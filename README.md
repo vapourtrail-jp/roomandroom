@@ -1,36 +1,70 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# Roomandroom
 
-## Getting Started
+A high-performance, visually stunning website base built with **Next.js** and **Three.js**.
 
-First, run the development server:
+## 🚀 Features
+
+- **Next.js 15 (App Router)**: Modern React framework for the best developer experience.
+- **Three.js Integration**: Using `@react-three/fiber` and `@react-three/drei` for immersive 3D experiences.
+- **Premium Design System**: Glassmorphism, refined typography (Outfit), and smooth animations with Vanilla CSS.
+- **Cloudflare Ready**: Optimized for deployment on Cloudflare Pages.
+
+## 🛠️ Tech Stack
+
+- **Framework**: Next.js
+- **3D Engine**: Three.js
+- **React Wrappers**: Fiber, Drei
+- **Styling**: Vanilla CSS (Global & Modules)
+- **Deployment**: Targeting Cloudflare Pages
+
+## 🏁 Getting Started
+
+First, install dependencies:
+
+```bash
+npm install
+```
+
+Second, run the development server:
 
 ```bash
 npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+Open [http://localhost:3000](http://localhost:3000) with your browser to see the 3D scene.
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+## ☁️ Deployment to Cloudflare Pages
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+### Option 1: Static Export (Recommended for simple sites)
 
-## Learn More
+Update `next.config.ts`:
+```typescript
+const nextConfig = {
+  output: 'export',
+  // ... other config
+}
+```
+Then run:
+```bash
+npm run build
+```
+And upload the `out` directory to Cloudflare Pages.
 
-To learn more about Next.js, take a look at the following resources:
+### Option 2: Next-on-Pages (For SSR/API Routes)
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+1. Install the adapter:
+```bash
+npm install -D @cloudflare/next-on-pages
+```
+2. Run the build command:
+```bash
+npx @cloudflare/next-on-pages
+```
+3. Deploy the `.vercel/output/static` (or equivalent) to Cloudflare.
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
+## 📁 Project Structure
 
-## Deploy on Vercel
-
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
-
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+- `src/app/`: Next.js App Router pages and layouts.
+- `src/components/`: Reusable React components.
+- `src/components/Experience.tsx`: The 3D world content.
+- `src/components/Scene.tsx`: The Canvas container and environment setup.
