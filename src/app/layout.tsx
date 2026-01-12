@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import "./globals.css";
 import "./style.css";
 import Link from "next/link";
+import PageTransition from "@/components/PageTransition";
 
 export const metadata: Metadata = {
   title: "room and room.",
@@ -45,7 +46,7 @@ export default function RootLayout({
         </nav>
 
         <main id="content" className="main l-main l-padding">
-          {children}
+          <PageTransition>{children}</PageTransition>
         </main>
 
         <footer className="footer l-footer l-padding">
