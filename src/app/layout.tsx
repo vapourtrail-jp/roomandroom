@@ -21,9 +21,9 @@ export default function RootLayout({
     <html lang="ja">
       <body className="home wp-singular page-template-default page page-id-8 wp-embed-responsive wp-theme-blankslate">
         <header className="header l-header l-padding">
-          <a href="https://www.roomandroom.org/">
+          <Link href="/">
             <img src="/logo_rar.png" height={33} alt="room and room" />
-          </a>
+          </Link>
         </header>
 
         <div className="mob-menu">
