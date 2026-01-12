@@ -25,7 +25,7 @@ export default function RootLayout({
         </a>
         <header className="header l-header l-padding">
           <a href="https://www.roomandroom.org/">
-            <img src="/img/logo_rar.png" height={33} alt="room and room" />
+            <img src="/logo_rar.png" height={33} alt="room and room" />
           </a>
         </header>
 
@@ -39,7 +39,7 @@ export default function RootLayout({
               <Link href="/">HOME</Link>
             </li>
             <li>
-              <Link href="/trip">ROOMS</Link>
+              <Link href="/rooms">ROOMS</Link>
             </li>
             <li>
               <Link href="/about">ABOUT</Link>
@@ -60,7 +60,7 @@ export default function RootLayout({
                 rel="noopener noreferrer"
                 className="sns-icon sns-x"
               >
-                <img src="/img/sns/sns-x-bk.png" alt="X" />
+                <img src="/sns-x-bk.png" alt="X" />
               </a>
               <a
                 href="https://www.instagram.com/roomandroom/"
@@ -68,7 +68,7 @@ export default function RootLayout({
                 rel="noopener noreferrer"
                 className="sns-icon sns-instagram"
               >
-                <img src="/img/sns/sns-instagram-black.png" alt="Instagram" />
+                <img src="/sns-instagram-black.png" alt="Instagram" />
               </a>
               <a
                 href="https://www.threads.net/@roomandroom"
@@ -76,7 +76,7 @@ export default function RootLayout({
                 rel="noopener noreferrer"
                 className="sns-icon sns-threads"
               >
-                <img src="/img/sns/sns-threads-bk.png" alt="Threads" />
+                <img src="/sns-threads-bk.png" alt="Threads" />
               </a>
             </div>
           </div>
