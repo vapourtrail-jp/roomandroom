@@ -1,5 +1,5 @@
 export default function Home() {
   return (
-    <div className="title">room and room.</div>
+    <div className="title">under construction...</div>
   );
 }

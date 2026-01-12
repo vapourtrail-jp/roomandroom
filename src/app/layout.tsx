@@ -20,9 +20,6 @@ export default function RootLayout({
   return (
     <html lang="ja">
       <body className="home wp-singular page-template-default page page-id-8 wp-embed-responsive wp-theme-blankslate">
-        <a href="#content" className="skip-link screen-reader-text">
-          Skip to the content
-        </a>
         <header className="header l-header l-padding">
           <a href="https://www.roomandroom.org/">
             <img src="/logo_rar.png" height={33} alt="room and room" />
