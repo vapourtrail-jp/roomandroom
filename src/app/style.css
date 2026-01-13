@@ -431,7 +431,6 @@ a {
 
 .title {
     letter-spacing: -.01em;
-    font-size: 21px;
     font-size: 16px;
     font-weight: bold;
 }
@@ -440,6 +439,7 @@ a {
     font-size: 12px;
     line-height: 1.92;
     margin-top: 14px;
+    letter-spacing: 0.024rem;
 }
 
 .content p {
