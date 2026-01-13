@@ -43,6 +43,11 @@ body {
     letter-spacing: 0.05rem;
 }
 
+body.is-fixed {
+    overflow: hidden;
+}
+
+
 a {
     text-decoration: none;
     display: inline-block;
@@ -295,7 +300,8 @@ a {
 
 /*activeクラスが付与されると線が回転して×に*/
 
-.mob-menu.panelactive span:nth-of-type(1) {
+.mob-menu.panelactive span:nth-of-type(1),
+.js-toggle-menu .menu-icon.is-open span:nth-of-type(1) {
     top: 22px;
     left: 17px;
     transform: translateY(6px) rotate(-45deg);
@@ -304,7 +310,8 @@ a {
 
 
 
-.mob-menu.panelactive span:nth-of-type(2) {
+.mob-menu.panelactive span:nth-of-type(2),
+.js-toggle-menu .menu-icon.is-open span:nth-of-type(2) {
     top: 34px;
     left: 17px;
     will-change: transform;
@@ -391,7 +398,8 @@ a {
     }
 
     /*アクティブクラスがついたら透過なしにして最前面へ*/
-    #g-nav.panelactive {
+    #g-nav.panelactive,
+    #g-nav.is-open {
         opacity: 1;
         z-index: 999;
     }
@@ -408,7 +416,8 @@ a {
         transform: translate(-50%, -50%);
     }
 
-    #g-nav.panelactive ul {
+    #g-nav.panelactive ul,
+    #g-nav.is-open ul {
         display: block;
     }
 

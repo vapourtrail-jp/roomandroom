@@ -3,6 +3,7 @@ import "./globals.css";
 import "./style.css";
 import Link from "next/link";
 import PageTransition from "@/components/PageTransition";
+import Navigation from "@/components/Navigation";
 
 export const metadata: Metadata = {
   title: "room and room.",
@@ -27,23 +28,7 @@ export default function RootLayout({
           </Link>
         </header>
 
-        <div className="mob-menu">
-          <span></span>
-          <span></span>
-        </div>
-        <nav id="g-nav" className="header-nav">
-          <ul className="menu-main">
-            <li>
-              <Link href="/">HOME</Link>
-            </li>
-            <li>
-              <Link href="/rooms">ROOMS</Link>
-            </li>
-            <li>
-              <Link href="/about">ABOUT</Link>
-            </li>
-          </ul>
-        </nav>
+        <Navigation />
 
         <main id="content" className="main l-main l-padding">
           <PageTransition>{children}</PageTransition>
