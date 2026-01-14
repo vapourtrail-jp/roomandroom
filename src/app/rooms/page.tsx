@@ -9,6 +9,12 @@ interface RoomPhoto {
     alt: string;
 }
 
+// ACFの「画像」フィールドが配列（Gallery）の場合の構造
+interface RoomPhotoItem {
+    caption: string;
+    room_photo: RoomPhoto;
+}
+
 interface Room {
     id: number;
     title: {
@@ -17,25 +23,35 @@ interface Room {
     acf: {
         room_no: string;
         room_thumbnail: RoomPhoto;
-        room_photos: RoomPhoto[];
+        room_photos: RoomPhotoItem[]; // 実態に合わせて修正
     };
 }
 
 async function getRooms(): Promise<Room[]> {
-    const res = await fetch('https://cms.roomandroom.org/w/wp-json/wp/v2/rooms?acf_format=standard', {
-        cache: 'force-cache',
-        next: { tags: ['rooms'] }
-    });
+    try {
+        const res = await fetch('https://cms.roomandroom.org/w/wp-json/wp/v2/rooms?acf_format=standard', {
+            cache: 'force-cache',
+            next: { tags: ['rooms'] }
+        });
 
-    if (!res.ok) {
-        throw new Error('Failed to fetch rooms');
+        if (!res.ok) {
+            console.error('Fetch error:', res.status, res.statusText);
+            return [];
+        }
+
+        return res.json();
+    } catch (error) {
+        console.error('Error fetching rooms:', error);
+        return [];
     }
-
-    return res.json();
 }
 
 export default async function RoomsPage() {
     const rooms = await getRooms();
+
+    if (!rooms || !Array.isArray(rooms)) {
+        return <main style={{ padding: '20px' }}>No rooms data available.</main>;
+    }
 
     return (
         <main style={{ padding: '20px' }}>
@@ -43,7 +59,7 @@ export default async function RoomsPage() {
             {rooms.map((room) => (
                 <div key={room.id} style={{ marginBottom: '40px', borderBottom: '1px solid #ccc', paddingBottom: '20px' }}>
                     <h2>
-                        {room.title.rendered}
+                        {room.title?.rendered}
                         {room.acf?.room_no && (
                             <span style={{ marginLeft: '10px', fontSize: '0.8em', color: '#666' }}>
                                 (No. {room.acf.room_no})
@@ -52,7 +68,7 @@ export default async function RoomsPage() {
                     </h2>
 
                     {/* サムネイルの表示 */}
-                    {room.acf?.room_thumbnail && (
+                    {room.acf?.room_thumbnail?.url && (
                         <div style={{ marginBottom: '20px' }}>
                             <h3>Thumbnail</h3>
                             <img
@@ -67,16 +83,21 @@ export default async function RoomsPage() {
                     {/* フォトギャラリーの表示 */}
                     <h3>Photos</h3>
                     <div style={{ display: 'flex', flexDirection: 'column', gap: '10px' }}>
-                        {room.acf?.room_photos?.map((photo, index) => (
-                            <div key={photo.id || index}>
-                                <img
-                                    src={photo.url}
-                                    alt={photo.alt || ''}
-                                    style={{ maxWidth: '400px', height: 'auto', display: 'block' }}
-                                />
-                                <code style={{ fontSize: '12px', wordBreak: 'break-all' }}>{photo.url}</code>
-                            </div>
-                        ))}
+                        {room.acf?.room_photos?.map((item, index) => {
+                            const photo = item.room_photo;
+                            if (!photo?.url) return null;
+
+                            return (
+                                <div key={photo.id || index}>
+                                    <img
+                                        src={photo.url}
+                                        alt={photo.alt || ''}
+                                        style={{ maxWidth: '400px', height: 'auto', display: 'block' }}
+                                    />
+                                    <code style={{ fontSize: '12px', wordBreak: 'break-all' }}>{photo.url}</code>
+                                </div>
+                            );
+                        })}
                     </div>
                 </div>
             ))}
