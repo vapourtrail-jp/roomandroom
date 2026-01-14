@@ -28,13 +28,15 @@ interface Room {
 }
 
 async function getRooms(): Promise<Room[]> {
+    const timestamp = Date.now();
     try {
-        const res = await fetch('https://cms.roomandroom.org/w/wp-json/wp/v2/rooms?acf_format=standard', {
+        const res = await fetch(`https://cms.roomandroom.org/w/wp-json/wp/v2/rooms?acf_format=standard&_=${timestamp}`, {
             headers: {
                 'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/91.0.4472.124 Safari/537.36'
             },
             next: {
-                tags: ['rooms']
+                tags: ['rooms'],
+                revalidate: 0
             }
         });
 
