@@ -28,15 +28,13 @@ interface Room {
 }
 
 async function getRooms(): Promise<Room[]> {
-    const timestamp = Date.now();
     try {
-        const res = await fetch(`https://cms.roomandroom.org/w/wp-json/wp/v2/rooms?acf_format=standard&_=${timestamp}`, {
+        const res = await fetch('https://cms.roomandroom.org/w/wp-json/wp/v2/rooms?acf_format=standard', {
             headers: {
                 'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/91.0.4472.124 Safari/537.36'
             },
             next: {
-                tags: ['rooms'],
-                revalidate: 0
+                tags: ['rooms']
             }
         });
 
@@ -52,12 +50,10 @@ async function getRooms(): Promise<Room[]> {
 
 export default async function RoomsPage() {
     const rooms = await getRooms();
-    const updatedTime = new Date().toLocaleString('ja-JP', { timeZone: 'Asia/Tokyo' });
 
     return (
         <main style={{ padding: '20px' }}>
             <h1 className="title">ROOMS</h1>
-            <p style={{ fontSize: '10px', color: '#999' }}>Last Data Fetch: {updatedTime}</p>
 
             {rooms.length === 0 ? (
                 <p>現在表示できるデータがありません。</p>
