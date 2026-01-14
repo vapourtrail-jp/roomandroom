@@ -48,10 +48,12 @@ async function getRooms(): Promise<Room[]> {
 
 export default async function RoomsPage() {
     const rooms = await getRooms();
+    const updatedTime = new Date().toLocaleString('ja-JP', { timeZone: 'Asia/Tokyo' });
 
     return (
         <main style={{ padding: '20px' }}>
             <h1 className="title">ROOMS</h1>
+            <p style={{ fontSize: '10px', color: '#999' }}>Last Data Fetch: {updatedTime}</p>
 
             {rooms.length === 0 ? (
                 <p>現在表示できるデータがありません。</p>

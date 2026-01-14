@@ -1,5 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { revalidateTag } from 'next/cache';
+import { revalidateTag, revalidatePath } from 'next/cache';
 
 export const runtime = 'edge';
 
@@ -14,6 +14,9 @@ export async function GET(request: NextRequest) {
     try {
         // 'rooms' タグのキャッシュを再検証
         revalidateTag('rooms', 'tag');
+        // パス自体の再検証も追加
+        revalidatePath('/rooms');
+
         return NextResponse.json({
             revalidated: true,
             tag: 'rooms',
