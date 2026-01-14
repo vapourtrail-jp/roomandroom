@@ -27,33 +27,48 @@ interface Room {
     };
 }
 
-async function getRooms(): Promise<Room[]> {
+async function getRooms(): Promise<{ data: Room[], status: number, error: string }> {
     try {
         const res = await fetch('https://cms.roomandroom.org/w/wp-json/wp/v2/rooms?acf_format=standard', {
-            cache: 'force-cache',
+            cache: 'no-store', // 一時的にキャッシュを無効化して接続テスト
+            headers: {
+                'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/91.0.4472.124 Safari/537.36'
+            },
             next: { tags: ['rooms'] }
         });
 
         if (!res.ok) {
-            console.error('Fetch error:', res.status, res.statusText);
-            return [];
+            return { data: [], status: res.status, error: res.statusText };
         }
 
         const data = await res.json();
-        return Array.isArray(data) ? data : [];
+        return {
+            data: Array.isArray(data) ? data : [],
+            status: res.status,
+            error: ''
+        };
     } catch (error) {
-        console.error('Error fetching rooms:', error);
-        return [];
+        return { data: [], status: 0, error: String(error) };
     }
 }
 
 export default async function RoomsPage() {
-    const rooms = await getRooms();
+    const { data: rooms, status, error } = await getRooms();
 
     return (
         <main style={{ padding: '20px' }}>
             <h1 className="title">ROOMS (Count: {rooms.length})</h1>
-            {rooms.length === 0 && <p>データが取得できませんでした。APIまたはキャッシュの設定を確認してください。</p>}
+            {status !== 200 && (
+                <div style={{ color: 'red', marginBottom: '20px' }}>
+                    <p>Fetch Status: {status}</p>
+                    <p>Error: {error}</p>
+                </div>
+            )}
+
+            {rooms.length === 0 && status === 200 && (
+                <p>APIは成功しましたが、データが空です。</p>
+            )}
+
             {rooms.map((room) => (
                 <div key={room.id} style={{ marginBottom: '40px', borderBottom: '1px solid #ccc', paddingBottom: '20px' }}>
                     <h2>
