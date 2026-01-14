@@ -1,3 +1,5 @@
+export const runtime = 'edge';
+
 interface RoomPhoto {
     id: number;
     title: string;
@@ -22,7 +24,7 @@ interface Room {
 async function getRooms(): Promise<Room[]> {
     const res = await fetch('https://cms.roomandroom.org/w/wp-json/wp/v2/rooms?acf_format=standard', {
         cache: 'force-cache',
-        next: { tags: ['rooms'] },
+        next: { tags: ['rooms'] }
     });
 
     if (!res.ok) {
