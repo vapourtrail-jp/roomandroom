@@ -70,36 +70,15 @@ export default async function RoomsPage() {
 
                         {/* サムネイルの表示 */}
                         {room.acf?.room_thumbnail?.url && (
-                            <div style={{ marginBottom: '20px' }}>
-                                <h3>Thumbnail</h3>
+                            <div style={{ marginTop: '20px' }}>
                                 <img
                                     src={room.acf.room_thumbnail.url}
                                     alt={room.acf.room_thumbnail.alt || ''}
-                                    style={{ maxWidth: '300px', height: 'auto', display: 'block', border: '2px solid #000' }}
+                                    style={{ maxWidth: '400px', height: 'auto', display: 'block', border: '1px solid #000' }}
                                 />
                                 <code style={{ fontSize: '12px' }}>{room.acf.room_thumbnail.url}</code>
                             </div>
                         )}
-
-                        {/* フォトギャラリーの表示 */}
-                        <h3>Photos</h3>
-                        <div style={{ display: 'flex', flexDirection: 'column', gap: '10px' }}>
-                            {room.acf?.room_photos?.map((item, index) => {
-                                const photo = item.room_photo;
-                                if (!photo?.url) return null;
-
-                                return (
-                                    <div key={photo.id || index}>
-                                        <img
-                                            src={photo.url}
-                                            alt={photo.alt || ''}
-                                            style={{ maxWidth: '400px', height: 'auto', display: 'block' }}
-                                        />
-                                        <code style={{ fontSize: '12px', wordBreak: 'break-all' }}>{photo.url}</code>
-                                    </div>
-                                );
-                            })}
-                        </div>
                     </div>
                 ))
             )}
