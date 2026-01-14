@@ -39,7 +39,8 @@ async function getRooms(): Promise<Room[]> {
             return [];
         }
 
-        return res.json();
+        const data = await res.json();
+        return Array.isArray(data) ? data : [];
     } catch (error) {
         console.error('Error fetching rooms:', error);
         return [];
@@ -49,13 +50,10 @@ async function getRooms(): Promise<Room[]> {
 export default async function RoomsPage() {
     const rooms = await getRooms();
 
-    if (!rooms || !Array.isArray(rooms)) {
-        return <main style={{ padding: '20px' }}>No rooms data available.</main>;
-    }
-
     return (
         <main style={{ padding: '20px' }}>
-            <h1 className="title">ROOMS</h1>
+            <h1 className="title">ROOMS (Count: {rooms.length})</h1>
+            {rooms.length === 0 && <p>データが取得できませんでした。APIまたはキャッシュの設定を確認してください。</p>}
             {rooms.map((room) => (
                 <div key={room.id} style={{ marginBottom: '40px', borderBottom: '1px solid #ccc', paddingBottom: '20px' }}>
                     <h2>
