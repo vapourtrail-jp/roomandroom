@@ -60,16 +60,18 @@ a {
 .l-header {
     box-sizing: border-box;
     width: 100%;
-    height: 92px;
+    height: 80px;
     display: flex;
     justify-content: space-between;
     align-items: center;
     position: fixed;
     top: 0px;
     left: 0px;
-    width: 100%;
-    height: 80px;
-    z-index: 3;
+    z-index: 10;
+    /* Navigation などより前面に */
+    background-color: rgba(255, 255, 255, 0.75);
+    backdrop-filter: blur(10px);
+    -webkit-backdrop-filter: blur(10px);
 }
 
 .l-main {
@@ -77,8 +79,10 @@ a {
     box-sizing: border-box;
     margin: 0px auto;
     z-index: 1;
-    padding-top: 80px;      /* ヘッダーの高さ */
-    padding-bottom: 100px;  /* フッターの高さ */
+    padding-top: 80px;
+    /* ヘッダーの高さ */
+    padding-bottom: 100px;
+    /* フッターの高さ */
 }
 
 .l-main-content {
@@ -90,11 +94,13 @@ a {
     box-sizing: border-box;
     width: 100%;
     height: 100px;
-    z-index: 3;
+    z-index: 10;
     position: fixed;
     bottom: 0px;
     left: 0px;
-    background-color: #fff; /* 重なった時に透けないように背景色を指定 */
+    background-color: rgba(255, 255, 255, 0.75);
+    backdrop-filter: blur(10px);
+    -webkit-backdrop-filter: blur(10px);
     display: flex;
     flex-flow: column;
 }
@@ -327,11 +333,25 @@ a {
 
 
 .header-nav {
+    box-sizing: border-box;
     height: 80px;
     display: flex;
     justify-content: flex-end;
+    align-items: center;
+    position: fixed;
+    top: 0px;
+    right: 0px;
     padding-right: 21px;
-    z-index: 4;
+    z-index: 11;
+    /* Header の背景より前面に */
+    padding: 21px 28px;
+    pointer-events: none;
+    /* 下の要素を触れるように（中のメニュー自体は後に上書き） */
+}
+
+.header-nav ul {
+    pointer-events: auto;
+    /* メニュー項目は触れるように */
 }
 
 
@@ -395,8 +415,9 @@ a {
         height: 100vh;
         height: 100dvh;
         background: #999;
-        background-color: rgba(255, 255, 255, 0.8);
-        ;
+        background-color: rgba(255, 255, 255, 0.75);
+        backdrop-filter: blur(10px);
+        -webkit-backdrop-filter: blur(10px);
 
         /*動き*/
         transition: all 0.3s;
