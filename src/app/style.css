@@ -79,10 +79,10 @@ a {
     box-sizing: border-box;
     margin: 0px auto;
     z-index: 1;
-    padding-top: 80px;
-    /* ヘッダーの高さ */
-    padding-bottom: 100px;
-    /* フッターの高さ */
+    /* ヘッダー(80px) + 本来のパディング(21px) = 101px */
+    padding-top: 101px !important;
+    /* フッター(100px) + 本来のパディング(21px) = 121px */
+    padding-bottom: 121px !important;
 }
 
 .l-main-content {
