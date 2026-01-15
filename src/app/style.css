@@ -773,10 +773,22 @@ a {
     margin-bottom: 20px;
 }
 
-.room-photo-page__footer .room-info {
+.room-photo-page__footer {
     display: flex;
     justify-content: center;
     gap: 30px;
+    font-size: 12px;
+    color: #666;
+}
+
+.room-photo-page__footer h1 {
+    font-size: 21px;
+}
+
+.room-info {
+    display: flex;
+    justify-content: center;
+    gap: 4px;
     font-size: 12px;
     color: #666;
 }

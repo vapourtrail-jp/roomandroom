@@ -128,7 +128,7 @@ export default async function RoomPhotoPage({ params }: PageProps) {
             </div>
 
             <div className="room-photo-page__footer">
-                <h1 className="title" style={{ marginBottom: '14px' }}>room*{room.acf.room_no}</h1>
+                <h1 className="title" style={{ marginBottom: '7px' }}>room*{room.acf.room_no}</h1>
                 <div className="room-info">
                     {room.acf.photo_by && <span className="meta-item">photo by: {room.acf.photo_by}</span>}
                     {room.acf.photo_by && room.acf.room_by && <span className="meta-separator" style={{ margin: '0 4px' }}>/</span>}
