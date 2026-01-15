@@ -531,7 +531,7 @@ a {
 
 .room-card__meta {
     display: flex;
-    flex-direction: column;
+    flex-direction: row;
     gap: 0px;
     margin: 0;
 }
@@ -570,13 +570,12 @@ a {
     display: flex;
     align-items: flex-start;
     /* 上揃え */
-    width: 240px;
+    width: 320px;
     /* 横幅固定 */
     min-height: 80px;
     text-decoration: none;
     color: inherit;
     background-color: #fff;
-    border: 1px solid #eee;
     box-sizing: border-box;
     /* パディングを幅に含める */
     transition: background-color 0.2s;
@@ -603,10 +602,13 @@ a {
 
 /* テキストエリア */
 .room-card__body {
-    padding: 6px 8px;
+    padding: 0px 14px;
     /* 狭い幅に合わせて余白を調整 */
     overflow: hidden;
     /* はみ出し対策 */
+
+    display: flex;
+    flex-direction: column;
 }
 
 .room-card__no {
