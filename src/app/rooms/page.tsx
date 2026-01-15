@@ -19,6 +19,7 @@ interface RoomPhotoItem {
 
 interface Room {
     id: number;
+    slug: string;
     title: {
         rendered: string;
     };
@@ -79,7 +80,7 @@ export default async function RoomsPage() {
 
                         return (
                             <li key={room.id} className="l-list__item">
-                                <Link href={`/details/${room.id}`} className="room-card">
+                                <Link href={`/rooms/${room.acf.room_no}`} className="room-card">
                                     <div className="room-card__thumbnail">
                                         {thumbnailUrl ? (
                                             <img
