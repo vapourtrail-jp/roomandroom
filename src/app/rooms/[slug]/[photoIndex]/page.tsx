@@ -92,7 +92,7 @@ export default async function RoomPhotoPage({ params }: PageProps) {
         <div className="room-photo-page">
             <div className="room-photo-page__header">
                 <Link href="/rooms" className="back-link">BACK TO LIST</Link>
-                <h1 className="title">{room.acf.room_no}</h1>
+                <h1 className="title">room*{room.acf.room_no}</h1>
             </div>
 
             <div className="room-photo-page__main">

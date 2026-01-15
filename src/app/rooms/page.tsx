@@ -94,7 +94,7 @@ export default async function RoomsPage() {
                                     </div>
 
                                     <div className="room-card__body">
-                                        <p className="room-card__no">{room.acf?.room_no || room.title?.rendered}</p>
+                                        <p className="room-card__no">room*{room.acf?.room_no || room.title?.rendered}</p>
 
                                         <dl className="room-card__meta">
                                             {room.acf?.photo_by && (
