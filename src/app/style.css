@@ -470,8 +470,9 @@ a {
 }
 
 .l-list {
-    display: grid;
-    grid-template-columns: repeat(1, 1fr);
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: flex-start;
     gap: 40px;
     list-style: none;
     padding: 0;
@@ -481,7 +482,6 @@ a {
 /* PC */
 @media screen and (min-width: 1025px) {
     .l-list {
-        grid-template-columns: repeat(2, 1fr);
         gap: 60px 40px;
     }
 }
@@ -506,7 +506,7 @@ a {
     aspect-ratio: 1 / 1;
     overflow: hidden;
     background-color: #f0f0f0;
-    margin-bottom: 14px;
+    margin-bottom: 0px;
 }
 
 .room-card__image {
@@ -532,7 +532,7 @@ a {
 .room-card__meta {
     display: flex;
     flex-direction: column;
-    gap: 20px;
+    gap: 0px;
     margin: 0;
 }
 
@@ -546,7 +546,6 @@ a {
 .room-card__label {
     font-size: 10px;
     color: #999;
-    text-transform: uppercase;
     font-weight: normal;
 }
 
