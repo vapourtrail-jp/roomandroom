@@ -54,18 +54,18 @@ export default async function RoomsPage() {
     const rooms = await getRooms();
 
     return (
-        <main style={{ padding: '20px' }}>
+        <div className="rooms-container">
             <h1 className="title">ROOMS</h1>
 
             {rooms.length === 0 ? (
-                <p>現在表示できるデータがありません。</p>
+                <p className="no-data">現在表示できるデータがありません。</p>
             ) : (
                 rooms.map((room) => (
-                    <div key={room.id} style={{ marginBottom: '40px', borderBottom: '1px solid #ccc', paddingBottom: '20px' }}>
-                        <h2>
+                    <div key={room.id} className="room-item">
+                        <h2 className="room-title">
                             {room.title?.rendered}
                             {room.acf?.room_no && (
-                                <span style={{ marginLeft: '10px', fontSize: '0.8em', color: '#666' }}>
+                                <span className="room-no">
                                     (No. {room.acf.room_no})
                                 </span>
                             )}
@@ -73,18 +73,18 @@ export default async function RoomsPage() {
 
                         {/* サムネイル画像のみを表示 */}
                         {room.acf?.room_thumbnail?.url && (
-                            <div style={{ marginTop: '20px' }}>
+                            <div className="room-thumbnail">
                                 <img
                                     src={room.acf.room_thumbnail.url}
                                     alt={room.acf.room_thumbnail.alt || ''}
-                                    style={{ maxWidth: '400px', height: 'auto', display: 'block', border: '1px solid #000' }}
+                                    className="room-thumbnail-img"
                                 />
-                                <code style={{ fontSize: '10px', color: '#888' }}>{room.acf.room_thumbnail.url}</code>
+                                <code className="room-image-url">{room.acf.room_thumbnail.url}</code>
                             </div>
                         )}
                     </div>
                 ))
             )}
-        </main>
+        </div>
     );
 }

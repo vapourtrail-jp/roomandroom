@@ -471,3 +471,53 @@ a {
 .content p {
     margin-bottom: 21px;
 }
+/* -------------------------------------------------- */
+/* Rooms Page
+/* -------------------------------------------------- */
+
+.rooms-container {
+    padding: 0px; /* layout.tsx の .l-padding に任せる */
+}
+
+.room-item {
+    margin-bottom: 40px;
+    border-bottom: 1px solid #ccc;
+    padding-bottom: 20px;
+}
+
+.room-title {
+    font-size: 1.25rem;
+    margin-bottom: 14px;
+}
+
+.room-no {
+    margin-left: 10px;
+    font-size: 0.8em;
+    color: #666;
+    font-weight: normal;
+}
+
+.room-thumbnail {
+    margin-top: 20px;
+}
+
+.room-thumbnail-img {
+    max-width: 100%;
+    width: 400px;
+    height: auto;
+    display: block;
+    border: 1px solid #000;
+}
+
+.room-image-url {
+    font-size: 10px;
+    color: #888;
+    word-break: break-all;
+    display: block;
+    margin-top: 5px;
+}
+
+.no-data {
+    color: #666;
+    font-style: italic;
+}
