@@ -531,6 +531,7 @@ a {
 
 .room-card__meta {
     display: flex;
+    flex-direction: column;
     gap: 20px;
     margin: 0;
 }
@@ -570,7 +571,7 @@ a {
     display: flex;
     align-items: flex-start;
     /* 上揃え */
-    width: 210px;
+    width: 240px;
     /* 横幅固定 */
     min-height: 80px;
     text-decoration: none;
@@ -633,7 +634,7 @@ a {
 .room-card__photographer,
 .room-card__owner {
     display: flex;
-    flex-direction: column;
+    flex-direction: row;
     /* 横幅が狭いため縦に並べるのも手（今回は横並びで実装） */
     margin-bottom: 4px;
 }
