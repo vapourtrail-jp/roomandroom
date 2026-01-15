@@ -683,10 +683,108 @@ a {
     color: #444;
 }
 
-.room-detail__meta {
+/* Room Photo Page (Single View)
+/* -------------------------------------------------- */
+
+.room-photo-page {
+    padding: 40px 20px;
+    max-width: 1200px;
+    margin: 0 auto;
+}
+
+.room-photo-page__header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
     margin-bottom: 30px;
+}
+
+.room-photo-page__header .back-link {
+    font-size: 11px;
+    color: #999;
+    text-decoration: none;
+    letter-spacing: 0.1em;
+}
+
+.room-photo-page__header .back-link:hover {
+    color: #333;
+}
+
+.room-photo-page__main {
+    position: relative;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    min-height: 60vh;
+    background: #fafafa;
+    margin-bottom: 40px;
+}
+
+.room-photo-page__image-container {
+    text-align: center;
+    max-width: 100%;
+}
+
+.room-photo-page__image-container .main-photo {
+    max-width: 100%;
+    max-height: 80vh;
+    object-fit: contain;
+    box-shadow: 0 10px 40px rgba(0, 0, 0, 0.05);
+}
+
+.room-photo-page__main .nav-button {
+    position: absolute;
+    top: 50%;
+    transform: translateY(-50%);
+    width: 60px;
+    height: 60px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: rgba(255, 255, 255, 0.8);
+    color: #333;
+    text-decoration: none;
+    border-radius: 50%;
+    font-size: 24px;
+    z-index: 10;
+    transition: all 0.3s ease;
+}
+
+.room-photo-page__main .nav-button:hover {
+    background: #fff;
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+}
+
+.room-photo-page__main .nav-button--prev {
+    left: 20px;
+}
+
+.room-photo-page__main .nav-button--next {
+    right: 20px;
+}
+
+.room-photo-page__footer {
+    text-align: center;
+}
+
+.room-photo-page__footer .photo-counter {
+    font-size: 14px;
+    color: #999;
+    margin-bottom: 20px;
+}
+
+.room-photo-page__footer .room-info {
+    display: flex;
+    justify-content: center;
+    gap: 30px;
     font-size: 12px;
-    color: #888;
+    color: #666;
+}
+
+.room-photo-page__image-container .photo-caption {
+    margin-top: 20px;
+    color: #333;
+    font-size: 15px;
 }
 
 

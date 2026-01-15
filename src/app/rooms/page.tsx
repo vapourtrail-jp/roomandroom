@@ -80,7 +80,7 @@ export default async function RoomsPage() {
 
                         return (
                             <li key={room.id} className="l-list__item">
-                                <Link href={`/rooms/${room.acf.room_no}`} className="room-card">
+                                <Link href={`/rooms/${room.acf.room_no}/01`} className="room-card">
                                     <div className="room-card__thumbnail">
                                         {thumbnailUrl ? (
                                             <img
