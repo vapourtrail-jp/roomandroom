@@ -1,3 +1,5 @@
+import Link from 'next/link';
+
 export const runtime = 'edge';
 
 interface RoomPhoto {
@@ -12,7 +14,7 @@ interface RoomPhoto {
 // ACFの「画像」フィールドが配列（Gallery）の場合の構造
 interface RoomPhotoItem {
     caption: string;
-    room_photo: RoomPhoto;
+    room_photo: RoomPhoto | number;
 }
 
 interface Room {
@@ -22,7 +24,13 @@ interface Room {
     };
     acf: {
         room_no: string;
-        room_thumbnail: RoomPhoto;
+        room_by: string;          // オーナー
+        photo_by: string;         // 撮影者
+        room_desc: string;        // 説明文
+        sns_instagram: string;    // Instagram
+        sns_x: string;            // X
+        photo_count: string;      // 枚数
+        room_thumbnail: RoomPhoto | number;
         room_photos: RoomPhotoItem[];
     };
 }
@@ -60,31 +68,55 @@ export default async function RoomsPage() {
             {rooms.length === 0 ? (
                 <p className="no-data">現在表示できるデータがありません。</p>
             ) : (
-                rooms.map((room) => (
-                    <div key={room.id} className="room-item">
-                        <h2 className="room-title">
-                            {room.title?.rendered}
-                            {room.acf?.room_no && (
-                                <span className="room-no">
-                                    (No. {room.acf.room_no})
-                                </span>
-                            )}
-                        </h2>
+                <ul className="l-list">
+                    {rooms.map((room) => {
+                        // サムネイルURLの優先順：
+                        // 1. room_thumbnail の URL
+                        // 2. room_photos[0] の URL
+                        const thumbnailUrl = (typeof room.acf?.room_thumbnail === 'object' && room.acf.room_thumbnail?.url)
+                            || (Array.isArray(room.acf?.room_photos) && typeof room.acf.room_photos[0]?.room_photo === 'object' && room.acf.room_photos[0].room_photo?.url)
+                            || '';
 
-                        {/* サムネイル画像のみを表示 */}
-                        {room.acf?.room_thumbnail?.url && (
-                            <div className="room-thumbnail">
-                                <img
-                                    src={room.acf.room_thumbnail.url}
-                                    alt={room.acf.room_thumbnail.alt || ''}
-                                    className="room-thumbnail-img"
-                                />
-                                <code className="room-image-url">{room.acf.room_thumbnail.url}</code>
-                            </div>
-                        )}
-                    </div>
-                ))
+                        return (
+                            <li key={room.id} className="l-list__item">
+                                <Link href={`/details/${room.id}`} className="room-card">
+                                    <div className="room-card__thumbnail">
+                                        {thumbnailUrl ? (
+                                            <img
+                                                src={thumbnailUrl}
+                                                alt={room.acf.room_no || room.title?.rendered}
+                                                className="room-card__image"
+                                            />
+                                        ) : (
+                                            <div className="room-card__no-image" style={{ height: '100%', display: 'flex', alignItems: 'center', justifyContent: 'center', background: '#eee', color: '#999' }}>NO IMAGE</div>
+                                        )}
+                                    </div>
+
+                                    <div className="room-card__body">
+                                        <p className="room-card__no">{room.acf?.room_no || room.title?.rendered}</p>
+
+                                        <dl className="room-card__meta">
+                                            <div className="room-card__photographer">
+                                                <dt className="room-card__label">Photo</dt>
+                                                <dd className="room-card__value">
+                                                    {room.acf?.photo_by || '田中'}
+                                                </dd>
+                                            </div>
+                                            <div className="room-card__owner">
+                                                <dt className="room-card__label">room</dt>
+                                                <dd className="room-card__value">
+                                                    @{room.acf?.room_by || 'design'}
+                                                </dd>
+                                            </div>
+                                        </dl>
+                                    </div>
+                                </Link>
+                            </li>
+                        );
+                    })}
+                </ul>
             )}
         </div>
     );
 }
+
