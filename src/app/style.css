@@ -560,3 +560,94 @@ a {
     font-style: italic;
     margin-top: 28px;
 }
+
+
+/* ==========================================================================
+   Module: room-card
+   ========================================================================== */
+
+.room-card {
+    display: flex;
+    align-items: flex-start;
+    /* 上揃え */
+    width: 210px;
+    /* 横幅固定 */
+    min-height: 80px;
+    text-decoration: none;
+    color: inherit;
+    background-color: #fff;
+    border: 1px solid #eee;
+    box-sizing: border-box;
+    /* パディングを幅に含める */
+    transition: background-color 0.2s;
+}
+
+.room-card:hover {
+    background-color: #f9f9f9;
+}
+
+/* サムネイル: 80px 正方形切り抜き */
+.room-card__thumbnail {
+    flex-shrink: 0;
+    width: 80px;
+    height: 80px;
+    overflow: hidden;
+}
+
+.room-card__image {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    display: block;
+}
+
+/* テキストエリア */
+.room-card__body {
+    padding: 6px 8px;
+    /* 狭い幅に合わせて余白を調整 */
+    overflow: hidden;
+    /* はみ出し対策 */
+}
+
+.room-card__no {
+    margin: 0 0 4px;
+    font-family: monospace;
+    font-weight: bold;
+    font-size: 0.9rem;
+    /* 幅に合わせて少し小さく */
+    color: #333;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    /* 長すぎる番号を三点リーダーに */
+}
+
+/* メタ情報 */
+.room-card__meta {
+    margin: 0;
+    font-size: 0.7rem;
+    /* 210px幅に適したサイズ */
+    line-height: 1.2;
+}
+
+.room-card__photographer,
+.room-card__owner {
+    display: flex;
+    flex-direction: column;
+    /* 横幅が狭いため縦に並べるのも手（今回は横並びで実装） */
+    margin-bottom: 4px;
+}
+
+.room-card__label {
+    color: #999;
+    font-size: 0.65rem;
+}
+
+.room-card__value {
+    margin: 0;
+    color: #666;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    /* 名前が長い場合に備えて */
+}
