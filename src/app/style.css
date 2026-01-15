@@ -609,6 +609,7 @@ a {
 
     display: flex;
     flex-direction: column;
+    height: 80px;
 }
 
 .room-card__no {
