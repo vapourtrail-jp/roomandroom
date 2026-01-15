@@ -92,7 +92,6 @@ export default async function RoomPhotoPage({ params }: PageProps) {
         <div className="room-photo-page">
             <div className="room-photo-page__header">
                 <Link href="/rooms" className="back-link">BACK TO LIST</Link>
-                <h1 className="title">room*{room.acf.room_no}</h1>
             </div>
 
             <div className="room-photo-page__main">
@@ -129,11 +128,13 @@ export default async function RoomPhotoPage({ params }: PageProps) {
             </div>
 
             <div className="room-photo-page__footer">
-                <p className="photo-counter">{index} / {photos.length}</p>
+                <h1 className="title" style={{ marginBottom: '14px' }}>room*{room.acf.room_no}</h1>
                 <div className="room-info">
-                    {room.acf.photo_by && <p className="meta-item">photo by: {room.acf.photo_by}</p>}
-                    {room.acf.room_by && <p className="meta-item">room by: {room.acf.room_by}</p>}
+                    {room.acf.photo_by && <span className="meta-item">photo by: {room.acf.photo_by}</span>}
+                    {room.acf.photo_by && room.acf.room_by && <span className="meta-separator" style={{ margin: '0 4px' }}>/</span>}
+                    {room.acf.room_by && <span className="meta-item">room by: {room.acf.room_by}</span>}
                 </div>
+                <p className="photo-counter" style={{ marginTop: '20px' }}>{index} / {photos.length}</p>
             </div>
 
         </div>

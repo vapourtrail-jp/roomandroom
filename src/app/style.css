@@ -716,7 +716,7 @@ a {
     align-items: center;
     justify-content: center;
     min-height: 60vh;
-    background: #fafafa;
+    /*    background: #fafafa;*/
     margin-bottom: 40px;
 }
 
