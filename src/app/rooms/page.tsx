@@ -60,14 +60,7 @@ async function getRooms(): Promise<Room[]> {
 }
 
 export default async function RoomsPage() {
-    const originalRooms = await getRooms();
-    // テスト用に40個並ぶように複製（一時的）
-    const rooms = originalRooms.length > 0
-        ? Array.from({ length: 40 }, (_, i) => ({
-            ...originalRooms[i % originalRooms.length],
-            id: originalRooms[i % originalRooms.length].id + i * 1000 // unique key
-        }))
-        : [];
+    const rooms = await getRooms();
 
     return (
         <div className="rooms-container">
