@@ -117,7 +117,11 @@ export default function WobblyThumbnail({ src, alt, initialDelay = 0 }: WobblyTh
 
         gsap.ticker.add(update);
 
-        if (card) {
+        // マウスデバイス（pointer: fine）の場合のみホバーイベントを登録
+        // スマホ等のタッチデバイスでは Sticky Hover を防ぐため無効化
+        const isMouse = window.matchMedia('(pointer: fine)').matches;
+
+        if (isMouse && card) {
             card.addEventListener('mouseenter', handleMouseEnter);
             card.addEventListener('mouseleave', handleMouseLeave);
         }
