@@ -1,5 +1,8 @@
 import { notFound } from 'next/navigation';
-import Link from 'next/link';
+import ZoomableImage from '@/components/ZoomableImage';
+import RoomPhotoNav from '@/components/RoomPhotoNav';
+import { Suspense } from 'react';
+import LocalPhotoContainer from '@/components/LocalPhotoContainer';
 
 export const runtime = 'edge';
 
@@ -20,18 +23,8 @@ interface RoomPhotoItem {
 interface Room {
     id: number;
     slug: string;
-    title: {
-        rendered: string;
-    };
     acf: {
         room_no: string;
-        room_by: string;
-        photo_by: string;
-        room_desc: string;
-        sns_instagram: string;
-        sns_x: string;
-        photo_count: string;
-        room_thumbnail: RoomPhoto;
         room_photos: RoomPhotoItem[];
     };
 }
@@ -54,7 +47,7 @@ async function getRoomByRoomNo(roomNo: string): Promise<Room | null> {
         const data: Room[] = await res.json();
         return Array.isArray(data) ? data.find(room => room.acf.room_no === roomNo) || null : null;
     } catch (error) {
-        console.error('Error fetching room by room_no:', error);
+        console.error('Error fetching room by room_no in page:', error);
         return null;
     }
 }
@@ -77,7 +70,6 @@ export default async function RoomPhotoPage({ params }: PageProps) {
     const index = parseInt(photoIndex, 10);
     const photos = room.acf.room_photos || [];
 
-    // インデックスが有効かチェック
     if (isNaN(index) || index < 1 || index > photos.length) {
         notFound();
     }
@@ -89,54 +81,29 @@ export default async function RoomPhotoPage({ params }: PageProps) {
     const padIndex = (idx: number) => idx.toString().padStart(2, '0');
 
     return (
-        <div className="room-photo-page">
-            <div className="room-photo-page__header">
-                <Link href="/rooms" className="back-link">BACK TO LIST</Link>
-            </div>
+        <div className="room-photo-page__main">
+            <Suspense fallback={<div className="nav-placeholder" />}>
+                <RoomPhotoNav
+                    slug={slug}
+                    prevIndex={prevIndex}
+                    nextIndex={nextIndex}
+                />
+            </Suspense>
 
-            <div className="room-photo-page__main">
-                {prevIndex && (
-                    <Link
-                        href={`/rooms/${slug}/${padIndex(prevIndex)}`}
-                        className="nav-button nav-button--prev"
-                    >
-                        &lt;
-                    </Link>
-                )}
-
-                <div className="room-photo-page__image-container">
-                    {typeof currentPhotoItem.room_photo === 'object' && currentPhotoItem.room_photo?.url && (
-                        <img
+            <LocalPhotoContainer>
+                {typeof currentPhotoItem.room_photo === 'object' && currentPhotoItem.room_photo?.url && (
+                    <Suspense fallback={<div className="image-placeholder" />}>
+                        <ZoomableImage
                             src={currentPhotoItem.room_photo.url}
                             alt={currentPhotoItem.caption || `${room.acf.room_no} - ${photoIndex}`}
                             className="main-photo"
                         />
-                    )}
-                    {currentPhotoItem.caption && (
-                        <p className="photo-caption">{currentPhotoItem.caption}</p>
-                    )}
-                </div>
-
-                {nextIndex && (
-                    <Link
-                        href={`/rooms/${slug}/${padIndex(nextIndex)}`}
-                        className="nav-button nav-button--next"
-                    >
-                        &gt;
-                    </Link>
+                    </Suspense>
                 )}
-            </div>
-
-            <div className="room-photo-page__footer">
-                <h1 className="title" style={{ marginBottom: '7px' }}>room*{room.acf.room_no}</h1>
-                <div className="room-info">
-                    {room.acf.photo_by && <span className="meta-item">photo by: {room.acf.photo_by}</span>}
-                    {room.acf.photo_by && room.acf.room_by && <span className="meta-separator" style={{ margin: '0 4px' }}>/</span>}
-                    {room.acf.room_by && <span className="meta-item">room by: {room.acf.room_by}</span>}
-                </div>
-                <p className="photo-counter" style={{ marginTop: '20px' }}>{index} / {photos.length}</p>
-            </div>
-
+                {currentPhotoItem.caption && (
+                    <p className="photo-caption">{currentPhotoItem.caption}</p>
+                )}
+            </LocalPhotoContainer>
         </div>
     );
 }

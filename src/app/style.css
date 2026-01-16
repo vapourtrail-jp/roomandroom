@@ -1,31 +1,3 @@
-/*
-Theme Name: BlankSlate
-Theme URI: https://opencollective.com/blankslate
-Author: Bryan Hadaway
-Author URI: https://opencollective.com/blankslate#section-contributors
-Description: Donate: https://opencollective.com/blankslate. Learn: https://blankslate.me/. BlankSlate is the definitive WordPress boilerplate starter theme. I've carefully constructed the most clean and minimalist theme possible for designers and developers to use as a base to build websites for clients or to build completely custom themes from scratch. Clean, simple, unstyled, semi-minified, unformatted, and valid code, SEO-friendly, jQuery-enabled, no programmer comments, standardized and as white label as possible, and most importantly, the CSS is reset for cross-browser-compatability, with no intrusive visual CSS styles added whatsoever. A perfect skeleton theme. For support and suggestions, go to: https://github.com/bhadaway/blankslate/issues. Thank you.
-Tags: accessibility-ready, one-column, two-columns, custom-menu, featured-images, microformats, sticky-post, threaded-comments, translation-ready
-Version: 2024.1
-Requires at least: 5.2
-Tested up to: 6.5
-Requires PHP: 7.0
-License: GNU General Public License v3 or Later
-License URI: https://www.gnu.org/licenses/gpl.html
-Text Domain: blankslate
-
-BlankSlate WordPress Theme 2011-2024
-BlankSlate is distributed under the terms of the GNU GPL
-*/
-/*
-html,body,div,span,applet,object,iframe,h1,h2,h3,h4,h5,h6,p,blockquote,pre,a,abbr,acronym,address,big,cite,code,del,dfn,em,img,ins,kbd,q,s,samp,small,strike,strong,sub,sup,tt,var,b,u,i,center,dl,dt,dd,ol,ul,li,fieldset,form,label,legend,table,caption,tbody,tfoot,thead,tr,th,td,article,aside,canvas,details,embed,figure,figcaption,footer,header,hgroup,menu,nav,output,ruby,section,summary,time,mark,audio,video{margin:0;padding:0;border:0;font-size:100%;font:inherit;vertical-align:baseline}html{scroll-behavior:smooth}body{line-height:1}a{text-decoration-skip-ink:auto}a[href^="tel"]{color:inherit;text-decoration:none}button{outline:0}ol,ul{list-style:none}blockquote,q{quotes:none}blockquote:before,blockquote:after,q:before,q:after{content:'';content:none}q{display:inline;font-style:italic}q:before{content:'"';font-style:normal}q:after{content:'"';font-style:normal}textarea,input[type="text"],input[type="button"],input[type="submit"],input[type="reset"],input[type="search"],input[type="password"]{-webkit-appearance:none;appearance:none;border-radius:0}input[type="search"]{-webkit-appearance:textfield}table{border-collapse:collapse;border-spacing:0}th,td{padding:2px}big{font-size:120%}small,sup,sub{font-size:80%}sup{vertical-align:super}sub{vertical-align:sub}dd{margin-left:20px}kbd,tt{font-family:courier;font-size:12px}ins{text-decoration:underline}del,strike,s{text-decoration:line-through}dt{font-weight:bold}address,cite,var{font-style:italic}article,aside,details,figcaption,figure,footer,header,hgroup,menu,nav,section{display:block}*{box-sizing:border-box;-webkit-tap-highlight-color:transparent}
-.sticky{}.bypostauthor{}.wp-caption{}.wp-caption-text{}.gallery-caption{}.alignright{}.alignleft{}.aligncenter{}
-.screen-reader-text{border:0;clip:rect(1px,1px,1px,1px);-webkit-clip-path:inset(50%);clip-path:inset(50%);height:1px;margin:-1px;overflow:hidden;padding:0;position:absolute!important;width:1px;word-wrap:normal!important;word-break:normal}
-.screen-reader-text:focus{background-color:#f7f7f7;border-radius:3px;box-shadow:0 0 2px 2px rgba(0,0,0,.6);clip:auto!important;-webkit-clip-path:none;clip-path:none;color:#007acc;display:block;font-size:14px;font-size:.875rem;font-weight:700;height:auto;right:5px;line-height:normal;padding:15px 23px 14px;text-decoration:none;top:5px;width:auto;z-index:100000}
-.skip-link{left:-9999rem;top:2.5rem;z-index:999999999;text-decoration:underline}
-.skip-link:focus{display:block;left:6px;top:7px;font-size:14px;font-weight:600;text-decoration:none;line-height:normal;padding:15px 23px 14px;z-index:100000;right:auto}
-.visually-hidden:not(:focus):not(:active), .form-allowed-tags:not(:focus):not(:active){position:absolute !important;height:1px;width:1px;overflow:hidden;clip:rect(1px 1px 1px 1px);clip:rect(1px, 1px, 1px, 1px);white-space:nowrap}
-*/
-
 /* -------------------------------------------------- */
 
 body {
@@ -105,8 +77,6 @@ a {
     flex-flow: column;
 }
 
-
-
 .l-content-width {
     width: 1025px;
 }
@@ -117,7 +87,8 @@ a {
     padding: 21px 21px;
 }
 
-/* -------------------------------------------------- */
+
+/* -- header ------------------------------------------------ */
 
 .header-nav {
     box-sizing: border-box;
@@ -129,6 +100,139 @@ a {
 
     padding: 21px 28px;
 }
+
+
+.header-nav {
+    box-sizing: border-box;
+    height: 80px;
+    display: flex;
+    justify-content: flex-end;
+    align-items: center;
+    position: fixed;
+    top: 0px;
+    right: 0px;
+    padding-right: 21px;
+    z-index: 11;
+    /* Header の背景より前面に */
+    padding: 21px 28px;
+    pointer-events: none;
+    /* 下の要素を触れるように（中のメニュー自体は後に上書き） */
+}
+
+.header-nav ul {
+    pointer-events: auto;
+    /* メニュー項目は触れるように */
+}
+
+/* -------------------------------------------------- */
+
+.mob-menu {
+    top: 30px;
+}
+
+.mob-menu {
+    height: 20px;
+    position: absolute;
+    right: 20px;
+    width: 30px;
+    z-index: 99;
+}
+
+.mob-menu__line {
+    background: #000;
+    display: block;
+    height: 2px;
+    position: absolute;
+    transition: transform .3s;
+    width: 100%;
+}
+
+.mob-menu__line--center {
+    top: 9px;
+}
+
+.mob-menu__line--bottom {
+    bottom: 0;
+}
+
+
+.mob-menu {
+    position: fixed;
+    z-index: 9999;
+    /*ボタンを最前面に*/
+    top: 10px;
+    right: 10px;
+    cursor: pointer;
+    width: 60px;
+    height: 60px;
+}
+
+.mob-menu span {
+    display: inline-block;
+    transition: all .4s;
+    position: absolute;
+    left: 14px;
+    height: 3px;
+    border-radius: 2px;
+    background-color: #666;
+    width: 45%;
+}
+
+
+
+
+.mob-menu span {
+    display: inline-block;
+    transition: all .2s;
+    /*アニメーションの設定*/
+    position: absolute;
+    left: 18.7px;
+    height: 2px;
+    line-height: 0px;
+    margin: 0;
+    padding: 0;
+    font-size: 0;
+    background-color: #000;
+}
+
+
+.mob-menu span:nth-of-type(1) {
+    top: 20px;
+    width: 22.6px;
+    border-top: 1px solid #000;
+    border-bottom: 1px solid #000;
+    border-radius: 4px;
+}
+
+.mob-menu span:nth-of-type(2) {
+    top: 36px;
+    width: 22.6px;
+    border-top: 1px solid #000;
+    border-bottom: 1px solid #000;
+    border-radius: 4px;
+}
+
+.mob-menu.panelactive span:nth-of-type(1),
+.js-toggle-menu .menu-icon.is-open span:nth-of-type(1) {
+    top: 22px;
+    left: 17px;
+    transform: translateY(6px) rotate(-45deg);
+    width: 28.3px;
+}
+
+.mob-menu.panelactive span:nth-of-type(2),
+.js-toggle-menu .menu-icon.is-open span:nth-of-type(2) {
+    top: 34px;
+    left: 17px;
+    will-change: transform;
+    transform: translateY(-6px) rotate(45deg);
+    width: 28px;
+}
+
+
+
+
+/* -------------------------------------------------- */
 
 .main-content {
     /* padding-top: 28px; */
@@ -153,13 +257,11 @@ a {
 }
 
 
-
-
-
 .menu-main a:not(:first-child) {
     margin-left: 14px;
 }
 
+/* -- sns ------------------------------------------------ */
 
 .list-sns {
     font-size: 0px;
@@ -213,236 +315,6 @@ a {
 
 
 
-/* -------------------------------------------------- */
-
-.mob-menu {
-    top: 30px;
-}
-
-.mob-menu {
-    height: 20px;
-    position: absolute;
-    right: 20px;
-    width: 30px;
-    z-index: 99;
-}
-
-.mob-menu__line {
-    background: #000;
-    display: block;
-    height: 2px;
-    position: absolute;
-    transition: transform .3s;
-    width: 100%;
-}
-
-.mob-menu__line--center {
-    top: 9px;
-}
-
-.mob-menu__line--bottom {
-    bottom: 0;
-}
-
-
-.mob-menu {
-    position: fixed;
-    z-index: 9999;
-    /*ボタンを最前面に*/
-    top: 10px;
-    right: 10px;
-    cursor: pointer;
-    width: 60px;
-    height: 60px;
-}
-
-/*×に変化*/
-.mob-menu span {
-    display: inline-block;
-    transition: all .4s;
-    position: absolute;
-    left: 14px;
-    height: 3px;
-    border-radius: 2px;
-    background-color: #666;
-    width: 45%;
-}
-
-
-
-
-.mob-menu span {
-    display: inline-block;
-    transition: all .2s;
-    /*アニメーションの設定*/
-    position: absolute;
-    left: 18.7px;
-    height: 2px;
-    line-height: 0px;
-    margin: 0;
-    padding: 0;
-    font-size: 0;
-    background-color: #000;
-}
-
-
-.mob-menu span:nth-of-type(1) {
-    top: 20px;
-    width: 22.6px;
-    border-top: 1px solid #000;
-    border-bottom: 1px solid #000;
-    border-radius: 4px;
-}
-
-.mob-menu span:nth-of-type(2) {
-    top: 36px;
-    width: 22.6px;
-    border-top: 1px solid #000;
-    border-bottom: 1px solid #000;
-    border-radius: 4px;
-}
-
-/*activeクラスが付与されると線が回転して×に*/
-
-.mob-menu.panelactive span:nth-of-type(1),
-.js-toggle-menu .menu-icon.is-open span:nth-of-type(1) {
-    top: 22px;
-    left: 17px;
-    transform: translateY(6px) rotate(-45deg);
-    width: 28.3px;
-}
-
-
-
-.mob-menu.panelactive span:nth-of-type(2),
-.js-toggle-menu .menu-icon.is-open span:nth-of-type(2) {
-    top: 34px;
-    left: 17px;
-    will-change: transform;
-    transform: translateY(-6px) rotate(45deg);
-    width: 28px;
-}
-
-
-
-
-.header-nav {
-    box-sizing: border-box;
-    height: 80px;
-    display: flex;
-    justify-content: flex-end;
-    align-items: center;
-    position: fixed;
-    top: 0px;
-    right: 0px;
-    padding-right: 21px;
-    z-index: 11;
-    /* Header の背景より前面に */
-    padding: 21px 28px;
-    pointer-events: none;
-    /* 下の要素を触れるように（中のメニュー自体は後に上書き） */
-}
-
-.header-nav ul {
-    pointer-events: auto;
-    /* メニュー項目は触れるように */
-}
-
-
-/* -------------------------------------------------- */
-
-/* PC */
-@media screen and (min-width: 1025px) {
-    .mob-menu {
-        display: none;
-    }
-
-    .menu-main li:not(:first-child) {
-        margin-left: 14px;
-    }
-
-}
-
-/* -------------------------------------------------- */
-
-/* タブレット＋スマホ */
-@media screen and (max-width: 1024px) {
-
-    .l-main {
-        margin-top: 80px;
-    }
-
-    .menu-main li:not(:first-child) {
-        margin-top: 7px;
-        margin-left: 0;
-    }
-
-    .menu-main a {
-        font-size: 1.2rem;
-        color: #000;
-        font-weight: normal;
-        line-height: 2.1rem;
-    }
-
-
-
-    .header-nav-main {
-        display: none;
-    }
-
-    #g-nav {
-        position: fixed;
-        z-index: 1;
-
-        opacity: 0;
-        /*はじめは透過0*/
-
-        /*ナビの位置と形状*/
-        top: 0;
-        left: 0;
-        width: 100%;
-        height: 100vh;
-        height: 100dvh;
-        background: #999;
-        background-color: rgba(255, 255, 255, 0.75);
-        backdrop-filter: blur(10px);
-        -webkit-backdrop-filter: blur(10px);
-
-        /*動き*/
-        transition: all 0.3s;
-    }
-
-    /*アクティブクラスがついたら透過なしにして最前面へ*/
-    #g-nav.panelactive,
-    #g-nav.is-open {
-        opacity: 1;
-        z-index: 999;
-    }
-
-    /*ナビゲーション*/
-    #g-nav ul {
-        display: none;
-        /*ナビゲーション天地中央揃え*/
-        position: absolute;
-        z-index: 999;
-        padding: 0;
-        top: 40%;
-        left: 50%;
-        transform: translate(-50%, -50%);
-    }
-
-    #g-nav.panelactive ul,
-    #g-nav.is-open ul {
-        display: block;
-    }
-
-
-    .entry-content img {
-        width: 100%;
-    }
-
-}
-
 
 .title {
     letter-spacing: -.01em;
@@ -479,16 +351,25 @@ a {
     margin: 28px 0;
 }
 
-/* PC */
-@media screen and (min-width: 1025px) {
-    .l-list {
-        gap: 60px 40px;
-    }
-}
-
 .l-list__item {
     margin: 0;
     padding: 0;
+}
+
+@keyframes cardFadeIn {
+    from {
+        opacity: 0;
+    }
+
+    to {
+        opacity: 1;
+    }
+}
+
+.room-card-wrapper {
+    opacity: 0;
+    /* 初期状態は透明 */
+    animation: cardFadeIn 0.8s ease forwards;
 }
 
 .room-card {
@@ -505,7 +386,6 @@ a {
 .room-card__thumbnail {
     aspect-ratio: 1 / 1;
     overflow: hidden;
-    background-color: #f0f0f0;
     margin-bottom: 0px;
 }
 
@@ -721,15 +601,18 @@ a {
 }
 
 .room-photo-page__image-container {
-    text-align: center;
-    max-width: 100%;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    min-height: 600px;
+    /* 拡大後の高さに合わせる */
 }
 
 .room-photo-page__image-container .main-photo {
-    max-width: 100%;
-    max-height: 80vh;
+    width: 100%;
+    max-width: 480px;
+    max-height: 480px;
     object-fit: contain;
-    box-shadow: 0 10px 40px rgba(0, 0, 0, 0.05);
 }
 
 .room-photo-page__main .nav-button {
@@ -774,9 +657,9 @@ a {
 }
 
 .room-photo-page__footer {
-    display: flex;
+    /*    display: flex;
     justify-content: center;
-    gap: 30px;
+    gap: 30px;*/
     font-size: 12px;
     color: #666;
 }
@@ -821,7 +704,7 @@ a {
 }
 
 .room-card:hover {
-    background-color: #f9f9f9;
+    /*    background-color: #f9f9f9;*/
 }
 
 /* サムネイル: 80px 正方形切り抜き */
@@ -892,4 +775,107 @@ a {
     overflow: hidden;
     text-overflow: ellipsis;
     /* 名前が長い場合に備えて */
+}
+
+/* -------------------------------------------------- */
+
+/* PC */
+@media screen and (min-width: 1025px) {
+    .mob-menu {
+        display: none;
+    }
+
+    .menu-main li:not(:first-child) {
+        margin-left: 14px;
+    }
+
+}
+
+/* -------------------------------------------------- */
+
+/* タブレット＋スマホ */
+@media screen and (max-width: 1024px) {
+
+    .l-main {
+        margin-top: 80px;
+    }
+
+    .menu-main li:not(:first-child) {
+        margin-top: 7px;
+        margin-left: 0;
+    }
+
+    .menu-main a {
+        font-size: 1.2rem;
+        color: #000;
+        font-weight: normal;
+        line-height: 2.1rem;
+    }
+
+
+
+    .header-nav-main {
+        display: none;
+    }
+
+    #g-nav {
+        position: fixed;
+        z-index: 1;
+
+        opacity: 0;
+        /*はじめは透過0*/
+
+        /*ナビの位置と形状*/
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100vh;
+        height: 100dvh;
+        background: #999;
+        background-color: rgba(255, 255, 255, 0.75);
+        backdrop-filter: blur(10px);
+        -webkit-backdrop-filter: blur(10px);
+
+        /*動き*/
+        transition: all 0.3s;
+    }
+
+    /*アクティブクラスがついたら透過なしにして最前面へ*/
+    #g-nav.panelactive,
+    #g-nav.is-open {
+        opacity: 1;
+        z-index: 999;
+    }
+
+    /*ナビゲーション*/
+    #g-nav ul {
+        display: none;
+        /*ナビゲーション天地中央揃え*/
+        position: absolute;
+        z-index: 999;
+        padding: 0;
+        top: 40%;
+        left: 50%;
+        transform: translate(-50%, -50%);
+    }
+
+    #g-nav.panelactive ul,
+    #g-nav.is-open ul {
+        display: block;
+    }
+
+
+    .entry-content img {
+        width: 100%;
+    }
+
+}
+
+
+
+/* PC */
+@media screen and (min-width: 1025px) {
+    .l-list {
+        gap: 60px 40px;
+    }
 }

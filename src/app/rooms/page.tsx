@@ -1,4 +1,5 @@
 import Link from 'next/link';
+import WobblyThumbnail from '@/components/WobblyThumbnail';
 
 export const runtime = 'edge';
 
@@ -11,7 +12,6 @@ interface RoomPhoto {
     alt: string;
 }
 
-// ACFの「画像」フィールドが配列（Gallery）の場合の構造
 interface RoomPhotoItem {
     caption: string;
     room_photo: RoomPhoto | number;
@@ -25,12 +25,12 @@ interface Room {
     };
     acf: {
         room_no: string;
-        room_by: string;          // オーナー
-        photo_by: string;         // 撮影者
-        room_desc: string;        // 説明文
-        sns_instagram: string;    // Instagram
-        sns_x: string;            // X
-        photo_count: string;      // 枚数
+        room_by: string;
+        photo_by: string;
+        room_desc: string;
+        sns_instagram: string;
+        sns_x: string;
+        photo_count: string;
         room_thumbnail: RoomPhoto | number;
         room_photos: RoomPhotoItem[];
     };
@@ -60,7 +60,14 @@ async function getRooms(): Promise<Room[]> {
 }
 
 export default async function RoomsPage() {
-    const rooms = await getRooms();
+    const originalRooms = await getRooms();
+    // テスト用に40個並ぶように複製（一時的）
+    const rooms = originalRooms.length > 0
+        ? Array.from({ length: 40 }, (_, i) => ({
+            ...originalRooms[i % originalRooms.length],
+            id: originalRooms[i % originalRooms.length].id + i * 1000 // unique key
+        }))
+        : [];
 
     return (
         <div className="rooms-container">
@@ -70,26 +77,27 @@ export default async function RoomsPage() {
                 <p className="no-data">現在表示できるデータがありません。</p>
             ) : (
                 <ul className="l-list">
-                    {rooms.map((room) => {
-                        // サムネイルURLの優先順：
-                        // 1. room_thumbnail の URL
-                        // 2. room_photos[0] の URL
+                    {rooms.map((room, index) => {
                         const thumbnailUrl = (typeof room.acf?.room_thumbnail === 'object' && room.acf.room_thumbnail?.url)
                             || (Array.isArray(room.acf?.room_photos) && typeof room.acf.room_photos[0]?.room_photo === 'object' && room.acf.room_photos[0].room_photo?.url)
                             || '';
 
                         return (
-                            <li key={room.id} className="l-list__item">
+                            <li
+                                key={`${room.id}-${index}`}
+                                className="l-list__item room-card-wrapper"
+                                style={{ animationDelay: `${index * 0.1}s` }}
+                            >
                                 <Link href={`/rooms/${room.acf.room_no}/01`} className="room-card">
                                     <div className="room-card__thumbnail">
                                         {thumbnailUrl ? (
-                                            <img
+                                            <WobblyThumbnail
                                                 src={thumbnailUrl}
                                                 alt={room.acf.room_no || room.title?.rendered}
-                                                className="room-card__image"
+                                                initialDelay={index * 0.1}
                                             />
                                         ) : (
-                                            <div className="room-card__no-image" style={{ height: '100%', display: 'flex', alignItems: 'center', justifyContent: 'center', background: '#eee', color: '#999' }}>NO IMAGE</div>
+                                            <div className="room-card__no-image" style={{ height: '80px', width: '80px', display: 'flex', alignItems: 'center', justifyContent: 'center', background: '#eee', color: '#999' }}>NO IMAGE</div>
                                         )}
                                     </div>
 
@@ -124,4 +132,3 @@ export default async function RoomsPage() {
         </div>
     );
 }
-
