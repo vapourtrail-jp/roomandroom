@@ -33,13 +33,14 @@ interface Room {
         photo_count: string;
         room_thumbnail: RoomPhoto | number;
         room_photos: RoomPhotoItem[];
+        thumbnail_no: string;
     };
 }
 
 async function getRooms(): Promise<Room[]> {
     const timestamp = Date.now();
     try {
-        const res = await fetch(`https://cms.roomandroom.org/w/wp-json/wp/v2/rooms?acf_format=standard&_=${timestamp}`, {
+        const res = await fetch(`https://cms.roomandroom.org/w/wp-json/wp/v2/rooms?acf_format=standard&per_page=100&_=${timestamp}`, {
             headers: {
                 'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/91.0.4472.124 Safari/537.36'
             },
@@ -52,7 +53,14 @@ async function getRooms(): Promise<Room[]> {
         if (!res.ok) return [];
 
         const data = await res.json();
-        return Array.isArray(data) ? data : [];
+        if (!Array.isArray(data)) return [];
+
+        // room_no を数値として昇順ソート
+        return data.sort((a, b) => {
+            const noA = parseInt(a.acf?.room_no || '0', 10);
+            const noB = parseInt(b.acf?.room_no || '0', 10);
+            return noA - noB;
+        });
     } catch (error) {
         console.error('Error fetching rooms:', error);
         return [];
@@ -71,7 +79,9 @@ export default async function RoomsPage() {
             ) : (
                 <ul className="l-list">
                     {rooms.map((room, index) => {
-                        const thumbnailUrl = (typeof room.acf?.room_thumbnail === 'object' && room.acf.room_thumbnail?.url)
+                        const thumbIdx = parseInt(room.acf?.thumbnail_no || '0', 10) - 1;
+                        const thumbnailUrl = (thumbIdx >= 0 && Array.isArray(room.acf?.room_photos) && typeof room.acf.room_photos[thumbIdx]?.room_photo === 'object' && room.acf.room_photos[thumbIdx].room_photo?.url)
+                            || (typeof room.acf?.room_thumbnail === 'object' && room.acf.room_thumbnail?.url)
                             || (Array.isArray(room.acf?.room_photos) && typeof room.acf.room_photos[0]?.room_photo === 'object' && room.acf.room_photos[0].room_photo?.url)
                             || '';
 
@@ -98,21 +108,36 @@ export default async function RoomsPage() {
                                         <p className="room-card__no">room*{room.acf?.room_no || room.title?.rendered}</p>
 
                                         <dl className="room-card__meta">
-                                            {room.acf?.photo_by && (
-                                                <div className="room-card__photographer">
-                                                    <dt className="room-card__label">photo by </dt>
-                                                    <dd className="room-card__value">
-                                                        {room.acf.photo_by}
-                                                    </dd>
-                                                </div>
-                                            )}
-                                            {room.acf?.room_by && (
-                                                <div className="room-card__owner">
-                                                    <dt className="room-card__label">room by</dt>
-                                                    <dd className="room-card__value">
-                                                        {room.acf.room_by}
-                                                    </dd>
-                                                </div>
+                                            {room.acf?.photo_by === room.acf?.room_by ? (
+                                                // 同一人物の場合
+                                                room.acf?.photo_by && (
+                                                    <div className="room-card__combined">
+                                                        <dt className="room-card__label">room and photo by </dt>
+                                                        <dd className="room-card__value">
+                                                            {room.acf.photo_by}
+                                                        </dd>
+                                                    </div>
+                                                )
+                                            ) : (
+                                                // 別人の場合（既存の表示）
+                                                <>
+                                                    {room.acf?.photo_by && (
+                                                        <div className="room-card__photographer">
+                                                            <dt className="room-card__label">photo by </dt>
+                                                            <dd className="room-card__value">
+                                                                {room.acf.photo_by}
+                                                            </dd>
+                                                        </div>
+                                                    )}
+                                                    {room.acf?.room_by && (
+                                                        <div className="room-card__owner">
+                                                            <dt className="room-card__label">room by</dt>
+                                                            <dd className="room-card__value">
+                                                                {room.acf.room_by}
+                                                            </dd>
+                                                        </div>
+                                                    )}
+                                                </>
                                             )}
                                         </dl>
                                     </div>

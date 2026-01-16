@@ -29,7 +29,8 @@ interface Room {
     };
 }
 
-async function getRoomByRoomNo(roomNo: string): Promise<Room | null> {
+// 全ルームを取得する関数 (順序維持のため)
+async function getAllRooms(): Promise<Room[]> {
     const timestamp = Date.now();
     try {
         const res = await fetch(`https://cms.roomandroom.org/w/wp-json/wp/v2/rooms?acf_format=standard&per_page=100&_=${timestamp}`, {
@@ -42,13 +43,19 @@ async function getRoomByRoomNo(roomNo: string): Promise<Room | null> {
             }
         });
 
-        if (!res.ok) return null;
+        if (!res.ok) return [];
+        const data = await res.json();
+        if (!Array.isArray(data)) return [];
 
-        const data: Room[] = await res.json();
-        return Array.isArray(data) ? data.find(room => room.acf.room_no === roomNo) || null : null;
+        // room_no を数値として昇順ソート
+        return data.sort((a, b) => {
+            const noA = parseInt(a.acf?.room_no || '0', 10);
+            const noB = parseInt(b.acf?.room_no || '0', 10);
+            return noA - noB;
+        });
     } catch (error) {
-        console.error('Error fetching room by room_no in page:', error);
-        return null;
+        console.error('Error fetching rooms:', error);
+        return [];
     }
 }
 
@@ -61,32 +68,62 @@ interface PageProps {
 
 export default async function RoomPhotoPage({ params }: PageProps) {
     const { slug, photoIndex } = await params;
-    const room = await getRoomByRoomNo(decodeURIComponent(slug));
+    const allRooms = await getAllRooms();
+
+    // 現在のルームを特定
+    const currentRoomIndex = allRooms.findIndex(r => r.acf.room_no === decodeURIComponent(slug));
+    const room = allRooms[currentRoomIndex];
 
     if (!room) {
         notFound();
     }
 
-    const index = parseInt(photoIndex, 10);
+    const currentIndex = parseInt(photoIndex, 10);
     const photos = room.acf.room_photos || [];
 
-    if (isNaN(index) || index < 1 || index > photos.length) {
+    if (isNaN(currentIndex) || currentIndex < 1 || currentIndex > photos.length) {
         notFound();
     }
 
-    const currentPhotoItem = photos[index - 1];
-    const prevIndex = index > 1 ? index - 1 : null;
-    const nextIndex = index < photos.length ? index + 1 : null;
-
+    const currentPhotoItem = photos[currentIndex - 1];
     const padIndex = (idx: number) => idx.toString().padStart(2, '0');
+
+    // --- ナビゲーションリンクの生成 ---
+    let prevHref = '/rooms';
+    let nextHref = '/rooms';
+
+    // 前へのリンク
+    if (currentIndex > 1) {
+        // 同一ルーム内の前の写真
+        prevHref = `/rooms/${slug}/${padIndex(currentIndex - 1)}`;
+    } else {
+        // ルームの最初の写真なので、前のルームの最後の写真へ
+        const prevRoom = allRooms[currentRoomIndex - 1];
+        if (prevRoom) {
+            const prevRoomPhotos = prevRoom.acf.room_photos || [];
+            const lastPhotoIdx = prevRoomPhotos.length;
+            prevHref = `/rooms/${prevRoom.acf.room_no}/${padIndex(lastPhotoIdx)}`;
+        }
+    }
+
+    // 次へのリンク
+    if (currentIndex < photos.length) {
+        // 同一ルーム内の次の写真
+        nextHref = `/rooms/${slug}/${padIndex(currentIndex + 1)}`;
+    } else {
+        // ルームの最後の写真なので、次のルームの1枚目へ
+        const nextRoom = allRooms[currentRoomIndex + 1];
+        if (nextRoom) {
+            nextHref = `/rooms/${nextRoom.acf.room_no}/01`;
+        }
+    }
 
     return (
         <div className="room-photo-page__main">
             <Suspense fallback={<div className="nav-placeholder" />}>
                 <RoomPhotoNav
-                    slug={slug}
-                    prevIndex={prevIndex}
-                    nextIndex={nextIndex}
+                    prevHref={prevHref}
+                    nextHref={nextHref}
                 />
             </Suspense>
 

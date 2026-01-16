@@ -6,7 +6,6 @@ import { useContext, useRef, ReactNode, useMemo } from "react";
 import { LayoutRouterContext } from "next/dist/shared/lib/app-router-context.shared-runtime";
 
 // コンテキストを固定するコンポーネント
-// キーを渡すことで、同じ transitionKey 内でも中身を更新できるようにする
 function FrozenRoute({ children }: { children: ReactNode }) {
     const context = useContext(LayoutRouterContext);
     const frozen = useRef(context).current;
@@ -21,8 +20,9 @@ function FrozenRoute({ children }: { children: ReactNode }) {
 export default function PageTransition({ children }: { children: ReactNode }) {
     const pathname = usePathname();
 
-    // 写真の切り替え時 (/rooms/xxx/01 -> /rooms/xxx/02) は
-    // 画面全体のフェードを止めるために共通のキーを生成する
+    // 部屋が切り替わる時（slugが異なる時）や、 rooms 一覧、about など他ページへの遷移時のみ
+    // 全体のフェードを発生させるためのキーを生成。
+    // 例: /rooms/001/01 と /rooms/001/02 は同じキーになるため、全体フェードは起きない。
     const transitionKey = useMemo(() => {
         const match = pathname.match(/^(\/rooms\/[^\/]+)\/\d+$/);
         return match ? match[1] : pathname;
@@ -35,13 +35,14 @@ export default function PageTransition({ children }: { children: ReactNode }) {
                 initial={{ opacity: 0 }}
                 animate={{ opacity: 1 }}
                 exit={{ opacity: 0 }}
-                transition={{ duration: 0.4, ease: "easeInOut" }}
+                transition={{ duration: 0.5, ease: "easeInOut" }}
                 style={{ width: "100%" }}
             >
                 {/* 
-                    同じ transitionKey 内での遷移（写真の変更）のときは 
-                    FrozenRoute 自体を新しいキーで再生成させることで、
-                    全体のフェードを発生させずに中身（01から02）だけを更新する。
+                  部屋が変わらない（transitionKeyが同じ）場合は、
+                  FrozenRoute を解除して中身だけを即座に更新する。
+                  これにより、footerなどは維持されたまま、children内（LocalPhotoContainer）で
+                  個別のフェードが発生するようになる。
                 */}
                 <FrozenRoute key={pathname}>{children}</FrozenRoute>
             </motion.div>

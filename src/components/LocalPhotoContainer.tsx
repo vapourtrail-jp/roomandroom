@@ -1,25 +1,26 @@
 'use client';
 
 import { motion, AnimatePresence } from 'framer-motion';
-import { useParams } from 'next/navigation';
+import { usePathname } from 'next/navigation';
+import { ReactNode } from 'react';
 
 interface LocalPhotoContainerProps {
-    children: React.ReactNode;
+    children: ReactNode;
 }
 
 export default function LocalPhotoContainer({ children }: LocalPhotoContainerProps) {
-    const params = useParams();
-    const photoIndex = params.photoIndex as string;
+    const pathname = usePathname();
 
     return (
         <AnimatePresence mode="wait">
             <motion.div
-                key={photoIndex}
+                key={pathname}
                 initial={{ opacity: 0 }}
                 animate={{ opacity: 1 }}
                 exit={{ opacity: 0 }}
-                transition={{ duration: 0.4, ease: "easeInOut" }}
+                transition={{ duration: 0.5, ease: "easeInOut" }}
                 className="room-photo-page__image-container"
+                style={{ width: '100%' }}
             >
                 {children}
             </motion.div>
