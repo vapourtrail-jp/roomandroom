@@ -1,18 +1,80 @@
 'use client';
 
-import { useParams } from 'next/navigation';
+import { useParams, useRouter, useSearchParams } from 'next/navigation';
+import { useEffect, useCallback } from 'react';
 
 interface RoomPhotoFooterProps {
     roomNo: string;
     photoBy: string;
     roomBy: string;
     totalPhotos: number;
+    nextRoomNo: string | null;
 }
 
-export default function RoomPhotoFooter({ roomNo, photoBy, roomBy, totalPhotos }: RoomPhotoFooterProps) {
+export default function RoomPhotoFooter({
+    roomNo,
+    photoBy,
+    roomBy,
+    totalPhotos,
+    nextRoomNo
+}: RoomPhotoFooterProps) {
     const params = useParams();
+    const router = useRouter();
+    const searchParams = useSearchParams();
+
     const photoIndex = params.photoIndex as string;
-    const index = parseInt(photoIndex, 10);
+    const currentIndex = parseInt(photoIndex, 10);
+    const isAutoplay = searchParams.get('ap') === '1';
+    const isZoomed = searchParams.get('z') === '1';
+
+    // 次のパスを計算
+    const getNextPath = useCallback(() => {
+        const padIndex = (idx: number) => idx.toString().padStart(2, '0');
+        if (currentIndex < totalPhotos) {
+            // 同一ルーム内の次の写真
+            return `/rooms/${roomNo}/${padIndex(currentIndex + 1)}`;
+        } else if (nextRoomNo) {
+            // 次のルームの1枚目
+            return `/rooms/${nextRoomNo}/01`;
+        }
+        // 最後の場合は一覧に戻る
+        return '/rooms';
+    }, [currentIndex, totalPhotos, roomNo, nextRoomNo]);
+
+    // 自動遷移の実行
+    useEffect(() => {
+        if (!isAutoplay) return;
+
+        const timer = setTimeout(() => {
+            const nextPath = getNextPath();
+            if (nextPath === '/rooms') {
+                router.push(nextPath);
+                return;
+            }
+
+            // クエリパラメータの構築
+            const params = new URLSearchParams();
+            params.set('ap', '1');
+            if (isZoomed) params.set('z', '1');
+
+            router.push(`${nextPath}?${params.toString()}`);
+        }, 4000); // 4秒で遷移
+
+        return () => clearTimeout(timer);
+    }, [isAutoplay, isZoomed, getNextPath, router]);
+
+    const handlePlay = () => {
+        const params = new URLSearchParams(searchParams.toString());
+        params.set('ap', '1');
+        router.push(`${window.location.pathname}?${params.toString()}`);
+    };
+
+    const handleStop = () => {
+        const params = new URLSearchParams(searchParams.toString());
+        params.delete('ap');
+        const query = params.toString();
+        router.push(`${window.location.pathname}${query ? '?' + query : ''}`);
+    };
 
     return (
         <div className="room-photo-page__footer">
@@ -28,10 +90,44 @@ export default function RoomPhotoFooter({ roomNo, photoBy, roomBy, totalPhotos }
                     </>
                 )}
             </div>
-            {index > 0 && (
-                <p className="photo-counter" style={{ marginTop: '20px' }}>
-                    {index} / {totalPhotos}
-                </p>
+
+            {currentIndex > 0 && (
+                <div style={{ marginTop: '20px', display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '8px' }}>
+                    <p className="photo-counter" style={{ margin: 0 }}>
+                        {currentIndex} / {totalPhotos}
+                    </p>
+
+                    <div className="autoplay-controls" style={{ display: 'flex', gap: '15px', fontSize: '11px', letterSpacing: '0.1em' }}>
+                        <button
+                            onClick={handlePlay}
+                            style={{
+                                background: 'none',
+                                border: 'none',
+                                cursor: 'pointer',
+                                padding: 0,
+                                opacity: isAutoplay ? 1 : 0.4,
+                                fontWeight: isAutoplay ? 'bold' : 'normal',
+                                transition: 'opacity 0.3s'
+                            }}
+                        >
+                            PLAY
+                        </button>
+                        <button
+                            onClick={handleStop}
+                            style={{
+                                background: 'none',
+                                border: 'none',
+                                cursor: 'pointer',
+                                padding: 0,
+                                opacity: !isAutoplay ? 1 : 0.4,
+                                fontWeight: !isAutoplay ? 'bold' : 'normal',
+                                transition: 'opacity 0.3s'
+                            }}
+                        >
+                            STOP
+                        </button>
+                    </div>
+                </div>
             )}
         </div>
     );

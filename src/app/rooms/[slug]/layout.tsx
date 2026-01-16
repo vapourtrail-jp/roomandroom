@@ -1,5 +1,4 @@
 import { notFound } from 'next/navigation';
-import Link from 'next/link';
 import RoomPhotoFooter from '@/components/RoomPhotoFooter';
 
 export const runtime = 'edge';
@@ -24,7 +23,8 @@ interface Room {
     };
 }
 
-async function getRoomByRoomNo(roomNo: string): Promise<Room | null> {
+// 全ルームを取得する関数 (次の部屋を特定するため)
+async function getAllRooms(): Promise<Room[]> {
     const timestamp = Date.now();
     try {
         const res = await fetch(`https://cms.roomandroom.org/w/wp-json/wp/v2/rooms?acf_format=standard&per_page=100&_=${timestamp}`, {
@@ -37,13 +37,19 @@ async function getRoomByRoomNo(roomNo: string): Promise<Room | null> {
             }
         });
 
-        if (!res.ok) return null;
+        if (!res.ok) return [];
+        const data = await res.json();
+        if (!Array.isArray(data)) return [];
 
-        const data: Room[] = await res.json();
-        return Array.isArray(data) ? data.find(room => room.acf.room_no === roomNo) || null : null;
+        // room_no を数値として昇順ソート
+        return data.sort((a, b) => {
+            const noA = parseInt(a.acf?.room_no || '0', 10);
+            const noB = parseInt(b.acf?.room_no || '0', 10);
+            return noA - noB;
+        });
     } catch (error) {
-        console.error('Error fetching room by room_no in layout:', error);
-        return null;
+        console.error('Error fetching rooms in layout:', error);
+        return [];
     }
 }
 
@@ -55,18 +61,20 @@ export default async function RoomLayout({
     params: Promise<{ slug: string }>;
 }) {
     const { slug } = await params;
-    const room = await getRoomByRoomNo(decodeURIComponent(slug));
+    const allRooms = await getAllRooms();
+
+    const currentRoomIdx = allRooms.findIndex(r => r.acf.room_no === decodeURIComponent(slug));
+    const room = allRooms[currentRoomIdx];
 
     if (!room) {
         notFound();
     }
 
+    // 次の部屋の番号を取得（自動遷移用）
+    const nextRoomNo = allRooms[currentRoomIdx + 1]?.acf?.room_no || null;
+
     return (
         <div className="room-photo-page">
-            {/* <div className="room-photo-page__header">
-                <Link href="/rooms" className="back-link">BACK TO LIST</Link>
-            </div> */}
-
             {children}
 
             <RoomPhotoFooter
@@ -74,6 +82,7 @@ export default async function RoomLayout({
                 photoBy={room.acf.photo_by}
                 roomBy={room.acf.room_by}
                 totalPhotos={room.acf.room_photos?.length || 0}
+                nextRoomNo={nextRoomNo}
             />
         </div>
     );
