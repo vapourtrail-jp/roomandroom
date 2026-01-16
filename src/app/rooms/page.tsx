@@ -91,7 +91,7 @@ export default async function RoomsPage() {
                                 className="l-list__item room-card-wrapper"
                                 style={{ animationDelay: `${index * 0.1}s` }}
                             >
-                                <Link href={`/rooms/${room.acf.room_no}/01`} className="room-card">
+                                <Link href={`/rooms/${room.acf.room_no}/00`} className="room-card">
                                     <div className="room-card__thumbnail">
                                         {thumbnailUrl ? (
                                             <WobblyThumbnail

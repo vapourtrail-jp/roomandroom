@@ -48,9 +48,9 @@ export default function Navigation() {
                     <li>
                         <Link href="/" onClick={closeMenu}>HOME</Link>
                     </li>
-                    <li>
-                        <Link href="/rooms" onClick={closeMenu}>ROOMS</Link>
-                    </li>
+                    {/* <li>
+    <Link href="/rooms" onClick={closeMenu}>ROOMS</Link>
+</li> */}
                     <li>
                         <Link href="/about" onClick={closeMenu}>ABOUT</Link>
                     </li>

@@ -34,8 +34,8 @@ export default function RoomPhotoFooter({
             // 同一ルーム内の次の写真
             return `/rooms/${roomNo}/${padIndex(currentIndex + 1)}`;
         } else if (nextRoomNo) {
-            // 次のルームの1枚目
-            return `/rooms/${nextRoomNo}/01`;
+            // 次のルームの 00 ページへ
+            return `/rooms/${nextRoomNo}/00`;
         }
         // 最後の場合は一覧に戻る
         return '/rooms';
@@ -78,57 +78,76 @@ export default function RoomPhotoFooter({
 
     return (
         <div className="room-photo-page__footer">
-            <h1 className="title" style={{ marginBottom: '7px' }}>room*{roomNo}</h1>
-            <div className="room-info">
-                {photoBy === roomBy ? (
-                    photoBy && <span className="meta-item">room and photo by: {photoBy}</span>
-                ) : (
-                    <>
-                        {photoBy && <span className="meta-item">photo by: {photoBy}</span>}
-                        {photoBy && roomBy && <span className="meta-separator" style={{ margin: '0 4px' }}>/</span>}
-                        {roomBy && <span className="meta-item">room by: {roomBy}</span>}
-                    </>
-                )}
+            <div style={{ visibility: currentIndex === 0 ? 'hidden' : 'visible' }}>
+                <h1 className="title" style={{ marginBottom: '7px' }}>room*{roomNo}</h1>
+                <div className="room-info">
+                    {photoBy === roomBy ? (
+                        photoBy && <span className="meta-item">room and photo by: {photoBy}</span>
+                    ) : (
+                        <>
+                            {photoBy && <span className="meta-item">photo by: {photoBy}</span>}
+                            {photoBy && roomBy && <span className="meta-separator" style={{ margin: '0 4px' }}>/</span>}
+                            {roomBy && <span className="meta-item">room by: {roomBy}</span>}
+                        </>
+                    )}
+                </div>
             </div>
 
-            {currentIndex > 0 && (
-                <div style={{ marginTop: '20px', display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '8px' }}>
-                    <p className="photo-counter" style={{ margin: 0 }}>
-                        {currentIndex} / {totalPhotos}
-                    </p>
+            <div style={{ marginTop: '20px', display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '8px' }}>
+                <p className="photo-counter" style={{ margin: 0, visibility: currentIndex === 0 ? 'hidden' : 'visible' }}>
+                    {currentIndex} / {totalPhotos}
+                </p>
 
-                    <div className="autoplay-controls" style={{ display: 'flex', gap: '15px', fontSize: '11px', letterSpacing: '0.1em' }}>
-                        <button
-                            onClick={handlePlay}
-                            style={{
-                                background: 'none',
-                                border: 'none',
-                                cursor: 'pointer',
-                                padding: 0,
-                                opacity: isAutoplay ? 1 : 0.4,
-                                fontWeight: isAutoplay ? 'bold' : 'normal',
-                                transition: 'opacity 0.3s'
-                            }}
+                <div className="autoplay-controls" style={{ display: 'flex', gap: '20px', alignItems: 'center', marginTop: '15px' }}>
+                    <button
+                        onClick={handlePlay}
+                        title="PLAY"
+                        style={{
+                            background: 'none',
+                            border: 'none',
+                            cursor: 'pointer',
+                            padding: 0,
+                            opacity: isAutoplay ? 1 : 0.4,
+                            color: '#000',
+                            transition: 'opacity 0.3s'
+                        }}
+                    >
+                        <span
+                            className={`material-symbols-rounded ${isAutoplay ? 'is-filled' : ''}`}
+                            style={{ fontSize: '20px', display: 'block' }}
                         >
-                            PLAY
-                        </button>
-                        <button
-                            onClick={handleStop}
-                            style={{
-                                background: 'none',
-                                border: 'none',
-                                cursor: 'pointer',
-                                padding: 0,
-                                opacity: !isAutoplay ? 1 : 0.4,
-                                fontWeight: !isAutoplay ? 'bold' : 'normal',
-                                transition: 'opacity 0.3s'
-                            }}
+                            {isAutoplay ? 'play_circle' : 'play_arrow'}
+                        </span>
+                    </button>
+                    <button
+                        onClick={handleStop}
+                        title="STOP"
+                        style={{
+                            background: 'none',
+                            border: 'none',
+                            cursor: 'pointer',
+                            padding: 0,
+                            opacity: !isAutoplay ? 1 : 0.4,
+                            color: '#000',
+                            transition: 'opacity 0.3s'
+                        }}
+                    >
+                        <span
+                            className={`material-symbols-rounded ${!isAutoplay ? 'is-filled' : ''}`}
+                            style={{ fontSize: '20px', display: 'block' }}
                         >
-                            STOP
-                        </button>
-                    </div>
+                            {!isAutoplay ? 'pause_circle' : 'pause'}
+                        </span>
+                    </button>
                 </div>
-            )}
+
+                <div className="autoplay-progress-bar" style={{ visibility: isAutoplay ? 'visible' : 'hidden' }}>
+                    <div
+                        key={`${roomNo}-${currentIndex}`}
+                        className={`autoplay-progress-fill ${isAutoplay ? 'is-active' : ''}`}
+                    />
+                </div>
+            </div>
         </div>
     );
 }

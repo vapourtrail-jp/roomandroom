@@ -10,12 +10,12 @@ interface RoomPhotoNavProps {
 
 export default function RoomPhotoNav({ prevHref, nextHref }: RoomPhotoNavProps) {
     const searchParams = useSearchParams();
-    const isZoomed = searchParams.get('z') === '1';
-    const zoomQuery = isZoomed ? '?z=1' : '';
+    const currentParams = searchParams.toString();
+    const query = currentParams ? `?${currentParams}` : '';
 
-    // rooms 一覧へのリンクの場合はズームクエリを付けない
-    const finalPrevHref = prevHref === '/rooms' ? prevHref : `${prevHref}${zoomQuery}`;
-    const finalNextHref = nextHref === '/rooms' ? nextHref : `${nextHref}${zoomQuery}`;
+    // rooms 一覧へのリンクの場合はクエリを付けない
+    const finalPrevHref = prevHref === '/rooms' ? prevHref : `${prevHref}${query}`;
+    const finalNextHref = nextHref === '/rooms' ? nextHref : `${nextHref}${query}`;
 
     return (
         <>
@@ -23,14 +23,14 @@ export default function RoomPhotoNav({ prevHref, nextHref }: RoomPhotoNavProps) 
                 href={finalPrevHref}
                 className="nav-button nav-button--prev"
             >
-                &lt;
+                <span className="material-symbols-rounded" style={{ fontSize: '40px' }}>chevron_left</span>
             </Link>
 
             <Link
                 href={finalNextHref}
                 className="nav-button nav-button--next"
             >
-                &gt;
+                <span className="material-symbols-rounded" style={{ fontSize: '40px' }}>chevron_right</span>
             </Link>
         </>
     );

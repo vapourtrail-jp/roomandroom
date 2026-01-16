@@ -1,7 +1,5 @@
 'use client';
 
-import { useRef, useEffect } from 'react';
-import gsap from 'gsap';
 import { useRouter, useSearchParams, usePathname } from 'next/navigation';
 
 interface ZoomableImageProps {
@@ -14,63 +12,14 @@ export default function ZoomableImage({ src, alt, className }: ZoomableImageProp
     const router = useRouter();
     const searchParams = useSearchParams();
     const pathname = usePathname();
-    const imgRef = useRef<HTMLImageElement>(null);
 
-    const isZoomed = searchParams.get('z') === '1';
-    const isFirstRender = useRef(true);
-
-    useEffect(() => {
-        if (!imgRef.current) return;
-
-        // 初期表示かつズーム状態の場合、アニメーションなしで即座に適用
-        if (isFirstRender.current) {
-            isFirstRender.current = false;
-            if (isZoomed) {
-                gsap.set(imgRef.current, {
-                    maxWidth: '600px',
-                    maxHeight: '600px',
-                    width: '600px',
-                    height: '600px'
-                });
-            } else {
-                gsap.set(imgRef.current, {
-                    maxWidth: '480px',
-                    maxHeight: '480px',
-                    width: '100%',
-                    height: 'auto'
-                });
-            }
-            return;
-        }
-
-        // 2回目以降（クリック時）はアニメーションを適用
-        if (isZoomed) {
-            gsap.to(imgRef.current, {
-                maxWidth: '600px',
-                maxHeight: '600px',
-                width: '600px',
-                height: '600px',
-                duration: 0.6,
-                ease: 'power2.inOut',
-                overwrite: true
-            });
-        } else {
-            gsap.to(imgRef.current, {
-                maxWidth: '480px',
-                maxHeight: '480px',
-                width: '100%',
-                height: 'auto',
-                duration: 0.6,
-                ease: 'power2.inOut',
-                overwrite: true
-            });
-        }
-    }, [isZoomed]);
+    // z=1 のとき、元の標準サイズ（480px）とする（= isSmall）
+    const isSmall = searchParams.get('z') === '1';
 
     const handleToggleZoom = () => {
-        const nextZoom = !isZoomed;
+        const nextSmall = !isSmall;
         const params = new URLSearchParams(searchParams.toString());
-        if (nextZoom) {
+        if (nextSmall) {
             params.set('z', '1');
         } else {
             params.delete('z');
@@ -81,18 +30,23 @@ export default function ZoomableImage({ src, alt, className }: ZoomableImageProp
         router.replace(url, { scroll: false });
     };
 
+    const size = isSmall ? '480px' : '600px';
+
     return (
         <img
-            ref={imgRef}
             src={src}
             alt={alt}
-            className={`${className} ${isZoomed ? 'is-zoomed' : ''}`}
+            className={`${className} ${isSmall ? 'is-small' : 'is-large'}`}
             onClick={handleToggleZoom}
             style={{
-                cursor: isZoomed ? 'zoom-out' : 'zoom-in',
+                cursor: isSmall ? 'zoom-in' : 'zoom-out',
                 objectFit: 'contain',
                 display: 'block',
-                margin: '0 auto'
+                margin: '0 auto',
+                width: '100%',
+                maxWidth: size,
+                maxHeight: size,
+                transition: 'max-width 0.3s ease-in-out, max-height 0.3s ease-in-out'
             }}
         />
     );

@@ -25,6 +25,8 @@ interface Room {
     slug: string;
     acf: {
         room_no: string;
+        room_by: string;
+        photo_by: string;
         room_photos: RoomPhotoItem[];
     };
 }
@@ -81,11 +83,12 @@ export default async function RoomPhotoPage({ params }: PageProps) {
     const currentIndex = parseInt(photoIndex, 10);
     const photos = room.acf.room_photos || [];
 
-    if (isNaN(currentIndex) || currentIndex < 1 || currentIndex > photos.length) {
+    // 00 (プロフィール) から photos.length までの範囲を許可
+    if (isNaN(currentIndex) || currentIndex < 0 || currentIndex > photos.length) {
         notFound();
     }
 
-    const currentPhotoItem = photos[currentIndex - 1];
+    const currentPhotoItem = currentIndex > 0 ? photos[currentIndex - 1] : null;
     const padIndex = (idx: number) => idx.toString().padStart(2, '0');
 
     // --- ナビゲーションリンクの生成 ---
@@ -93,11 +96,11 @@ export default async function RoomPhotoPage({ params }: PageProps) {
     let nextHref = '/rooms';
 
     // 前へのリンク
-    if (currentIndex > 1) {
-        // 同一ルーム内の前の写真
+    if (currentIndex > 0) {
+        // 同一ルーム内の前（01 -> 00 など）
         prevHref = `/rooms/${slug}/${padIndex(currentIndex - 1)}`;
     } else {
-        // ルームの最初の写真なので、前のルームの最後の写真へ
+        // 現在 00 なので、前のルームの最後の写真へ
         const prevRoom = allRooms[currentRoomIndex - 1];
         if (prevRoom) {
             const prevRoomPhotos = prevRoom.acf.room_photos || [];
@@ -108,13 +111,13 @@ export default async function RoomPhotoPage({ params }: PageProps) {
 
     // 次へのリンク
     if (currentIndex < photos.length) {
-        // 同一ルーム内の次の写真
+        // 同一ルーム内の次
         nextHref = `/rooms/${slug}/${padIndex(currentIndex + 1)}`;
     } else {
-        // ルームの最後の写真なので、次のルームの1枚目へ
+        // ルームの最後の写真なので、次のルームの 00 へ
         const nextRoom = allRooms[currentRoomIndex + 1];
         if (nextRoom) {
-            nextHref = `/rooms/${nextRoom.acf.room_no}/01`;
+            nextHref = `/rooms/${nextRoom.acf.room_no}/00`;
         }
     }
 
@@ -128,17 +131,47 @@ export default async function RoomPhotoPage({ params }: PageProps) {
             </Suspense>
 
             <LocalPhotoContainer>
-                {typeof currentPhotoItem.room_photo === 'object' && currentPhotoItem.room_photo?.url && (
-                    <Suspense fallback={<div className="image-placeholder" />}>
-                        <ZoomableImage
-                            src={currentPhotoItem.room_photo.url}
-                            alt={currentPhotoItem.caption || `${room.acf.room_no} - ${photoIndex}`}
-                            className="main-photo"
-                        />
-                    </Suspense>
-                )}
-                {currentPhotoItem.caption && (
-                    <p className="photo-caption">{currentPhotoItem.caption}</p>
+                {currentIndex === 0 ? (
+                    /* 00 ページ: room_no とクレジットを表示 */
+                    <div className="profile-page-lead" style={{
+                        height: '480px',
+                        display: 'flex',
+                        flexDirection: 'column',
+                        alignItems: 'center',
+                        justifyContent: 'center',
+                        color: '#000'
+                    }}>
+                        <div style={{ fontSize: '48px', fontWeight: 'bold', letterSpacing: '0.1em', marginBottom: '10px' }}>
+                            room*{room.acf.room_no}
+                        </div>
+                        <div className="room-info" style={{ fontSize: '12px', color: '#666', display: 'flex', gap: '4px' }}>
+                            {room.acf.photo_by === room.acf.room_by ? (
+                                room.acf.photo_by && <span className="meta-item">room and photo by: {room.acf.photo_by}</span>
+                            ) : (
+                                <>
+                                    {room.acf.photo_by && <span className="meta-item">photo by: {room.acf.photo_by}</span>}
+                                    {room.acf.photo_by && room.acf.room_by && <span className="meta-separator" style={{ margin: '0 4px' }}>/</span>}
+                                    {room.acf.room_by && <span className="meta-item">room by: {room.acf.room_by}</span>}
+                                </>
+                            )}
+                        </div>
+                    </div>
+                ) : (
+                    /* 写真ページ */
+                    <>
+                        {currentPhotoItem && typeof currentPhotoItem.room_photo === 'object' && currentPhotoItem.room_photo?.url && (
+                            <Suspense fallback={<div className="image-placeholder" />}>
+                                <ZoomableImage
+                                    src={currentPhotoItem.room_photo.url}
+                                    alt={currentPhotoItem.caption || `${room.acf.room_no} - ${photoIndex}`}
+                                    className="main-photo"
+                                />
+                            </Suspense>
+                        )}
+                        {currentPhotoItem?.caption && (
+                            <p className="photo-caption">{currentPhotoItem.caption}</p>
+                        )}
+                    </>
                 )}
             </LocalPhotoContainer>
         </div>
