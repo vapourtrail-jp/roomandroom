@@ -1,8 +1,8 @@
 import { notFound } from 'next/navigation';
 import ZoomableImage from '@/components/ZoomableImage';
-import RoomPhotoNav from '@/components/RoomPhotoNav';
 import { Suspense } from 'react';
 import LocalPhotoContainer from '@/components/LocalPhotoContainer';
+import Link from 'next/link';
 
 export const runtime = 'edge';
 
@@ -27,6 +27,7 @@ interface Room {
         room_no: string;
         room_by: string;
         photo_by: string;
+        room_desc: string;
         room_photos: RoomPhotoItem[];
     };
 }
@@ -89,71 +90,62 @@ export default async function RoomPhotoPage({ params }: PageProps) {
     }
 
     const currentPhotoItem = currentIndex > 0 ? photos[currentIndex - 1] : null;
-    const padIndex = (idx: number) => idx.toString().padStart(2, '0');
+    const padIndexLocal = (idx: number) => idx.toString().padStart(2, '0');
 
-    // --- ナビゲーションリンクの生成 ---
-    let prevHref = '/rooms';
-    let nextHref = '/rooms';
+    // --- ナビゲーションパスの生成 ---
+    const getPaths = () => {
+        let prev = '/rooms';
+        let next = '/rooms';
 
-    // 前へのリンク
-    if (currentIndex > 0) {
-        // 同一ルーム内の前（01 -> 00 など）
-        prevHref = `/rooms/${slug}/${padIndex(currentIndex - 1)}`;
-    } else {
-        // 現在 00 なので、前のルームの最後の写真へ
-        const prevRoom = allRooms[currentRoomIndex - 1];
-        if (prevRoom) {
-            const prevRoomPhotos = prevRoom.acf.room_photos || [];
-            const lastPhotoIdx = prevRoomPhotos.length;
-            prevHref = `/rooms/${prevRoom.acf.room_no}/${padIndex(lastPhotoIdx)}`;
+        // 前のルーム・写真の特定
+        if (currentIndex > 0) {
+            prev = `/rooms/${slug}/${padIndexLocal(currentIndex - 1)}`;
+        } else {
+            const prevRoom = allRooms[currentRoomIndex - 1];
+            if (prevRoom) {
+                const prevPhotos = prevRoom.acf.room_photos || [];
+                prev = `/rooms/${prevRoom.acf.room_no}/${padIndexLocal(prevPhotos.length)}`;
+            }
         }
-    }
 
-    // 次へのリンク
-    if (currentIndex < photos.length) {
-        // 同一ルーム内の次
-        nextHref = `/rooms/${slug}/${padIndex(currentIndex + 1)}`;
-    } else {
-        // ルームの最後の写真なので、次のルームの 00 へ
-        const nextRoom = allRooms[currentRoomIndex + 1];
-        if (nextRoom) {
-            nextHref = `/rooms/${nextRoom.acf.room_no}/00`;
+        // 次のルーム・写真の特定
+        if (currentIndex < photos.length) {
+            next = `/rooms/${slug}/${padIndexLocal(currentIndex + 1)}`;
+        } else {
+            const nextRoom = allRooms[currentRoomIndex + 1];
+            if (nextRoom) {
+                next = `/rooms/${nextRoom.acf.room_no}/00`;
+            }
         }
-    }
+        return { prev, next };
+    };
+
+    const { prev: prevPath, next: nextPath } = getPaths();
 
     return (
         <div className="room-photo-page__main">
-            <Suspense fallback={<div className="nav-placeholder" />}>
-                <RoomPhotoNav
-                    prevHref={prevHref}
-                    nextHref={nextHref}
-                />
-            </Suspense>
-
             <LocalPhotoContainer>
                 {currentIndex === 0 ? (
-                    /* 00 ページ: room_no とクレジットを表示 */
-                    <div className="profile-page-lead" style={{
-                        height: '480px',
+                    /* 00 ページ: 写真の位置に room_desc を表示 */
+                    <div className="profile-image-placeholder" style={{
+                        width: '100%',
+                        flex: 1,
+                        minHeight: '400px',
                         display: 'flex',
-                        flexDirection: 'column',
                         alignItems: 'center',
                         justifyContent: 'center',
-                        color: '#000'
+                        padding: '0 40px',
+                        boxSizing: 'border-box'
                     }}>
-                        <div style={{ fontSize: '28px', fontWeight: 'bold', letterSpacing: '0.05em', marginBottom: '4px' }}>
-                            room*{room.acf.room_no}
-                        </div>
-                        <div className="room-info" style={{ fontSize: '12px', color: '#666', display: 'flex', gap: '4px' }}>
-                            {room.acf.photo_by === room.acf.room_by ? (
-                                room.acf.photo_by && <span className="meta-item">room and photo by: {room.acf.photo_by}</span>
-                            ) : (
-                                <>
-                                    {room.acf.photo_by && <span className="meta-item">photo by: {room.acf.photo_by}</span>}
-                                    {room.acf.photo_by && room.acf.room_by && <span className="meta-separator" style={{ margin: '0 4px' }}>/</span>}
-                                    {room.acf.room_by && <span className="meta-item">room by: {room.acf.room_by}</span>}
-                                </>
-                            )}
+                        <div style={{
+                            fontSize: '15px',
+                            lineHeight: '1.8',
+                            textAlign: 'center',
+                            whiteSpace: 'pre-wrap',
+                            maxWidth: '600px',
+                            color: '#333'
+                        }}>
+                            {room.acf.room_desc}
                         </div>
                     </div>
                 ) : (

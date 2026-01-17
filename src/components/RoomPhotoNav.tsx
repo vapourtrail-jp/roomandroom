@@ -25,7 +25,7 @@ export default function RoomPhotoNav({ prevHref, nextHref }: RoomPhotoNavProps) 
     const finalNextHref = (nextHref === '/rooms' || !mounted) ? nextHref : `${nextHref}${query}`;
 
     return (
-        <>
+        <div className="room-photo-nav">
             <Link
                 href={finalPrevHref}
                 className="nav-button nav-button--prev"
@@ -39,6 +39,6 @@ export default function RoomPhotoNav({ prevHref, nextHref }: RoomPhotoNavProps) 
             >
                 <span className="material-symbols-rounded" style={{ fontSize: '40px' }}>chevron_right</span>
             </Link>
-        </>
+        </div>
     );
 }

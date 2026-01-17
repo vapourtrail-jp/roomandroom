@@ -2,6 +2,7 @@
 
 import { useParams, useRouter, useSearchParams } from 'next/navigation';
 import { useState, useEffect, useCallback } from 'react';
+import Link from 'next/link';
 
 interface RoomPhotoFooterProps {
     roomNo: string;
@@ -9,6 +10,8 @@ interface RoomPhotoFooterProps {
     roomBy: string;
     totalPhotos: number;
     nextRoomNo: string | null;
+    prevRoomNo: string | null;
+    prevRoomTotalPhotos: number;
 }
 
 export default function RoomPhotoFooter({
@@ -16,127 +19,146 @@ export default function RoomPhotoFooter({
     photoBy,
     roomBy,
     totalPhotos,
-    nextRoomNo
+    nextRoomNo,
+    prevRoomNo,
+    prevRoomTotalPhotos
 }: RoomPhotoFooterProps) {
     const params = useParams();
     const router = useRouter();
     const searchParams = useSearchParams();
+    const slug = params?.slug as string;
+    const photoIndexStr = params?.photoIndex as string;
+
     const [mounted, setMounted] = useState(false);
 
     useEffect(() => {
         setMounted(true);
     }, []);
 
-    const photoIndex = params.photoIndex as string;
-    const currentIndex = parseInt(photoIndex, 10) || 0;
+    const currentIndex = parseInt(photoIndexStr, 10) || 0;
     const isAutoplay = searchParams.get('ap') === '1';
-    const isZoomed = searchParams.get('z') === '1';
 
-    // 次のパスを計算
-    const getNextPath = useCallback(() => {
-        const padIndex = (idx: number) => idx.toString().padStart(2, '0');
-        if (currentIndex < totalPhotos) {
-            // 同一ルーム内の次の写真
-            return `/rooms/${roomNo}/${padIndex(currentIndex + 1)}`;
-        } else if (nextRoomNo) {
-            // 次のルームの 00 ページへ
-            return `/rooms/${nextRoomNo}/00`;
+    const getPaths = useCallback(() => {
+        const padIndexLocal = (idx: number) => idx.toString().padStart(2, '0');
+        const currentParams = searchParams.toString();
+        const query = (mounted && currentParams) ? `?${currentParams}` : '';
+
+        let prev = '/rooms';
+        let next = '/rooms';
+
+        // Prev
+        if (currentIndex > 0) {
+            prev = `/rooms/${slug}/${padIndexLocal(currentIndex - 1)}`;
+        } else if (prevRoomNo) {
+            prev = `/rooms/${prevRoomNo}/${padIndexLocal(prevRoomTotalPhotos)}`;
         }
-        // 最後の場合は一覧に戻る
-        return '/rooms';
-    }, [currentIndex, totalPhotos, roomNo, nextRoomNo]);
 
-    // 自動遷移の実行
+        // Next
+        if (currentIndex < totalPhotos) {
+            next = `/rooms/${slug}/${padIndexLocal(currentIndex + 1)}`;
+        } else if (nextRoomNo) {
+            next = `/rooms/${nextRoomNo}/00`;
+        }
+
+        return {
+            prev: (prev === '/rooms' || !mounted) ? prev : `${prev}${query}`,
+            next: (next === '/rooms' || !mounted) ? next : `${next}${query}`
+        };
+    }, [currentIndex, slug, totalPhotos, nextRoomNo, prevRoomNo, prevRoomTotalPhotos, mounted, searchParams]);
+
+    const { prev: prevPath, next: nextPath } = getPaths();
+
+    const handleAutoNext = useCallback(() => {
+        if (isAutoplay && mounted) {
+            router.push(nextPath);
+        }
+    }, [isAutoplay, mounted, nextPath, router]);
+
     useEffect(() => {
-        if (!isAutoplay || !mounted) return;
-
-        const timer = setTimeout(() => {
-            const nextPath = getNextPath();
-            if (nextPath === '/rooms') {
-                router.push(nextPath);
-                return;
-            }
-
-            // クエリパラメータの構築
-            const params = new URLSearchParams();
-            params.set('ap', '1');
-            if (isZoomed) params.set('z', '1');
-
-            router.push(`${nextPath}?${params.toString()}`);
-        }, 4000); // 4秒で遷移
-
+        let timer: NodeJS.Timeout;
+        if (isAutoplay && mounted) {
+            timer = setTimeout(handleAutoNext, 4000);
+        }
         return () => clearTimeout(timer);
-    }, [isAutoplay, isZoomed, getNextPath, router, mounted]);
+    }, [isAutoplay, mounted, handleAutoNext]);
 
-    const handlePlay = () => {
-        const params = new URLSearchParams(searchParams.toString());
-        params.set('ap', '1');
-        router.push(`${window.location.pathname}?${params.toString()}`);
+    const toggleAutoplay = () => {
+        const nextAutoplay = !isAutoplay;
+        const currentParams = new URLSearchParams(searchParams.toString());
+        if (nextAutoplay) {
+            currentParams.set('ap', '1');
+        } else {
+            currentParams.delete('ap');
+        }
+        router.replace(`${window.location.pathname}?${currentParams.toString()}`);
     };
 
-    const handleStop = () => {
-        const params = new URLSearchParams(searchParams.toString());
-        params.delete('ap');
-        const query = params.toString();
-        router.push(`${window.location.pathname}${query ? '?' + query : ''}`);
-    };
-
-    // マウント前はサーバーの結果と一致させるためにデフォルトの状態を表示
     const showMetadata = mounted && currentIndex !== 0;
     const autoplayActive = mounted && isAutoplay;
 
+    // 00ページではフッター要素を隠すが、レイアウトは維持する
+    const footerVisibility = currentIndex === 0 ? 'hidden' : 'visible';
+
     return (
         <div className="room-photo-page__footer">
-            <div style={{ visibility: showMetadata ? 'visible' : 'hidden' }}>
-                <h1 className="title" style={{ marginBottom: '7px' }}>room*{roomNo}</h1>
-                <div className="room-info">
-                    {photoBy === roomBy ? (
-                        photoBy && <span className="meta-item">room and photo by: {photoBy}</span>
-                    ) : (
-                        <>
-                            {photoBy && <span className="meta-item">photo by: {photoBy}</span>}
-                            {photoBy && roomBy && <span className="meta-separator" style={{ margin: '0 4px' }}>/</span>}
-                            {roomBy && <span className="meta-item">room by: {roomBy}</span>}
-                        </>
-                    )}
-                </div>
+            <div className="footer-title-row">
+                <Link href={prevPath} className="footer-nav-button footer-nav-button--prev">
+                    <span className="material-symbols-rounded">arrow_circle_left</span>
+                </Link>
+
+                <h1 className="title" style={{ marginBottom: '7px' }}>
+                    room*{roomNo}
+                </h1>
+
+                <Link href={nextPath} className="footer-nav-button footer-nav-button--next">
+                    <span className="material-symbols-rounded">arrow_circle_right</span>
+                </Link>
             </div>
 
-            <div style={{ marginTop: '20px', display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '8px' }}>
-                <p className="photo-counter" style={{ margin: 0, visibility: showMetadata ? 'visible' : 'hidden' }}>
-                    {mounted ? currentIndex : 0} / {totalPhotos}
+            <div className="room-info">
+                {photoBy === roomBy ? (
+                    photoBy && <span className="meta-item">room and photo by: {photoBy}</span>
+                ) : (
+                    <>
+                        {photoBy && <span className="meta-item">photo by: {photoBy}</span>}
+                        {photoBy && roomBy && <span className="meta-separator">/</span>}
+                        {roomBy && <span className="meta-item">room by: {roomBy}</span>}
+                    </>
+                )}
+            </div>
+
+            <div style={{ marginTop: '20px' }}>
+                <p className="photo-counter">
+                    {currentIndex === 0 ? 'PROFILE' : `${mounted ? padIndex(currentIndex) : '01'} / ${padIndex(totalPhotos)}`}
                 </p>
 
-                <div className="autoplay-controls" style={{ display: 'flex', gap: '20px', alignItems: 'center', marginTop: '15px' }}>
+                <div className="autoplay-controls" style={{ display: 'flex', justifyContent: 'center', alignItems: 'center', gap: '20px' }}>
                     <button
-                        onClick={handlePlay}
-                        title="PLAY"
+                        onClick={toggleAutoplay}
                         style={{
                             background: 'none',
                             border: 'none',
                             cursor: 'pointer',
-                            padding: 0,
-                            opacity: autoplayActive ? 1 : 0.4,
+                            padding: '10px',
                             color: '#000',
                             transition: 'opacity 0.3s'
                         }}
                     >
                         <span
-                            className={`material-symbols-rounded ${autoplayActive ? 'is-filled' : ''}`}
+                            className={`material-symbols-rounded ${mounted && isAutoplay ? 'is-filled' : ''}`}
                             style={{ fontSize: '20px', display: 'block' }}
                         >
-                            {autoplayActive ? 'play_circle' : 'play_arrow'}
+                            play_arrow
                         </span>
                     </button>
+
                     <button
-                        onClick={handleStop}
-                        title="STOP"
+                        onClick={toggleAutoplay}
                         style={{
                             background: 'none',
                             border: 'none',
                             cursor: 'pointer',
-                            padding: 0,
-                            opacity: !autoplayActive ? 1 : 0.4,
+                            padding: '10px',
                             color: '#000',
                             transition: 'opacity 0.3s'
                         }}
@@ -159,4 +181,8 @@ export default function RoomPhotoFooter({
             </div>
         </div>
     );
+}
+
+function padIndex(idx: number) {
+    return idx.toString().padStart(2, '0');
 }

@@ -46,13 +46,15 @@ export default function ZoomableImage({ src, alt, className }: ZoomableImageProp
             className={`${className} ${isSmall ? 'is-small' : 'is-large'}`}
             onClick={handleToggleZoom}
             style={{
-                cursor: isSmall ? 'zoom-in' : 'zoom-out',
+                cursor: mounted ? (isSmall ? 'zoom-in' : 'zoom-out') : 'default',
                 objectFit: 'contain',
                 display: 'block',
                 margin: '0 auto',
                 width: '100%',
-                maxWidth: size,
-                maxHeight: size,
+                height: '100%',
+                maxWidth: mounted ? size : '600px',
+                maxHeight: mounted ? size : '600px',
+                minHeight: 0, // Flex内で縮小可能にする
                 transition: 'max-width 0.3s ease-in-out, max-height 0.3s ease-in-out'
             }}
         />

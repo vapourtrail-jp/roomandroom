@@ -71,7 +71,10 @@ export default async function RoomLayout({
         notFound();
     }
 
-    // 次の部屋の番号を取得（自動遷移用）
+    // 前後の部屋情報を取得（ナビゲーション用）
+    const prevRoom = allRooms[currentRoomIdx - 1];
+    const prevRoomNo = prevRoom?.acf?.room_no || null;
+    const prevRoomTotalPhotos = prevRoom?.acf?.room_photos?.length || 0;
     const nextRoomNo = allRooms[currentRoomIdx + 1]?.acf?.room_no || null;
 
     return (
@@ -85,6 +88,8 @@ export default async function RoomLayout({
                     roomBy={room.acf.room_by}
                     totalPhotos={room.acf.room_photos?.length || 0}
                     nextRoomNo={nextRoomNo}
+                    prevRoomNo={prevRoomNo}
+                    prevRoomTotalPhotos={prevRoomTotalPhotos}
                 />
             </Suspense>
         </div>

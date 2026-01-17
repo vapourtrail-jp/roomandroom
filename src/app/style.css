@@ -4,11 +4,14 @@
     font-family: 'Material Symbols Rounded';
     font-weight: normal;
     font-style: normal;
-    font-size: 24px;
+    font-size: 32px;
     line-height: 1;
     letter-spacing: normal;
     text-transform: none;
     display: inline-block;
+    width: 1em;
+    height: 1em;
+    overflow: hidden;
     white-space: nowrap;
     word-wrap: normal;
     direction: ltr;
@@ -51,7 +54,7 @@ a {
 .l-header {
     box-sizing: border-box;
     width: 100%;
-    height: 80px;
+    height: 56px;
     display: flex;
     justify-content: space-between;
     align-items: center;
@@ -70,15 +73,31 @@ a {
     box-sizing: border-box;
     margin: 0px auto;
     z-index: 1;
+    min-height: 100dvh;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
     /* ヘッダー(80px) + 本来のパディング(21px) = 101px */
-    padding-top: 101px !important;
+    padding-top: 100px !important;
     /* フッター(100px) + 本来のパディング(21px) = 121px */
-    padding-bottom: 121px !important;
+    padding-bottom: 100px !important;
 }
 
 .l-main-content {
-    display: block;
+    display: flex;
+    flex-direction: column;
+    flex: 1;
+    width: 100%;
     box-sizing: border-box;
+}
+
+/* PageTransitionの中間要素を広げる */
+.l-main>div {
+    display: flex;
+    flex-direction: column;
+    flex: 1;
+    width: 100%;
 }
 
 .l-footer {
@@ -109,9 +128,18 @@ a {
 
 /* -- header ------------------------------------------------ */
 
+.header a {
+    font-size: 0;
+}
+
+.header a.logo img {
+    position: relative;
+    top: -1px;
+}
+
 .header-nav {
     box-sizing: border-box;
-    height: 80px;
+    height: 56px;
     display: flex;
     justify-content: flex-end;
     padding-right: 21px;
@@ -123,7 +151,7 @@ a {
 
 .header-nav {
     box-sizing: border-box;
-    height: 80px;
+    height: 56px;
     display: flex;
     justify-content: flex-end;
     align-items: center;
@@ -179,18 +207,18 @@ a {
     position: fixed;
     z-index: 9999;
     /*ボタンを最前面に*/
-    top: 10px;
-    right: 10px;
+    top: 0px;
+    right: 0px;
     cursor: pointer;
-    width: 60px;
-    height: 60px;
+    width: 56px;
+    height: 56px;
 }
 
 .mob-menu span {
     display: inline-block;
     transition: all .4s;
     position: absolute;
-    left: 14px;
+    left: 21px;
     height: 3px;
     border-radius: 2px;
     background-color: #666;
@@ -205,7 +233,7 @@ a {
     transition: all .2s;
     /*アニメーションの設定*/
     position: absolute;
-    left: 18.7px;
+    left: 21px;
     height: 2px;
     line-height: 0px;
     margin: 0;
@@ -216,16 +244,16 @@ a {
 
 
 .mob-menu span:nth-of-type(1) {
-    top: 20px;
-    width: 22.6px;
+    top: 22px;
+    width: 14px;
     border-top: 1px solid #000;
     border-bottom: 1px solid #000;
     border-radius: 4px;
 }
 
 .mob-menu span:nth-of-type(2) {
-    top: 36px;
-    width: 22.6px;
+    top: 33px;
+    width: 14px;
     border-top: 1px solid #000;
     border-bottom: 1px solid #000;
     border-radius: 4px;
@@ -234,18 +262,18 @@ a {
 .mob-menu.panelactive span:nth-of-type(1),
 .js-toggle-menu .menu-icon.is-open span:nth-of-type(1) {
     top: 22px;
-    left: 17px;
+    left: 19px;
     transform: translateY(6px) rotate(-45deg);
-    width: 28.3px;
+    width: 20px;
 }
 
 .mob-menu.panelactive span:nth-of-type(2),
 .js-toggle-menu .menu-icon.is-open span:nth-of-type(2) {
     top: 34px;
-    left: 17px;
+    left: 19px;
     will-change: transform;
     transform: translateY(-6px) rotate(45deg);
-    width: 28px;
+    width: 20px;
 }
 
 
@@ -268,7 +296,7 @@ a {
 
 .menu-main {
     display: flex;
-    margin-top: 7px;
+    margin-top: 0px;
 }
 
 .menu-main li {
@@ -586,7 +614,11 @@ a {
 /* -------------------------------------------------- */
 
 .room-photo-page {
-    padding: 40px 20px;
+    width: 100%;
+    display: flex;
+    flex-direction: column;
+    flex: 1;
+    justify-content: center;
     max-width: 1200px;
     margin: 0 auto;
 }
@@ -612,11 +644,17 @@ a {
 .room-photo-page__main {
     position: relative;
     display: flex;
+    flex-direction: column;
     align-items: center;
     justify-content: center;
-    min-height: 60vh;
-    /*    background: #fafafa;*/
-    /*margin-bottom: 40px;*/
+    flex: 1;
+    width: 100%;
+    min-height: auto;
+}
+
+/* ナビゲーションコンテナ (PCでは非表示でも良いが、footer内に移設済み) */
+.room-photo-nav {
+    display: none;
 }
 
 .room-photo-page__image-container {
@@ -629,41 +667,53 @@ a {
 
 .room-photo-page__image-container .main-photo {
     width: 100%;
-    max-width: 600px;
-    max-height: 600px;
+    height: 100%;
     object-fit: contain;
+    min-height: 0;
+    /* flex縮小用 */
 }
 
-.room-photo-page__main .nav-button {
-    position: absolute;
-    top: 50%;
-    transform: translateY(-50%);
-    width: 60px;
-    height: 100%;
-    max-height: 200px;
+/* フッター内のタイトル行レイアウト */
+.footer-title-row {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    width: 100%;
+    position: relative;
+    box-sizing: border-box;
+    padding: 0 21px;
+}
+
+.footer-title-row h1.title {
+    margin: 0;
+    padding: 0;
+    line-height: 1.2;
+    /* margin-bottom はtsx側の inline style (7px) と競合しないよう注意、またはここで統一 */
+}
+
+.footer-nav-button {
+    color: #ccc;
+    transition: all 0.3s ease;
     display: flex;
     align-items: center;
     justify-content: center;
-    background: none;
-    color: #ccc;
     text-decoration: none;
-    z-index: 100;
-    transition: all 0.3s ease;
-    -webkit-tap-highlight-color: transparent;
+    width: 56px;
+    height: 56px;
 }
 
-.room-photo-page__main .nav-button:hover {
+.footer-nav-button:hover {
     color: #000;
-    background: none;
-    box-shadow: none;
 }
 
-.room-photo-page__main .nav-button--prev {
-    left: 20px;
+.footer-nav-button:hover .material-symbols-rounded {
+    font-variation-settings: 'FILL' 1;
 }
 
-.room-photo-page__main .nav-button--next {
-    right: 20px;
+@media screen and (max-width: 767px) {
+    .room-photo-page__main {
+        /* padding-bottom: 20px; */
+    }
 }
 
 .room-photo-page__footer {
@@ -852,7 +902,9 @@ a {
 @media screen and (max-width: 1024px) {
 
     .l-main {
-        margin-top: 80px;
+        /*        margin-top: 80px;*/
+        padding-top: 70px !important;
+        padding-bottom: 80px !important;
     }
 
     .menu-main li:not(:first-child) {

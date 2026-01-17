@@ -20,7 +20,7 @@ export default function LocalPhotoContainer({ children }: LocalPhotoContainerPro
                 exit={{ opacity: 0 }}
                 transition={{ duration: 0.5, ease: "easeInOut" }}
                 className="room-photo-page__image-container"
-                style={{ width: '100%' }}
+                style={{ width: '100%', height: '100%', display: 'flex', flexDirection: 'column', flex: 1 }}
             >
                 {children}
             </motion.div>
