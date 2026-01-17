@@ -1,7 +1,7 @@
 'use client';
 
 import { useParams, useRouter, useSearchParams } from 'next/navigation';
-import { useEffect, useCallback } from 'react';
+import { useState, useEffect, useCallback } from 'react';
 
 interface RoomPhotoFooterProps {
     roomNo: string;
@@ -21,9 +21,14 @@ export default function RoomPhotoFooter({
     const params = useParams();
     const router = useRouter();
     const searchParams = useSearchParams();
+    const [mounted, setMounted] = useState(false);
+
+    useEffect(() => {
+        setMounted(true);
+    }, []);
 
     const photoIndex = params.photoIndex as string;
-    const currentIndex = parseInt(photoIndex, 10);
+    const currentIndex = parseInt(photoIndex, 10) || 0;
     const isAutoplay = searchParams.get('ap') === '1';
     const isZoomed = searchParams.get('z') === '1';
 
@@ -43,7 +48,7 @@ export default function RoomPhotoFooter({
 
     // 自動遷移の実行
     useEffect(() => {
-        if (!isAutoplay) return;
+        if (!isAutoplay || !mounted) return;
 
         const timer = setTimeout(() => {
             const nextPath = getNextPath();
@@ -61,7 +66,7 @@ export default function RoomPhotoFooter({
         }, 4000); // 4秒で遷移
 
         return () => clearTimeout(timer);
-    }, [isAutoplay, isZoomed, getNextPath, router]);
+    }, [isAutoplay, isZoomed, getNextPath, router, mounted]);
 
     const handlePlay = () => {
         const params = new URLSearchParams(searchParams.toString());
@@ -76,9 +81,13 @@ export default function RoomPhotoFooter({
         router.push(`${window.location.pathname}${query ? '?' + query : ''}`);
     };
 
+    // マウント前はサーバーの結果と一致させるためにデフォルトの状態を表示
+    const showMetadata = mounted && currentIndex !== 0;
+    const autoplayActive = mounted && isAutoplay;
+
     return (
         <div className="room-photo-page__footer">
-            <div style={{ visibility: currentIndex === 0 ? 'hidden' : 'visible' }}>
+            <div style={{ visibility: showMetadata ? 'visible' : 'hidden' }}>
                 <h1 className="title" style={{ marginBottom: '7px' }}>room*{roomNo}</h1>
                 <div className="room-info">
                     {photoBy === roomBy ? (
@@ -94,8 +103,8 @@ export default function RoomPhotoFooter({
             </div>
 
             <div style={{ marginTop: '20px', display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '8px' }}>
-                <p className="photo-counter" style={{ margin: 0, visibility: currentIndex === 0 ? 'hidden' : 'visible' }}>
-                    {currentIndex} / {totalPhotos}
+                <p className="photo-counter" style={{ margin: 0, visibility: showMetadata ? 'visible' : 'hidden' }}>
+                    {mounted ? currentIndex : 0} / {totalPhotos}
                 </p>
 
                 <div className="autoplay-controls" style={{ display: 'flex', gap: '20px', alignItems: 'center', marginTop: '15px' }}>
@@ -107,16 +116,16 @@ export default function RoomPhotoFooter({
                             border: 'none',
                             cursor: 'pointer',
                             padding: 0,
-                            opacity: isAutoplay ? 1 : 0.4,
+                            opacity: autoplayActive ? 1 : 0.4,
                             color: '#000',
                             transition: 'opacity 0.3s'
                         }}
                     >
                         <span
-                            className={`material-symbols-rounded ${isAutoplay ? 'is-filled' : ''}`}
+                            className={`material-symbols-rounded ${autoplayActive ? 'is-filled' : ''}`}
                             style={{ fontSize: '20px', display: 'block' }}
                         >
-                            {isAutoplay ? 'play_circle' : 'play_arrow'}
+                            {autoplayActive ? 'play_circle' : 'play_arrow'}
                         </span>
                     </button>
                     <button
@@ -127,24 +136,24 @@ export default function RoomPhotoFooter({
                             border: 'none',
                             cursor: 'pointer',
                             padding: 0,
-                            opacity: !isAutoplay ? 1 : 0.4,
+                            opacity: !autoplayActive ? 1 : 0.4,
                             color: '#000',
                             transition: 'opacity 0.3s'
                         }}
                     >
                         <span
-                            className={`material-symbols-rounded ${!isAutoplay ? 'is-filled' : ''}`}
+                            className={`material-symbols-rounded ${mounted && !isAutoplay ? 'is-filled' : ''}`}
                             style={{ fontSize: '20px', display: 'block' }}
                         >
-                            {!isAutoplay ? 'pause_circle' : 'pause'}
+                            {mounted && !isAutoplay ? 'pause_circle' : 'pause'}
                         </span>
                     </button>
                 </div>
 
-                <div className="autoplay-progress-bar" style={{ visibility: isAutoplay ? 'visible' : 'hidden' }}>
+                <div className="autoplay-progress-bar" style={{ visibility: autoplayActive ? 'visible' : 'hidden' }}>
                     <div
-                        key={`${roomNo}-${currentIndex}`}
-                        className={`autoplay-progress-fill ${isAutoplay ? 'is-active' : ''}`}
+                        key={mounted ? `${roomNo}-${currentIndex}` : 'initial'}
+                        className={`autoplay-progress-fill ${autoplayActive ? 'is-active' : ''}`}
                     />
                 </div>
             </div>

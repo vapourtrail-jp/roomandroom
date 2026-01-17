@@ -1,5 +1,6 @@
 import { notFound } from 'next/navigation';
 import RoomPhotoFooter from '@/components/RoomPhotoFooter';
+import { Suspense } from 'react';
 
 export const runtime = 'edge';
 
@@ -77,13 +78,15 @@ export default async function RoomLayout({
         <div className="room-photo-page">
             {children}
 
-            <RoomPhotoFooter
-                roomNo={room.acf.room_no}
-                photoBy={room.acf.photo_by}
-                roomBy={room.acf.room_by}
-                totalPhotos={room.acf.room_photos?.length || 0}
-                nextRoomNo={nextRoomNo}
-            />
+            <Suspense fallback={null}>
+                <RoomPhotoFooter
+                    roomNo={room.acf.room_no}
+                    photoBy={room.acf.photo_by}
+                    roomBy={room.acf.room_by}
+                    totalPhotos={room.acf.room_photos?.length || 0}
+                    nextRoomNo={nextRoomNo}
+                />
+            </Suspense>
         </div>
     );
 }

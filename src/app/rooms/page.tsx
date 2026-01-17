@@ -108,36 +108,21 @@ export default async function RoomsPage() {
                                         <p className="room-card__no">room*{room.acf?.room_no || room.title?.rendered}</p>
 
                                         <dl className="room-card__meta">
-                                            {room.acf?.photo_by === room.acf?.room_by ? (
-                                                // 同一人物の場合
-                                                room.acf?.photo_by && (
-                                                    <div className="room-card__combined">
-                                                        <dt className="room-card__label">room and photo by </dt>
-                                                        <dd className="room-card__value">
-                                                            {room.acf.photo_by}
-                                                        </dd>
-                                                    </div>
-                                                )
-                                            ) : (
-                                                // 別人の場合（既存の表示）
-                                                <>
-                                                    {room.acf?.photo_by && (
-                                                        <div className="room-card__photographer">
-                                                            <dt className="room-card__label">photo by </dt>
-                                                            <dd className="room-card__value">
-                                                                {room.acf.photo_by}
-                                                            </dd>
-                                                        </div>
-                                                    )}
-                                                    {room.acf?.room_by && (
-                                                        <div className="room-card__owner">
-                                                            <dt className="room-card__label">room by</dt>
-                                                            <dd className="room-card__value">
-                                                                {room.acf.room_by}
-                                                            </dd>
-                                                        </div>
-                                                    )}
-                                                </>
+                                            {room.acf?.room_by && (
+                                                <div className="room-card__owner">
+                                                    <dt className="room-card__label">room by</dt>
+                                                    <dd className="room-card__value">
+                                                        {room.acf.room_by}
+                                                    </dd>
+                                                </div>
+                                            )}
+                                            {room.acf?.photo_by && (
+                                                <div className="room-card__photographer">
+                                                    <dt className="room-card__label">photo by </dt>
+                                                    <dd className="room-card__value">
+                                                        {room.acf.photo_by}
+                                                    </dd>
+                                                </div>
                                             )}
                                         </dl>
                                     </div>

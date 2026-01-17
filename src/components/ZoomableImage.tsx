@@ -1,6 +1,7 @@
 'use client';
 
 import { useRouter, useSearchParams, usePathname } from 'next/navigation';
+import { useState, useEffect } from 'react';
 
 interface ZoomableImageProps {
     src: string;
@@ -12,9 +13,15 @@ export default function ZoomableImage({ src, alt, className }: ZoomableImageProp
     const router = useRouter();
     const searchParams = useSearchParams();
     const pathname = usePathname();
+    const [mounted, setMounted] = useState(false);
+
+    useEffect(() => {
+        setMounted(true);
+    }, []);
 
     // z=1 のとき、元の標準サイズ（480px）とする（= isSmall）
-    const isSmall = searchParams.get('z') === '1';
+    // マウント前は常に false (デフォルトの拡大表示) とすることでサーバーと一致させる
+    const isSmall = mounted && searchParams.get('z') === '1';
 
     const handleToggleZoom = () => {
         const nextSmall = !isSmall;

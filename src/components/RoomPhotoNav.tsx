@@ -2,6 +2,7 @@
 
 import Link from 'next/link';
 import { useSearchParams } from 'next/navigation';
+import { useState, useEffect } from 'react';
 
 interface RoomPhotoNavProps {
     prevHref: string;
@@ -10,12 +11,18 @@ interface RoomPhotoNavProps {
 
 export default function RoomPhotoNav({ prevHref, nextHref }: RoomPhotoNavProps) {
     const searchParams = useSearchParams();
+    const [mounted, setMounted] = useState(false);
+
+    useEffect(() => {
+        setMounted(true);
+    }, []);
+
     const currentParams = searchParams.toString();
-    const query = currentParams ? `?${currentParams}` : '';
+    const query = (mounted && currentParams) ? `?${currentParams}` : '';
 
     // rooms 一覧へのリンクの場合はクエリを付けない
-    const finalPrevHref = prevHref === '/rooms' ? prevHref : `${prevHref}${query}`;
-    const finalNextHref = nextHref === '/rooms' ? nextHref : `${nextHref}${query}`;
+    const finalPrevHref = (prevHref === '/rooms' || !mounted) ? prevHref : `${prevHref}${query}`;
+    const finalNextHref = (nextHref === '/rooms' || !mounted) ? nextHref : `${nextHref}${query}`;
 
     return (
         <>

@@ -141,7 +141,7 @@ export default async function RoomPhotoPage({ params }: PageProps) {
                         justifyContent: 'center',
                         color: '#000'
                     }}>
-                        <div style={{ fontSize: '48px', fontWeight: 'bold', letterSpacing: '0.1em', marginBottom: '10px' }}>
+                        <div style={{ fontSize: '28px', fontWeight: 'bold', letterSpacing: '0.05em', marginBottom: '4px' }}>
                             room*{room.acf.room_no}
                         </div>
                         <div className="room-info" style={{ fontSize: '12px', color: '#666', display: 'flex', gap: '4px' }}>
