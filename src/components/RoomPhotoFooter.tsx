@@ -47,7 +47,7 @@ export default function RoomPhotoFooter({
         let next = '/rooms';
 
         // Prev
-        if (currentIndex > 0) {
+        if (currentIndex > 1) {
             prev = `/rooms/${slug}/${padIndexLocal(currentIndex - 1)}`;
         } else if (prevRoomNo) {
             prev = `/rooms/${prevRoomNo}/${padIndexLocal(prevRoomTotalPhotos)}`;
@@ -57,7 +57,7 @@ export default function RoomPhotoFooter({
         if (currentIndex < totalPhotos) {
             next = `/rooms/${slug}/${padIndexLocal(currentIndex + 1)}`;
         } else if (nextRoomNo) {
-            next = `/rooms/${nextRoomNo}/00`;
+            next = `/rooms/${nextRoomNo}/01`;
         }
 
         return {
@@ -120,9 +120,9 @@ export default function RoomPhotoFooter({
                     photoBy && <span className="meta-item">room and photo by: {photoBy}</span>
                 ) : (
                     <>
-                        {photoBy && <span className="meta-item">photo by: {photoBy}</span>}
-                        {photoBy && roomBy && <span className="meta-separator">/</span>}
                         {roomBy && <span className="meta-item">room by: {roomBy}</span>}
+                        {photoBy && roomBy && <span className="meta-separator">/</span>}
+                        {photoBy && <span className="meta-item">photo by: {photoBy}</span>}
                     </>
                 )}
             </div>

@@ -85,7 +85,7 @@ a {
     justify-content: center;
     align-items: center;
     /* ヘッダー(80px) + 本来のパディング(21px) = 101px */
-    padding-top: 100px !important;
+    padding-top: 56px !important;
     /* フッター(100px) + 本来のパディング(21px) = 121px */
     padding-bottom: 100px !important;
 }
@@ -396,9 +396,9 @@ a {
 }
 
 .l-list {
-    display: flex;
-    flex-wrap: wrap;
-    justify-content: flex-start;
+    display: grid;
+    grid-template-columns: repeat(auto-fill, 320px);
+    justify-content: center;
     gap: 40px;
     list-style: none;
     padding: 0;
@@ -686,12 +686,15 @@ a {
 .footer-title-row {
     display: flex;
     align-items: center;
-    justify-content: space-between;
     width: 100%;
     position: relative;
     box-sizing: border-box;
     padding: 0 21px;
 }
+
+
+
+
 
 .footer-title-row h1.title {
     margin: 0;
@@ -810,7 +813,7 @@ a {
     display: flex;
     align-items: flex-end;
     /* 下揃え */
-    width: 280px;
+    width: 320px;
     /* 横幅固定 */
     min-height: 80px;
     text-decoration: none;
@@ -920,7 +923,7 @@ a {
     .l-main {
         /*        margin-top: 80px;*/
         padding-top: 56px !important;
-        padding-bottom: 120px !important;
+        padding-bottom: 100px !important;
     }
 
     .menu-main li:not(:first-child) {
@@ -993,13 +996,19 @@ a {
     }
 
     .room-photo-page__image-container {
-        max-height: 513px;
+        max-height: 620px;
     }
 
+    .rooms-container {
+        margin: 21px 21px 21px;
+    }
 
 }
 
 
+.footer-title-row {
+    justify-content: space-between;
+}
 
 /* PC */
 @media screen and (min-width: 1025px) {
@@ -1019,16 +1028,32 @@ a {
         width: 600px;
         margin: 0 auto;
     }
+
+    .footer-title-row {
+        /*        justify-content: center;*/
+    }
+
+    .rooms-container {
+        margin: 21px 21px 21px;
+    }
+
+
 }
 
 .about-container {
-    margin-top: 21px;
+    margin: 21px;
 }
 
-.rooms-container {
-    margin-top: 21px;
-}
 
 .autoplay-controls {
     color: #999;
+}
+
+
+.footer-nav-button--prev {
+    margin-right: 28px;
+}
+
+.footer-nav-button--next {
+    margin-left: 28px;
 }
