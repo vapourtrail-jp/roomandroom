@@ -1012,3 +1012,11 @@ a {
         margin: 0 auto;
     }
 }
+
+.p-about .l-main>div {
+    margin-top: 21px;
+}
+
+.p-rooms .l-main>div {
+    margin-top: 21px;
+}
