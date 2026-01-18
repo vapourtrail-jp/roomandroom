@@ -37,7 +37,8 @@ body {
     flex-flow: column;
     min-height: 100dvh;
     box-sizing: border-box;
-    font-family: "Helvetica Neue", Arial, 'Noto Sans JP', 'Noto Serif JP', "Hiragino Kaku Gothic ProN", "Hiragino Sans", "BIZ UDPGothic", Meiryo, sans-serif;
+    /* font-family: "Helvetica Neue", Arial, 'Noto Sans JP', 'Noto Serif JP', "Hiragino Kaku Gothic ProN", "Hiragino Sans", "BIZ UDPGothic", Meiryo, sans-serif; */
+    font-family: -apple-system, BlinkMacSystemFont, "Hiragino Kaku Gothic ProN", "Yu Gothic", "メイリオ", sans-serif;
     font-size: 0.75rem;
     letter-spacing: 0.05rem;
 }
@@ -375,7 +376,7 @@ a {
 }
 
 .content {
-    font-size: 12px;
+    font-size: 0.875rem;
     line-height: 1.92;
     margin-top: 14px;
     letter-spacing: 0.024rem;
@@ -759,7 +760,7 @@ a {
 }
 
 .autoplay-progress-bar {
-    width: 60px;
+    width: 78px;
     height: 1px;
     background: #eee;
     margin: 12px auto 6px;
