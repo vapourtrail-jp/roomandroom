@@ -402,7 +402,7 @@ a {
     gap: 40px;
     list-style: none;
     padding: 0;
-    margin: 28px 0;
+    margin: 42px 0;
 }
 
 .l-list__item {
@@ -1056,4 +1056,14 @@ a {
 
 .footer-nav-button--next {
     margin-left: 28px;
+}
+
+.p-home .title {
+    font-weight: normal;
+}
+
+.home-notice {
+    font-size: 0.875rem;
+    color: #999;
+    font-weight: normal;
 }
