@@ -1,6 +1,6 @@
 export default function About() {
     return (
-        <>
+        <div className="about-container">
             <div className="title">ABOUT</div>
             <div className="content">
                 <p>ＷＥＢの普及によって、遠くに住む見知らぬ人と簡単に知り合えるようになった。ただしそれはインターネットでの文字だけの繋がりでしかない。きっと気が合えばそれだけで十分という人もいると思う。でも、ぼくには何かが足りない。ＷＥＢで世界の人と話すことができるように、いろんな部屋を見てみたい。そう思い、ぼくはこのサイトを始めた。ぼくは部屋が好きなのだ。</p>
@@ -32,6 +32,6 @@ export default function About() {
                 <p style={{ display: 'none' }}>2026.1.16 Hiroshige Matsuda</p>
 
             </div>
-        </>
+        </div>
     );
 }

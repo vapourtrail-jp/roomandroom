@@ -1007,16 +1007,16 @@ a {
         width: 600px;
     }
 
-    .p-about .l-main>div {
-        width: 600px !important;
+    .about-container {
+        width: 600px;
         margin: 0 auto;
     }
 }
 
-.p-about .l-main>div {
+.about-container {
     margin-top: 21px;
 }
 
-.p-rooms .l-main>div {
+.rooms-container {
     margin-top: 21px;
 }
