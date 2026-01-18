@@ -45,6 +45,8 @@ export default function ZoomableImage({ src, alt, className }: ZoomableImageProp
             alt={alt}
             className={`${className} ${isSmall ? 'is-small' : 'is-large'}`}
             onClick={handleToggleZoom}
+            onContextMenu={(e) => e.preventDefault()}
+            onDragStart={(e) => e.preventDefault()}
             style={{
                 cursor: mounted ? (isSmall ? 'zoom-in' : 'zoom-out') : 'default',
                 objectFit: 'contain',

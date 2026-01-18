@@ -22,6 +22,11 @@
     font-variation-settings: 'FILL' 1;
 }
 
+img {
+    -webkit-touch-callout: none;
+    user-select: none;
+}
+
 body {
     margin: 0;
     padding: 0;
@@ -692,6 +697,7 @@ a {
 
     margin-top: 7px;
     margin-bottom: 13px;
+    letter-spacing: 0.04rem;
 
 }
 
@@ -909,8 +915,8 @@ a {
 
     .l-main {
         /*        margin-top: 80px;*/
-        padding-top: 70px !important;
-        padding-bottom: 80px !important;
+        padding-top: 56px !important;
+        padding-bottom: 120px !important;
     }
 
     .menu-main li:not(:first-child) {
@@ -990,5 +996,18 @@ a {
 @media screen and (min-width: 1025px) {
     .l-list {
         gap: 60px 40px;
+    }
+
+    .p-about .title {
+        width: 600px;
+    }
+
+    .p-about .content {
+        width: 600px;
+    }
+
+    .p-about .l-main>div {
+        width: 600px !important;
+        margin: 0 auto;
     }
 }

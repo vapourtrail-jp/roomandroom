@@ -4,6 +4,7 @@ import "./style.css";
 import Link from "next/link";
 import PageTransition from "@/components/PageTransition";
 import Navigation from "@/components/Navigation";
+import BodyClassManager from "@/components/BodyClassManager";
 
 export const metadata: Metadata = {
   title: "room and room.",
@@ -25,6 +26,7 @@ export default function RootLayout({
         <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Material+Symbols+Rounded:opsz,wght,FILL,GRAD@20..48,100..700,0..1,-50..200&display=block" />
       </head>
       <body className="home wp-singular page-template-default page page-id-8 wp-embed-responsive wp-theme-blankslate">
+        <BodyClassManager />
         <header className="header l-header l-padding">
           <Link href="/" className="logo">
             <img src="/logo_rar.png" height={29} alt="room and room" />
