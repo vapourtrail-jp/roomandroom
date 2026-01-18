@@ -87,7 +87,7 @@ a {
     /* ヘッダー(80px) + 本来のパディング(21px) = 101px */
     padding-top: 56px !important;
     /* フッター(100px) + 本来のパディング(21px) = 121px */
-    padding-bottom: 100px !important;
+    padding-bottom: 21px !important;
 }
 
 .l-main-content {
@@ -109,14 +109,7 @@ a {
 .l-footer {
     box-sizing: border-box;
     width: 100%;
-    height: 100px;
     z-index: 10;
-    position: fixed;
-    bottom: 0px;
-    left: 0px;
-    background-color: rgba(255, 255, 255, 0.75);
-    backdrop-filter: blur(10px);
-    -webkit-backdrop-filter: blur(10px);
     display: flex;
     flex-flow: column;
 }
@@ -923,7 +916,7 @@ a {
     .l-main {
         /*        margin-top: 80px;*/
         padding-top: 56px !important;
-        padding-bottom: 100px !important;
+        padding-bottom: 42px !important;
     }
 
     .menu-main li:not(:first-child) {
