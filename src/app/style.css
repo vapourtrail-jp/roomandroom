@@ -1067,3 +1067,9 @@ a {
     color: #999;
     font-weight: normal;
 }
+
+@media screen and (max-width: 721px) {
+    .l-list {
+        justify-content: start;
+    }
+}
