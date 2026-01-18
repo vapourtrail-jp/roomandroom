@@ -852,7 +852,7 @@ a {
 
 .room-card__no {
     margin: 0 0 4px;
-    font-family: monospace;
+    /*    font-family: monospace;*/
     font-weight: bold;
     font-size: 0.9rem;
     /* 幅に合わせて少し小さく */
