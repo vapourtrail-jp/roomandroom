@@ -661,7 +661,7 @@ a {
     display: flex;
     justify-content: center;
     align-items: center;
-    min-height: 600px;
+    min-height: 512px;
     /* 拡大後の高さに合わせる */
 }
 
@@ -689,7 +689,13 @@ a {
     padding: 0;
     line-height: 1.2;
     /* margin-bottom はtsx側の inline style (7px) と競合しないよう注意、またはここで統一 */
+
+    margin-top: 7px;
+    margin-bottom: 13px;
+
 }
+
+
 
 .footer-nav-button {
     color: #ccc;
@@ -698,8 +704,8 @@ a {
     align-items: center;
     justify-content: center;
     text-decoration: none;
-    width: 56px;
-    height: 56px;
+    width: 36px;
+    height: 36px;
 }
 
 .footer-nav-button:hover {
@@ -723,7 +729,7 @@ a {
 .room-photo-page__footer .photo-counter {
     font-size: 14px;
     color: #999;
-    margin-bottom: 20px;
+    margin-bottom: 11px;
 }
 
 .room-photo-page__footer {

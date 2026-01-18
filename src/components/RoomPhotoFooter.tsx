@@ -106,7 +106,7 @@ export default function RoomPhotoFooter({
                     <span className="material-symbols-rounded">arrow_circle_left</span>
                 </Link>
 
-                <h1 className="title" style={{ marginBottom: '7px' }}>
+                <h1 className="title">
                     room*{roomNo}
                 </h1>
 
@@ -127,7 +127,7 @@ export default function RoomPhotoFooter({
                 )}
             </div>
 
-            <div style={{ marginTop: '20px' }}>
+            <div style={{ marginTop: '12px' }}>
                 <p className="photo-counter">
                     {currentIndex === 0 ? 'PROFILE' : `${mounted ? padIndex(currentIndex) : '01'} / ${padIndex(totalPhotos)}`}
                 </p>
@@ -139,7 +139,7 @@ export default function RoomPhotoFooter({
                             background: 'none',
                             border: 'none',
                             cursor: 'pointer',
-                            padding: '10px',
+                            padding: '0px 10px',
                             color: '#000',
                             transition: 'opacity 0.3s'
                         }}
@@ -158,7 +158,7 @@ export default function RoomPhotoFooter({
                             background: 'none',
                             border: 'none',
                             cursor: 'pointer',
-                            padding: '10px',
+                            padding: '0px 10px',
                             color: '#000',
                             transition: 'opacity 0.3s'
                         }}
