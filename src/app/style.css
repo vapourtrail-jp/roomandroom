@@ -1044,6 +1044,9 @@ a {
     margin: 21px;
 }
 
+.home-container {
+    margin: 21px;
+}
 
 .autoplay-controls {
     color: #999;
@@ -1058,9 +1061,6 @@ a {
     margin-left: 28px;
 }
 
-.p-home .title {
-    font-weight: normal;
-}
 
 .home-notice {
     font-size: 0.875rem;
