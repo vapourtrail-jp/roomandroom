@@ -117,12 +117,12 @@ export default function RoomPhotoFooter({
 
             <div className="room-info">
                 {photoBy === roomBy ? (
-                    photoBy && <span className="meta-item">room and photo by: {photoBy}</span>
+                    photoBy && <span className="meta-item">room and photo by {photoBy}</span>
                 ) : (
                     <>
-                        {roomBy && <span className="meta-item">room by: {roomBy}</span>}
+                        {roomBy && <span className="meta-item">room by {roomBy}</span>}
                         {photoBy && roomBy && <span className="meta-separator">/</span>}
-                        {photoBy && <span className="meta-item">photo by: {photoBy}</span>}
+                        {photoBy && <span className="meta-item">photo by {photoBy}</span>}
                     </>
                 )}
             </div>
