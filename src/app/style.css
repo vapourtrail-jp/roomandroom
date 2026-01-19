@@ -86,8 +86,6 @@ a {
     flex: 1;
     display: flex;
     flex-direction: column;
-    justify-content: center;
-    align-items: center;
     /* ヘッダー(80px) + 本来のパディング(21px) = 101px */
     padding-top: 56px !important;
     /* フッター(100px) + 本来のパディング(21px) = 121px */
@@ -395,7 +393,7 @@ a {
 
 .rooms-header {
     display: flex;
-    justify-content: center;
+    justify-content: start;
     align-items: center;
     gap: 12px;
     margin-bottom: 0px;
