@@ -9,11 +9,14 @@ import BodyClassManager from "@/components/BodyClassManager";
 
 export const metadata: Metadata = {
   metadataBase: new URL('https://www.roomandroom.org'),
-  title: "room and room.",
-  description: "room and room.",
+  title: {
+    default: "room and room.",
+    template: "%s | room and room."
+  },
+  description: "2001年開始の部屋の写真サイト。”インテリア”ではなく”生活感”というかっこよさ。世界中に繋がれたwebという便利な道具を使って、このサイトでは\"部屋と部屋\"を繋ぎたい。",
   robots: {
-    index: false,
-    follow: false,
+    index: true,
+    follow: true,
   },
 };
 

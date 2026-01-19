@@ -1,7 +1,21 @@
+import { Metadata } from 'next';
 import { notFound } from 'next/navigation';
 import Link from 'next/link';
 
 export const runtime = 'edge';
+
+export async function generateMetadata(
+    { params }: { params: Promise<{ id: string }> }
+): Promise<Metadata> {
+    const { id } = await params;
+    const post = await getPost(id);
+
+    if (!post) return {};
+
+    return {
+        title: post.title.rendered.replace(/<\/?[^>]+(>|$)/g, ""), // Remove HTML tags if any
+    };
+}
 
 interface Post {
     id: number;
