@@ -1,5 +1,7 @@
 import { MetadataRoute } from 'next'
 
+export const runtime = 'edge';
+
 interface Room {
     acf: {
         room_no: string;
