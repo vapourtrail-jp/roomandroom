@@ -8,7 +8,7 @@ import Navigation from "@/components/Navigation";
 import BodyClassManager from "@/components/BodyClassManager";
 
 export const metadata: Metadata = {
-  metadataBase: new URL('https://roomandroom.org'),
+  metadataBase: new URL('https://www.roomandroom.org'),
   title: "room and room.",
   description: "room and room.",
   robots: {
