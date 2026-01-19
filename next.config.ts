@@ -30,6 +30,17 @@ const nextConfig: NextConfig = {
         destination: 'https://www.roomandroom.org/:path*',
         permanent: true,
       },
+      {
+        source: '/:path*',
+        has: [
+          {
+            type: 'host',
+            value: 'roomandroom.org',
+          },
+        ],
+        destination: 'https://www.roomandroom.org/:path*',
+        permanent: true,
+      },
     ]
   },
 };
