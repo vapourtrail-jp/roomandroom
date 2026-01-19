@@ -72,12 +72,40 @@ async function getRooms(): Promise<Room[]> {
     }
 }
 
-export default async function RoomsPage() {
-    const rooms = await getRooms();
+export default async function RoomsPage(props: {
+    searchParams: Promise<{ sort?: string }>
+}) {
+    const searchParams = await props.searchParams;
+    const sortOrder = searchParams.sort === 'desc' ? 'desc' : 'asc';
+    let rooms = await getRooms();
+
+    // ソート順に応じて並び替え
+    if (sortOrder === 'desc') {
+        rooms = [...rooms].sort((a, b) => {
+            const noA = parseInt(a.acf?.room_no || '0', 10);
+            const noB = parseInt(b.acf?.room_no || '0', 10);
+            return noB - noA; // 降順
+        });
+    } else {
+        rooms = [...rooms].sort((a, b) => {
+            const noA = parseInt(a.acf?.room_no || '0', 10);
+            const noB = parseInt(b.acf?.room_no || '0', 10);
+            return noA - noB; // 昇順
+        });
+    }
 
     return (
         <div className="rooms-container">
-            <h1 className="title">ROOMS</h1>
+            <div className="rooms-header">
+                <h1 className="title">ROOMS</h1>
+                <Link
+                    href={`/rooms?sort=${sortOrder === 'asc' ? 'desc' : 'asc'}`}
+                    className={`sort-toggle ${sortOrder === 'desc' ? 'is-desc' : ''}`}
+                    title={sortOrder === 'asc' ? "降順に並び替え" : "昇順に並び替え"}
+                >
+                    <span className="material-symbols-rounded">sort</span>
+                </Link>
+            </div>
 
             {rooms.length === 0 ? (
                 <p className="no-data">現在表示できるデータがありません。</p>
