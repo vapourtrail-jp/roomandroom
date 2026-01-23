@@ -52,6 +52,9 @@ export default function Navigation() {
                     <li>
                         <Link href="/rooms" onClick={closeMenu}>ROOMS</Link>
                     </li>
+                    <li>
+                        <Link href="/tags" onClick={closeMenu}>TAGS</Link>
+                    </li>
                     {/* <li>
                         <Link href="/blog" onClick={closeMenu}>BLOG</Link>
                     </li> */}

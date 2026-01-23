@@ -10,6 +10,7 @@ interface TagPhotoFooterProps {
     photoMetadata: {
         roomBy: string;
         photoBy: string;
+        roomNo: string;
     }[];
 }
 
@@ -57,7 +58,7 @@ export default function TagPhotoFooter({
     useEffect(() => {
         let timer: NodeJS.Timeout;
         if (isAutoplay && mounted) {
-            timer = setTimeout(handleAutoNext, 4000);
+            timer = setTimeout(handleAutoNext, 3000);
         }
         return () => clearTimeout(timer);
     }, [isAutoplay, mounted, handleAutoNext]);
@@ -83,7 +84,7 @@ export default function TagPhotoFooter({
                 </Link>
 
                 <h1 className="title">
-                    tag*{decodeURIComponent(tag)}
+                    {decodeURIComponent(tag)}
                 </h1>
 
                 <Link href={nextPath} className="footer-nav-button footer-nav-button--next">
@@ -103,6 +104,10 @@ export default function TagPhotoFooter({
                                 {photoMetadata[currentIndex - 1].photoBy && <span className="meta-item">photo by {photoMetadata[currentIndex - 1].photoBy}</span>}
                             </>
                         )}
+                        <span className="meta-separator"> / </span>
+                        <Link href={`/rooms/${photoMetadata[currentIndex - 1].roomNo}/01`} className="meta-item" style={{ textDecoration: 'none' }}>
+                            room*{photoMetadata[currentIndex - 1].roomNo}
+                        </Link>
                     </>
                 )}
             </div>

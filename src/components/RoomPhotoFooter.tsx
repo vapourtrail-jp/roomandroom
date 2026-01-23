@@ -77,7 +77,7 @@ export default function RoomPhotoFooter({
     useEffect(() => {
         let timer: NodeJS.Timeout;
         if (isAutoplay && mounted) {
-            timer = setTimeout(handleAutoNext, 4000);
+            timer = setTimeout(handleAutoNext, 3000);
         }
         return () => clearTimeout(timer);
     }, [isAutoplay, mounted, handleAutoNext]);

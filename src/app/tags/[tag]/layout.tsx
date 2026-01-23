@@ -88,7 +88,8 @@ export default async function TagLayout({
 
     const photoMetadata = taggedPhotos.map(p => ({
         roomBy: p.room_by,
-        photoBy: p.photo_by
+        photoBy: p.photo_by,
+        roomNo: p.room_no
     }));
 
     return (

@@ -816,7 +816,7 @@ a {
 }
 
 .autoplay-progress-fill.is-active {
-    animation: progressFill 4s linear forwards;
+    animation: progressFill 3s linear forwards;
 }
 
 @keyframes progressFill {
