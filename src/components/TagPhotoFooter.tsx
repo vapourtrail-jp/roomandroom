@@ -38,7 +38,11 @@ export default function TagPhotoFooter({
         const currentParams = searchParams.toString();
         const query = (mounted && currentParams) ? `?${currentParams}` : '';
 
+        // prev: 1枚目のときは totalPhotos へループ (手動)
         let prev = `/tags/${tag}/${padIndexLocal(currentIndex > 1 ? currentIndex - 1 : totalPhotos)}`;
+
+        // next: 最後の場合は autoPlay か手動かで分岐できるとベストだが、ここではリンク先としてはループさせておく (手動クリック用)
+        // 自動遷移の場合は handleAutoNext 内で分岐させる
         let next = `/tags/${tag}/${padIndexLocal(currentIndex < totalPhotos ? currentIndex + 1 : 1)}`;
 
         return {
@@ -51,9 +55,14 @@ export default function TagPhotoFooter({
 
     const handleAutoNext = useCallback(() => {
         if (isAutoplay && mounted) {
-            router.push(nextPath);
+            // 自動再生で最後の写真だった場合は tags 一覧へ戻る
+            if (currentIndex >= totalPhotos) {
+                router.push('/tags');
+            } else {
+                router.push(nextPath);
+            }
         }
-    }, [isAutoplay, mounted, nextPath, router]);
+    }, [isAutoplay, mounted, currentIndex, totalPhotos, nextPath, router]);
 
     useEffect(() => {
         let timer: NodeJS.Timeout;
