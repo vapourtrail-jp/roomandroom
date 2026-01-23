@@ -16,8 +16,8 @@ export default function WobblyThumbnail({ src, alt, initialDelay = 0 }: WobblyTh
 
     // アニメーションの状態を保持
     const state = useRef({
-        progress: 1,     // 0:アメーバ, 1:四角
-        wobbleScale: 0,  // 揺れの強さ
+        progress: 0,     // 0:アメーバ, 1:四角 (初期表示はアメーバ)
+        wobbleScale: 1.1,  // 揺れの強さ
         time: Math.random() * 100
     });
 
@@ -129,21 +129,13 @@ export default function WobblyThumbnail({ src, alt, initialDelay = 0 }: WobblyTh
             card.addEventListener('mouseleave', handleMouseLeave);
         }
 
-        // 初期表示アニメーション
-        const timeline = anime.timeline({
-            delay: initialDelay * 1000 // s -> ms
-        });
-
-        timeline.add({
-            targets: state.current,
-            wobbleScale: 1.1,
-            duration: 1300,
-            easing: 'linear'
-        }).add({
+        // 初期表示アニメーション: サムネイルが表示(フェードイン0.8s)されてから正方形に移行
+        anime({
             targets: state.current,
             progress: 1,
             wobbleScale: 0,
             duration: 800,
+            delay: initialDelay * 1000 + 800,
             easing: 'easeOutExpo'
         });
 
