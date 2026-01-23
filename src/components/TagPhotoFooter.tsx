@@ -7,11 +7,16 @@ import Link from 'next/link';
 interface TagPhotoFooterProps {
     tag: string;
     totalPhotos: number;
+    photoMetadata: {
+        roomBy: string;
+        photoBy: string;
+    }[];
 }
 
 export default function TagPhotoFooter({
     tag,
-    totalPhotos
+    totalPhotos,
+    photoMetadata
 }: TagPhotoFooterProps) {
     const params = useParams();
     const router = useRouter();
@@ -87,7 +92,19 @@ export default function TagPhotoFooter({
             </div>
 
             <div className="room-info">
-                <span className="meta-item">selected photos by tag</span>
+                {photoMetadata[currentIndex - 1] && (
+                    <>
+                        {photoMetadata[currentIndex - 1].photoBy === photoMetadata[currentIndex - 1].roomBy ? (
+                            photoMetadata[currentIndex - 1].photoBy && <span className="meta-item">room and photo by {photoMetadata[currentIndex - 1].photoBy}</span>
+                        ) : (
+                            <>
+                                {photoMetadata[currentIndex - 1].roomBy && <span className="meta-item">room by {photoMetadata[currentIndex - 1].roomBy}</span>}
+                                {photoMetadata[currentIndex - 1].photoBy && photoMetadata[currentIndex - 1].roomBy && <span className="meta-separator">/</span>}
+                                {photoMetadata[currentIndex - 1].photoBy && <span className="meta-item">photo by {photoMetadata[currentIndex - 1].photoBy}</span>}
+                            </>
+                        )}
+                    </>
+                )}
             </div>
 
             <div style={{ marginTop: '12px' }}>

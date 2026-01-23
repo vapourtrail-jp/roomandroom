@@ -19,6 +19,8 @@ interface Room {
     id: number;
     acf: {
         room_no: string;
+        room_by: string;
+        photo_by: string;
         room_photos: RoomPhotoItem[];
     };
 }
@@ -74,13 +76,20 @@ export default async function TagLayout({
             })
             .map(photo => ({
                 ...photo,
-                room_no: room.acf.room_no
+                room_no: room.acf.room_no,
+                room_by: room.acf.room_by,
+                photo_by: room.acf.photo_by
             }));
     });
 
     if (taggedPhotos.length === 0) {
         notFound();
     }
+
+    const photoMetadata = taggedPhotos.map(p => ({
+        roomBy: p.room_by,
+        photoBy: p.photo_by
+    }));
 
     return (
         <div className="room-photo-page">
@@ -90,6 +99,7 @@ export default async function TagLayout({
                 <TagPhotoFooter
                     tag={tag}
                     totalPhotos={taggedPhotos.length}
+                    photoMetadata={photoMetadata}
                 />
             </Suspense>
         </div>
