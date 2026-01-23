@@ -20,15 +20,14 @@ interface Post {
 }
 
 async function getPosts(): Promise<Post[]> {
-    const timestamp = Date.now();
     try {
-        const res = await fetch(`https://cms.roomandroom.org/w/wp-json/wp/v2/posts?_=${timestamp}`, {
+        const res = await fetch(`https://cms.roomandroom.org/w/wp-json/wp/v2/posts`, {
             headers: {
                 'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/91.0.4472.124 Safari/537.36'
             },
             next: {
                 tags: ['posts'],
-                revalidate: 0
+                revalidate: 3600
             }
         });
 

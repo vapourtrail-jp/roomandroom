@@ -1,7 +1,7 @@
 'use client';
 
 import { useId, useEffect, useRef } from 'react';
-import gsap from 'gsap';
+import anime from 'animejs';
 
 interface WobblyThumbnailProps {
     src: string;
@@ -16,15 +16,14 @@ export default function WobblyThumbnail({ src, alt, initialDelay = 0 }: WobblyTh
 
     // アニメーションの状態を保持
     const state = useRef({
-        progress: 0,     // 0:アメーバ
-        wobbleScale: 1,  // 1:最大
+        progress: 1,     // 0:アメーバ, 1:四角
+        wobbleScale: 0,  // 揺れの強さ
         time: Math.random() * 100
     });
 
     useEffect(() => {
         if (!pathRef.current || !containerRef.current) return;
 
-        // 親の a.room-card を取得して、そこにイベントを貼る
         const card = containerRef.current.closest('.room-card');
 
         const CONFIG = {
@@ -44,6 +43,8 @@ export default function WobblyThumbnail({ src, alt, initialDelay = 0 }: WobblyTh
             { x: 100, y: 50 }, { x: 100, y: 100 }, { x: 50, y: 100 }, { x: 0, y: 100 },
             { x: 0, y: 50 }, { x: 0, y: 0 }, { x: 50, y: 0 }, { x: 100, y: 0 }
         ];
+
+        let animationFrameId: number;
 
         const update = () => {
             const s = state.current;
@@ -93,47 +94,62 @@ export default function WobblyThumbnail({ src, alt, initialDelay = 0 }: WobblyTh
                 pathRef.current.setAttribute('d', d);
                 pathRef.current.setAttribute('transform', 'scale(0.01)');
             }
+
+            animationFrameId = requestAnimationFrame(update);
         };
 
         const handleMouseEnter = () => {
-            gsap.to(state.current, {
+            anime.remove(state.current);
+            anime({
+                targets: state.current,
                 progress: 0,
                 wobbleScale: 1.2,
-                duration: 0.6,
-                ease: "power2.out",
-                overwrite: true
+                duration: 600,
+                easing: 'easeOutQuad'
             });
         };
 
         const handleMouseLeave = () => {
-            gsap.to(state.current, {
+            anime.remove(state.current);
+            anime({
+                targets: state.current,
                 progress: 1,
                 wobbleScale: 0,
-                duration: 0.8,
-                ease: "expo.out",
-                overwrite: true
+                duration: 800,
+                easing: 'easeOutExpo'
             });
         };
 
-        gsap.ticker.add(update);
+        // ループ開始
+        animationFrameId = requestAnimationFrame(update);
 
-        // マウスデバイス（pointer: fine）の場合のみホバーイベントを登録
-        // スマホ等のタッチデバイスでは Sticky Hover を防ぐため無効化
         const isMouse = window.matchMedia('(pointer: fine)').matches;
-
         if (isMouse && card) {
             card.addEventListener('mouseenter', handleMouseEnter);
             card.addEventListener('mouseleave', handleMouseLeave);
         }
 
-        // --- 初期表示アニメーション (CSSのフェードイン遅延と同期させる) ---
-        const tl = gsap.timeline({ delay: initialDelay });
-        tl.to(state.current, { wobbleScale: 1.1, duration: 1.3, ease: "none" });
-        tl.to(state.current, { progress: 1, wobbleScale: 0, duration: 0.8, ease: "expo.out" });
+        // 初期表示アニメーション
+        const timeline = anime.timeline({
+            delay: initialDelay * 1000 // s -> ms
+        });
+
+        timeline.add({
+            targets: state.current,
+            wobbleScale: 1.1,
+            duration: 1300,
+            easing: 'linear'
+        }).add({
+            targets: state.current,
+            progress: 1,
+            wobbleScale: 0,
+            duration: 800,
+            easing: 'easeOutExpo'
+        });
 
         return () => {
-            gsap.ticker.remove(update);
-            tl.kill();
+            cancelAnimationFrame(animationFrameId);
+            anime.remove(state.current);
             if (card) {
                 card.removeEventListener('mouseenter', handleMouseEnter);
                 card.removeEventListener('mouseleave', handleMouseLeave);
