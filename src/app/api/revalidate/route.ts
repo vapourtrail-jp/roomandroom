@@ -14,6 +14,7 @@ export async function GET(request: NextRequest) {
     try {
         // 'rooms' タグのキャッシュを再検証
         revalidateTag('rooms', 'tag');
+
         // 各メインパスの再検証を追加
         revalidatePath('/rooms', 'layout');
         revalidatePath('/tags', 'layout');
@@ -22,6 +23,7 @@ export async function GET(request: NextRequest) {
         return NextResponse.json({
             revalidated: true,
             tag: 'rooms',
+            paths: ['/rooms', '/tags', '/'],
             now: Date.now()
         });
     } catch (err) {
