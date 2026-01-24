@@ -1,7 +1,8 @@
-export const runtime = 'edge';
 import { notFound } from 'next/navigation';
 import RoomPhotoFooter from '@/components/RoomPhotoFooter';
 import { Suspense } from 'react';
+
+export const runtime = 'edge';
 
 interface RoomPhoto {
     id: number;
@@ -26,7 +27,7 @@ interface Room {
 async function getAllRooms(): Promise<Room[]> {
     try {
         const res = await fetch(`https://cms.roomandroom.org/w/wp-json/wp/v2/rooms?acf_format=standard&per_page=100`, {
-            
+            next: { revalidate: 60 }
         });
 
         if (!res.ok) return [];

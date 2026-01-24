@@ -1,11 +1,11 @@
-export const runtime = 'edge';
 import { Metadata } from 'next';
 import Link from 'next/link';
+
+export const runtime = 'edge';
 
 export const metadata: Metadata = {
     title: 'BLOG',
 };
-
 
 interface Post {
     id: number;

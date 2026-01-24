@@ -1,8 +1,15 @@
-import { redirect } from 'next/navigation';
 
-export const runtime = 'edge';
+import { notFound, redirect } from 'next/navigation';
 
-export default async function TagPage({ params }: { params: Promise<{ tag: string }> }) {
+interface PageProps {
+    params: Promise<{
+        tag: string;
+    }>;
+}
+
+export default async function TagPageRedirect({ params }: PageProps) {
     const { tag } = await params;
+    if (!tag) notFound();
+    // 最初の写真へリダイレクト
     redirect(`/tags/${tag}/01`);
 }

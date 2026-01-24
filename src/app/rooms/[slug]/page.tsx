@@ -1,8 +1,15 @@
-import { redirect } from 'next/navigation';
 
-export const runtime = 'edge';
+import { notFound, redirect } from 'next/navigation';
 
-export default async function RoomPageRedirect({ params }: { params: Promise<{ slug: string }> }) {
+interface PageProps {
+    params: Promise<{
+        slug: string;
+    }>;
+}
+
+export default async function RoomPageRedirect({ params }: PageProps) {
     const { slug } = await params;
+    if (!slug) notFound();
+    // 最初の写真へリダイレクト
     redirect(`/rooms/${slug}/01`);
 }

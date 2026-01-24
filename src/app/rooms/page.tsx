@@ -1,7 +1,8 @@
-export const runtime = 'edge';
 import { Metadata } from 'next';
 import Link from 'next/link';
 import WobblyThumbnail from '@/components/WobblyThumbnail';
+
+
 
 export const metadata: Metadata = {
     title: 'ROOMS',
@@ -42,7 +43,7 @@ interface Room {
 async function getRooms(): Promise<Room[]> {
     try {
         const res = await fetch(`https://cms.roomandroom.org/w/wp-json/wp/v2/rooms?acf_format=standard&per_page=100`, {
-            
+            next: { revalidate: 60 }
         });
         if (!res.ok) return [];
         const data = await res.json();
@@ -53,7 +54,6 @@ async function getRooms(): Promise<Room[]> {
     }
 }
 
-// searchParams を削除し、純粋な静的ページにする
 export default async function RoomsPage() {
     let rooms = await getRooms();
 
@@ -75,6 +75,7 @@ export default async function RoomsPage() {
 
                         return (
                             <li key={`${room.id}-${index}`} className="l-list__item room-card-wrapper" style={{ animationDelay: `${index * 0.1}s` }}>
+                                {/* 直接詳細ページ (/01) へリンク */}
                                 <Link href={`/rooms/${room.acf.room_no}/01`} className="room-card">
                                     <div className="room-card__thumbnail">
                                         {thumbnailUrl ? (
