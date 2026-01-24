@@ -27,16 +27,9 @@ interface Room {
 }
 
 async function getAllRooms(): Promise<Room[]> {
-    const timestamp = Date.now();
     try {
-        const res = await fetch(`https://cms.roomandroom.org/w/wp-json/wp/v2/rooms?acf_format=standard&per_page=100&_=${timestamp}`, {
-            headers: {
-                'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/91.0.4472.124 Safari/537.36'
-            },
-            next: {
-                tags: ['rooms'],
-                revalidate: 60
-            }
+        const res = await fetch(`https://cms.roomandroom.org/w/wp-json/wp/v2/rooms?acf_format=standard&per_page=100`, {
+            cache: 'force-cache'
         });
 
         if (!res.ok) return [];
@@ -49,7 +42,6 @@ async function getAllRooms(): Promise<Room[]> {
             return noA - noB;
         });
     } catch (error) {
-        console.error('Error fetching rooms for tag list:', error);
         return [];
     }
 }

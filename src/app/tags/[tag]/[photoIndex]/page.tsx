@@ -35,33 +35,34 @@ async function getAllRooms(): Promise<Room[]> {
     }
 }
 
-// ビルド時に全てのタグと写真インデックスの組み合わせを生成
+// ビルド時に実際に存在する全てのタグと写真インデックスの組み合わせを生成
 export async function generateStaticParams() {
     const allRooms = await getAllRooms();
     const paths: { tag: string; photoIndex: string }[] = [];
 
-    const tagMap = new Set<string>();
+    const tagCounts = new Map<string, number>();
+
     allRooms.forEach(room => {
         const photos = room.acf.room_photos || [];
         photos.forEach(photo => {
             const tags = (photo.tags || '').split(/[,\s]+/).filter(t => t.trim() !== '');
             tags.forEach(t => {
                 const decodedTag = t.trim();
-                const tagKey = `${decodedTag}`;
-
-                // 特定のタグに紐づく写真枚数をカウントしてパスを生成
-                // (簡易化のため、ここでは全タグを収集)
-                tagMap.add(decodedTag);
+                const currentCount = tagCounts.get(decodedTag) || 0;
+                tagCounts.set(decodedTag, currentCount + 1);
             });
         });
     });
 
-    // 各タグについて、最大50枚程度までのインデックスを生成（実数に合わせて調整）
-    for (const tag of tagMap) {
-        for (let i = 1; i <= 30; i++) {
-            paths.push({ tag: encodeURIComponent(tag), photoIndex: i.toString().padStart(2, '0') });
+    // 各タグについて、実際に存在する写真の枚数分だけパスを生成
+    tagCounts.forEach((count, tag) => {
+        for (let i = 1; i <= count; i++) {
+            paths.push({
+                tag: encodeURIComponent(tag),
+                photoIndex: i.toString().padStart(2, '0')
+            });
         }
-    }
+    });
 
     return paths;
 }
@@ -75,6 +76,7 @@ export default async function TagPhotoPage({
     const decodedTag = decodeURIComponent(tag);
     const allRooms = await getAllRooms();
 
+    // 全ルームから指定されたタグを持つ写真を抽出
     const taggedPhotos = allRooms.flatMap(room => {
         const photos = room.acf.room_photos || [];
         return photos
