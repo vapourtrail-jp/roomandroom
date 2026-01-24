@@ -13,7 +13,7 @@ export async function GET(request: NextRequest) {
 
     try {
         // 'rooms' タグのキャッシュを再検証
-        revalidateTag('rooms', 'tag');
+        revalidateTag('rooms');
 
         // 各メインパスの再検証を追加
         revalidatePath('/rooms', 'layout');

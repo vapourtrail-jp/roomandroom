@@ -2,6 +2,8 @@ import { Metadata } from 'next';
 import { notFound } from 'next/navigation';
 import Link from 'next/link';
 
+export const runtime = 'edge';
+
 export async function generateMetadata(
     { params }: { params: Promise<{ id: string }> }
 ): Promise<Metadata> {
@@ -25,25 +27,12 @@ interface Post {
 async function getPost(id: string): Promise<Post | null> {
     try {
         const res = await fetch(`https://cms.roomandroom.org/w/wp-json/wp/v2/posts/${id}`, {
-            cache: 'force-cache'
+            next: { revalidate: 3600 }
         });
         if (!res.ok) return null;
         return await res.json();
     } catch (error) {
         return null;
-    }
-}
-
-export async function generateStaticParams() {
-    try {
-        const res = await fetch(`https://cms.roomandroom.org/w/wp-json/wp/v2/posts?per_page=100`, {
-            cache: 'force-cache'
-        });
-        if (!res.ok) return [];
-        const posts = await res.json() as Post[];
-        return posts.map(post => ({ id: post.id.toString() }));
-    } catch (error) {
-        return [];
     }
 }
 

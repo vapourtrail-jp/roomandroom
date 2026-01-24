@@ -1,3 +1,4 @@
+export const runtime = 'edge';
 import { notFound } from 'next/navigation';
 import RoomPhotoFooter from '@/components/RoomPhotoFooter';
 import { Suspense } from 'react';
@@ -25,7 +26,7 @@ interface Room {
 async function getAllRooms(): Promise<Room[]> {
     try {
         const res = await fetch(`https://cms.roomandroom.org/w/wp-json/wp/v2/rooms?acf_format=standard&per_page=100`, {
-            cache: 'force-cache'
+            
         });
 
         if (!res.ok) return [];

@@ -2,7 +2,8 @@ import { notFound } from 'next/navigation';
 import ZoomableImage from '@/components/ZoomableImage';
 import { Suspense } from 'react';
 import LocalPhotoContainer from '@/components/LocalPhotoContainer';
-import Link from 'next/link';
+
+export const runtime = 'edge';
 
 interface RoomPhoto {
     id: number;
@@ -33,7 +34,7 @@ interface Room {
 async function getAllRooms(): Promise<Room[]> {
     try {
         const res = await fetch(`https://cms.roomandroom.org/w/wp-json/wp/v2/rooms?acf_format=standard&per_page=100`, {
-            cache: 'force-cache'
+            next: { revalidate: 60 }
         });
         if (!res.ok) return [];
         const data = await res.json();
@@ -41,23 +42,6 @@ async function getAllRooms(): Promise<Room[]> {
     } catch (error) {
         return [];
     }
-}
-
-export async function generateStaticParams() {
-    const allRooms = await getAllRooms();
-    const params: { slug: string; photoIndex: string }[] = [];
-
-    allRooms.forEach(room => {
-        const photos = room.acf.room_photos || [];
-        // 00 (Profile)
-        params.push({ slug: room.acf.room_no, photoIndex: '00' });
-        // 01 to photos.length
-        photos.forEach((_, idx) => {
-            params.push({ slug: room.acf.room_no, photoIndex: (idx + 1).toString().padStart(2, '0') });
-        });
-    });
-
-    return params;
 }
 
 export default async function RoomPhotoPage({ params }: { params: Promise<{ slug: string; photoIndex: string }> }) {

@@ -3,6 +3,8 @@ import ZoomableImage from '@/components/ZoomableImage';
 import { Suspense } from 'react';
 import LocalPhotoContainer from '@/components/LocalPhotoContainer';
 
+export const runtime = 'edge';
+
 interface RoomPhoto {
     id: number;
     url: string;
@@ -25,7 +27,7 @@ interface Room {
 async function getAllRooms(): Promise<Room[]> {
     try {
         const res = await fetch(`https://cms.roomandroom.org/w/wp-json/wp/v2/rooms?acf_format=standard&per_page=100`, {
-            cache: 'force-cache'
+            next: { revalidate: 60 }
         });
         if (!res.ok) return [];
         const data = await res.json();
@@ -33,38 +35,6 @@ async function getAllRooms(): Promise<Room[]> {
     } catch (error) {
         return [];
     }
-}
-
-// ビルド時に実際に存在する全てのタグと写真インデックスの組み合わせを生成
-export async function generateStaticParams() {
-    const allRooms = await getAllRooms();
-    const paths: { tag: string; photoIndex: string }[] = [];
-
-    const tagCounts = new Map<string, number>();
-
-    allRooms.forEach(room => {
-        const photos = room.acf.room_photos || [];
-        photos.forEach(photo => {
-            const tags = (photo.tags || '').split(/[,\s]+/).filter(t => t.trim() !== '');
-            tags.forEach(t => {
-                const decodedTag = t.trim();
-                const currentCount = tagCounts.get(decodedTag) || 0;
-                tagCounts.set(decodedTag, currentCount + 1);
-            });
-        });
-    });
-
-    // 各タグについて、実際に存在する写真の枚数分だけパスを生成
-    tagCounts.forEach((count, tag) => {
-        for (let i = 1; i <= count; i++) {
-            paths.push({
-                tag: encodeURIComponent(tag),
-                photoIndex: i.toString().padStart(2, '0')
-            });
-        }
-    });
-
-    return paths;
 }
 
 export default async function TagPhotoPage({
@@ -76,7 +46,6 @@ export default async function TagPhotoPage({
     const decodedTag = decodeURIComponent(tag);
     const allRooms = await getAllRooms();
 
-    // 全ルームから指定されたタグを持つ写真を抽出
     const taggedPhotos = allRooms.flatMap(room => {
         const photos = room.acf.room_photos || [];
         return photos

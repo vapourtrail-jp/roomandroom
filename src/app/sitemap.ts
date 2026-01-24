@@ -15,7 +15,7 @@ const BASE_URL = 'https://www.roomandroom.org'
 async function getAllRoomPaths() {
     try {
         const res = await fetch(`https://cms.roomandroom.org/w/wp-json/wp/v2/rooms?acf_format=standard&per_page=100`, {
-            cache: 'force-cache'
+            
         });
         if (!res.ok) return [];
         const rooms: Room[] = await res.json();
@@ -28,7 +28,7 @@ async function getAllRoomPaths() {
 async function getAllBlogPaths() {
     try {
         const res = await fetch(`https://cms.roomandroom.org/w/wp-json/wp/v2/posts?per_page=100`, {
-            cache: 'force-cache'
+            
         });
         if (!res.ok) return [];
         const posts: Post[] = await res.json();
