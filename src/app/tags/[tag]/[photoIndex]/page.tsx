@@ -26,12 +26,22 @@ interface Room {
 
 async function getAllRooms(): Promise<Room[]> {
     try {
-        const res = await fetch(`https://cms.roomandroom.org/w/wp-json/wp/v2/rooms?acf_format=standard&per_page=100`, {
+        const res = await fetch(`https://cms.roomandroom.org/wp-json/wp/v2/rooms?acf_format=standard&per_page=100`, {
+            headers: {
+                'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/91.0.4472.124 Safari/537.36'
+            },
             next: { revalidate: 60 }
         });
         if (!res.ok) return [];
         const data = await res.json();
-        return Array.isArray(data) ? data : [];
+        if (!Array.isArray(data)) return [];
+
+        // レイアウト側と100%同じソート順を保証（キャプションの不一致を解消）
+        return data.sort((a, b) => {
+            const noA = parseInt(a.acf?.room_no || '0', 10);
+            const noB = parseInt(b.acf?.room_no || '0', 10);
+            return noA - noB;
+        });
     } catch (error) {
         return [];
     }

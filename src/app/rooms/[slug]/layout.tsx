@@ -37,6 +37,7 @@ async function getAllRooms(): Promise<Room[]> {
         const data = await res.json();
         if (!Array.isArray(data)) return [];
 
+        // 全ページで共通のソート順（room_no 昇順）を保証
         return data.sort((a, b) => {
             const noA = parseInt(a.acf?.room_no || '0', 10);
             const noB = parseInt(b.acf?.room_no || '0', 10);

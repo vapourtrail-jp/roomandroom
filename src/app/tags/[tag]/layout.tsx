@@ -27,7 +27,7 @@ interface Room {
 
 async function getAllRooms(): Promise<Room[]> {
     try {
-        const res = await fetch(`https://cms.roomandroom.org/w/wp-json/wp/v2/rooms?acf_format=standard&per_page=100`, {
+        const res = await fetch(`https://cms.roomandroom.org/wp-json/wp/v2/rooms?acf_format=standard&per_page=100`, {
             headers: {
                 'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/91.0.4472.124 Safari/537.36'
             },
@@ -56,6 +56,7 @@ export default async function TagLayout({
     params: Promise<{ tag: string }>;
 }) {
     const { tag } = await params;
+    const decodedTag = decodeURIComponent(tag);
     const allRooms = await getAllRooms();
 
     const taggedPhotos = allRooms.flatMap(room => {
@@ -64,7 +65,7 @@ export default async function TagLayout({
             .filter(photo => {
                 const tagString = photo.tags || '';
                 const tagsArray = tagString.split(/[,\s]+/).map(t => t.trim());
-                return tagsArray.includes(tag);
+                return tagsArray.includes(decodedTag);
             })
             .map(photo => ({
                 ...photo,
