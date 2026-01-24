@@ -2,7 +2,7 @@ import { Metadata } from 'next';
 import Link from 'next/link';
 import WobblyThumbnail from '@/components/WobblyThumbnail';
 
-
+export const runtime = 'edge';
 
 export const metadata: Metadata = {
     title: 'TAGS',
@@ -30,6 +30,9 @@ interface Room {
 async function getAllRooms(): Promise<Room[]> {
     try {
         const res = await fetch(`https://cms.roomandroom.org/w/wp-json/wp/v2/rooms?acf_format=standard&per_page=100`, {
+            headers: {
+                'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/91.0.4472.124 Safari/537.36'
+            },
             next: { revalidate: 60 }
         });
 
@@ -49,7 +52,6 @@ async function getAllRooms(): Promise<Room[]> {
 
 export default async function TagsPage() {
     const allRooms = await getAllRooms();
-
     const tagMap = new Map<string, { thumbnailUrl: string; count: number }>();
 
     allRooms.forEach(room => {
@@ -91,7 +93,6 @@ export default async function TagsPage() {
                             className="l-list__item room-card-wrapper"
                             style={{ animationDelay: `${index * 0.1}s` }}
                         >
-                            {/* 不確実なリダイレクトを避け、直接最初の写真ページへリンク */}
                             <Link href={`/tags/${encodeURIComponent(tag.name)}/01`} className="room-card">
                                 <div className="room-card__thumbnail">
                                     <WobblyThumbnail

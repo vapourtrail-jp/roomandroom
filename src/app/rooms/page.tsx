@@ -2,7 +2,7 @@ import { Metadata } from 'next';
 import Link from 'next/link';
 import WobblyThumbnail from '@/components/WobblyThumbnail';
 
-
+export const runtime = 'edge';
 
 export const metadata: Metadata = {
     title: 'ROOMS',
@@ -43,6 +43,9 @@ interface Room {
 async function getRooms(): Promise<Room[]> {
     try {
         const res = await fetch(`https://cms.roomandroom.org/w/wp-json/wp/v2/rooms?acf_format=standard&per_page=100`, {
+            headers: {
+                'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/91.0.4472.124 Safari/537.36'
+            },
             next: { revalidate: 60 }
         });
         if (!res.ok) return [];
@@ -75,7 +78,6 @@ export default async function RoomsPage() {
 
                         return (
                             <li key={`${room.id}-${index}`} className="l-list__item room-card-wrapper" style={{ animationDelay: `${index * 0.1}s` }}>
-                                {/* 直接詳細ページ (/01) へリンク */}
                                 <Link href={`/rooms/${room.acf.room_no}/01`} className="room-card">
                                     <div className="room-card__thumbnail">
                                         {thumbnailUrl ? (
