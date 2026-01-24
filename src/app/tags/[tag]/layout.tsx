@@ -27,7 +27,8 @@ interface Room {
 
 async function getAllRooms(): Promise<Room[]> {
     try {
-        const res = await fetch(`https://cms.roomandroom.org/wp-json/wp/v2/rooms?acf_format=standard&per_page=100`, {
+        // 重要: /w/ を確実に含め、User-Agent を設定
+        const res = await fetch(`https://cms.roomandroom.org/w/wp-json/wp/v2/rooms?acf_format=standard&per_page=100`, {
             headers: {
                 'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/91.0.4472.124 Safari/537.36'
             },
@@ -38,6 +39,7 @@ async function getAllRooms(): Promise<Room[]> {
         const data = await res.json();
         if (!Array.isArray(data)) return [];
 
+        // 並び順を全ての箇所で統一
         return data.sort((a, b) => {
             const noA = parseInt(a.acf?.room_no || '0', 10);
             const noB = parseInt(b.acf?.room_no || '0', 10);
@@ -56,7 +58,8 @@ export default async function TagLayout({
     params: Promise<{ tag: string }>;
 }) {
     const { tag } = await params;
-    const decodedTag = decodeURIComponent(tag);
+    // URLエンコードされたタグ名をデコード
+    const decodedTag = typeof tag === 'string' ? decodeURIComponent(tag) : '';
     const allRooms = await getAllRooms();
 
     const taggedPhotos = allRooms.flatMap(room => {

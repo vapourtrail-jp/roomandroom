@@ -1,6 +1,6 @@
 'use client';
 
-import { useId, useEffect, useRef } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import anime from 'animejs';
 
 interface WobblyThumbnailProps {
@@ -12,20 +12,24 @@ interface WobblyThumbnailProps {
 export default function WobblyThumbnail({ src, alt, initialDelay = 0 }: WobblyThumbnailProps) {
     const pathRef = useRef<SVGPathElement>(null);
     const containerRef = useRef<HTMLDivElement>(null);
-    const uniqueId = useId().replace(/:/g, '');
+    // Hydrationエラー（使用するIDのズレ）を避けるため、マウント後に生成される乱数を使用
+    const [uniqueId, setUniqueId] = useState<string>('');
 
-    // アニメーションの状態を保持
     const state = useRef({
-        progress: 0,     // 0:アメーバ, 1:四角 (初期表示はアメーバ)
-        wobbleScale: 1.1,  // 揺れの強さ
+        progress: 0,
+        wobbleScale: 1.1,
         time: Math.random() * 100
     });
 
     useEffect(() => {
-        if (!pathRef.current || !containerRef.current) return;
+        // マウント時にIDを一意に確定（サーバーとクライアントの不一致を防ぎ、リンクが死ぬのを防ぐ）
+        setUniqueId(Math.random().toString(36).substring(2, 9));
+    }, []);
+
+    useEffect(() => {
+        if (!pathRef.current || !containerRef.current || !uniqueId) return;
 
         const card = containerRef.current.closest('.room-card');
-
         const CONFIG = {
             baseRadius: 46,
             wobbleAmount: 3.5,
@@ -49,17 +53,14 @@ export default function WobblyThumbnail({ src, alt, initialDelay = 0 }: WobblyTh
         const update = () => {
             const s = state.current;
             s.time += 0.016;
-
             const t = s.time;
             const currentPoints = points.map((p, i) => {
                 const wave = (Math.sin(t * CONFIG.wobbleSpeed * p.indivSpeed + p.phase) * CONFIG.wobbleAmount) * s.wobbleScale;
                 const r = CONFIG.baseRadius + wave;
-
                 const bx = 50 + Math.cos(p.angle) * r;
                 const by = 50 + Math.sin(p.angle) * r;
                 const tx = squareTargets[i].x;
                 const ty = squareTargets[i].y;
-
                 return {
                     x: bx + (tx - bx) * s.progress,
                     y: by + (ty - by) * s.progress
@@ -68,12 +69,10 @@ export default function WobblyThumbnail({ src, alt, initialDelay = 0 }: WobblyTh
 
             const tension = 0.23 * (1 - s.progress);
             let d = `M ${currentPoints[0].x},${currentPoints[0].y}`;
-
             for (let i = 0; i < CONFIG.numPoints; i++) {
                 const i1 = (i + 1) % CONFIG.numPoints;
                 const p0 = currentPoints[i];
                 const p1 = currentPoints[i1];
-
                 if (s.progress >= 0.99) {
                     d += ` L ${p1.x},${p1.y}`;
                 } else {
@@ -94,7 +93,6 @@ export default function WobblyThumbnail({ src, alt, initialDelay = 0 }: WobblyTh
                 pathRef.current.setAttribute('d', d);
                 pathRef.current.setAttribute('transform', 'scale(0.01)');
             }
-
             animationFrameId = requestAnimationFrame(update);
         };
 
@@ -120,16 +118,13 @@ export default function WobblyThumbnail({ src, alt, initialDelay = 0 }: WobblyTh
             });
         };
 
-        // ループ開始
         animationFrameId = requestAnimationFrame(update);
-
         const isMouse = window.matchMedia('(pointer: fine)').matches;
         if (isMouse && card) {
             card.addEventListener('mouseenter', handleMouseEnter);
             card.addEventListener('mouseleave', handleMouseLeave);
         }
 
-        // 初期表示アニメーション: サムネイルが表示(フェードイン0.8s)されてから正方形に移行
         anime({
             targets: state.current,
             progress: 1,
@@ -147,32 +142,36 @@ export default function WobblyThumbnail({ src, alt, initialDelay = 0 }: WobblyTh
                 card.removeEventListener('mouseleave', handleMouseLeave);
             }
         };
-    }, [initialDelay]);
+    }, [initialDelay, uniqueId]);
 
     return (
         <div
             ref={containerRef}
             style={{ position: 'relative', width: '80px', height: '80px', background: 'transparent' }}
         >
-            <svg width="0" height="0" style={{ position: 'absolute' }}>
-                <defs>
-                    <clipPath id={`wobble-${uniqueId}`} clipPathUnits="objectBoundingBox">
-                        <path ref={pathRef} />
-                    </clipPath>
-                </defs>
-            </svg>
-            <img
-                src={src}
-                alt={alt}
-                style={{
-                    width: '100%',
-                    height: '100%',
-                    objectFit: 'cover',
-                    clipPath: `url(#wobble-${uniqueId})`,
-                    WebkitClipPath: `url(#wobble-${uniqueId})`,
-                    display: 'block'
-                }}
-            />
+            {uniqueId && (
+                <>
+                    <svg width="0" height="0" style={{ position: 'absolute' }}>
+                        <defs>
+                            <clipPath id={`wobble-${uniqueId}`} clipPathUnits="objectBoundingBox">
+                                <path ref={pathRef} />
+                            </clipPath>
+                        </defs>
+                    </svg>
+                    <img
+                        src={src}
+                        alt={alt}
+                        style={{
+                            width: '100%',
+                            height: '100%',
+                            objectFit: 'cover',
+                            clipPath: `url(#wobble-${uniqueId})`,
+                            WebkitClipPath: `url(#wobble-${uniqueId})`,
+                            display: 'block'
+                        }}
+                    />
+                </>
+            )}
         </div>
     );
 }
