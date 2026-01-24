@@ -73,6 +73,10 @@ export default function TagPhotoFooter({
         }
     }, [isAutoplay, mounted, isNavigating, nextPath, router]);
 
+    const handleManualNav = () => {
+        setIsNavigating(true);
+    };
+
     useEffect(() => {
         let timer: NodeJS.Timeout;
         if (isAutoplay && mounted && !isNavigating) {
@@ -99,7 +103,7 @@ export default function TagPhotoFooter({
     return (
         <div className="room-photo-page__footer">
             <div className="footer-title-row">
-                <Link href={prevPath} className="footer-nav-button footer-nav-button--prev">
+                <Link href={prevPath} className="footer-nav-button footer-nav-button--prev" onClick={handleManualNav}>
                     <span className="material-symbols-rounded">arrow_circle_left</span>
                 </Link>
 
@@ -107,7 +111,7 @@ export default function TagPhotoFooter({
                     {decodeURIComponent(tag)}
                 </h1>
 
-                <Link href={nextPath} className="footer-nav-button footer-nav-button--next">
+                <Link href={nextPath} className="footer-nav-button footer-nav-button--next" onClick={handleManualNav}>
                     <span className="material-symbols-rounded">arrow_circle_right</span>
                 </Link>
             </div>
