@@ -32,6 +32,12 @@ export default function TagPhotoFooter({
 
     const currentIndex = parseInt(photoIndexStr, 10) || 1;
     const isAutoplay = searchParams.get('ap') === '1';
+    const [localAutoplay, setLocalAutoplay] = useState(isAutoplay);
+
+    // URLのパラメータが変わったらローカルの状態も同期させる
+    useEffect(() => {
+        setLocalAutoplay(isAutoplay);
+    }, [isAutoplay]);
 
     const [isNavigating, setIsNavigating] = useState(false);
 
@@ -67,11 +73,11 @@ export default function TagPhotoFooter({
     const { prev: prevPath, next: nextPath } = getPaths();
 
     const handleAutoNext = useCallback(() => {
-        if (isAutoplay && mounted && !isNavigating) {
+        if (localAutoplay && mounted && !isNavigating) {
             setIsNavigating(true);
             router.push(nextPath);
         }
-    }, [isAutoplay, mounted, isNavigating, nextPath, router]);
+    }, [localAutoplay, mounted, isNavigating, nextPath, router]);
 
     const handleManualNav = () => {
         setIsNavigating(true);
@@ -79,29 +85,31 @@ export default function TagPhotoFooter({
 
     useEffect(() => {
         let timer: NodeJS.Timeout;
-        if (isAutoplay && mounted && !isNavigating) {
+        if (localAutoplay && mounted && !isNavigating) {
             timer = setTimeout(handleAutoNext, 3000);
         }
         return () => {
             if (timer) clearTimeout(timer);
         };
-    }, [isAutoplay, mounted, isNavigating, handleAutoNext]);
+    }, [localAutoplay, mounted, isNavigating, handleAutoNext]);
 
     const startAutoplay = () => {
-        if (isAutoplay) return;
+        if (localAutoplay) return;
+        setLocalAutoplay(true);
         const currentParams = new URLSearchParams(searchParams.toString());
         currentParams.set('ap', '1');
         router.replace(`${window.location.pathname}?${currentParams.toString()}`);
     };
 
     const stopAutoplay = () => {
+        setLocalAutoplay(false);
         setIsNavigating(true); // 即座に自動遷移をブロック
         const currentParams = new URLSearchParams(searchParams.toString());
         currentParams.delete('ap');
         router.replace(`${window.location.pathname}?${currentParams.toString()}`);
     };
 
-    const autoplayActive = mounted && isAutoplay;
+    const autoplayActive = mounted && localAutoplay;
 
     return (
         <div className="room-photo-page__footer">
@@ -157,7 +165,7 @@ export default function TagPhotoFooter({
                         }}
                     >
                         <span
-                            className={`material-symbols-rounded ${mounted && isAutoplay ? 'is-filled' : ''}`}
+                            className={`material-symbols-rounded ${mounted && localAutoplay ? 'is-filled' : ''}`}
                             style={{ fontSize: '20px', display: 'block' }}
                         >
                             play_arrow
@@ -176,10 +184,10 @@ export default function TagPhotoFooter({
                         }}
                     >
                         <span
-                            className={`material-symbols-rounded ${mounted && !isAutoplay ? 'is-filled' : ''}`}
+                            className={`material-symbols-rounded ${mounted && !localAutoplay ? 'is-filled' : ''}`}
                             style={{ fontSize: '20px', display: 'block' }}
                         >
-                            {mounted && !isAutoplay ? 'pause_circle' : 'pause'}
+                            {mounted && !localAutoplay ? 'pause_circle' : 'pause'}
                         </span>
                     </button>
                 </div>
