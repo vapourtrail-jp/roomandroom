@@ -99,6 +99,7 @@ export default async function TagsPage() {
                                     <WobblyThumbnail
                                         src={tag.thumbnailUrl}
                                         alt={tag.name}
+                                        uid={`tag-${tag.name}`}
                                         initialDelay={index * 0.1}
                                     />
                                 </div>

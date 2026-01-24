@@ -1001,6 +1001,8 @@ a {
 
         /*動き*/
         transition: all 0.3s;
+        pointer-events: none;
+        /* 通常時は背面へのクリックを通す */
     }
 
     /*アクティブクラスがついたら透過なしにして最前面へ*/
@@ -1008,6 +1010,8 @@ a {
     #g-nav.is-open {
         opacity: 1;
         z-index: 999;
+        pointer-events: auto;
+        /* 開いている時はクリックを許可 */
     }
 
     /*ナビゲーション*/

@@ -101,7 +101,7 @@ export default async function RoomsPage({
                                 <Link href={`/rooms/${room.acf.room_no}/01`} className="room-card">
                                     <div className="room-card__thumbnail">
                                         {thumbnailUrl ? (
-                                            <WobblyThumbnail src={thumbnailUrl} alt={room.acf.room_no} initialDelay={index * 0.1} />
+                                            <WobblyThumbnail src={thumbnailUrl} alt={room.acf.room_no} uid={`room-${room.id}`} initialDelay={index * 0.1} />
                                         ) : (
                                             <div className="room-card__no-image" style={{ height: '80px', width: '80px', display: 'flex', alignItems: 'center', justifyContent: 'center', background: '#eee', color: '#999' }}>NO IMAGE</div>
                                         )}

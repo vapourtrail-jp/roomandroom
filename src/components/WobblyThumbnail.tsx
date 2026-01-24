@@ -6,15 +6,14 @@ import anime from 'animejs';
 interface WobblyThumbnailProps {
     src: string;
     alt: string;
+    uid: string;
     initialDelay?: number;
 }
 
-export default function WobblyThumbnail({ src, alt, initialDelay = 0 }: WobblyThumbnailProps) {
+export default function WobblyThumbnail({ src, alt, uid, initialDelay = 0 }: WobblyThumbnailProps) {
     const pathRef = useRef<SVGPathElement>(null);
     const containerRef = useRef<HTMLDivElement>(null);
-    const reactId = useId();
-    // 実際にIDとして使うものは、コロンなどを除去した安全な文字列にする
-    const [id, setId] = useState<string>('');
+    const id = uid.replace(/[^a-zA-Z0-9]/g, '-');
 
     const state = useRef({
         progress: 0,
@@ -22,10 +21,6 @@ export default function WobblyThumbnail({ src, alt, initialDelay = 0 }: WobblyTh
         time: Math.random() * 100
     });
 
-    useEffect(() => {
-        // マウント後にIDを設定することで、サーバー・クライアント間の不一致を完全に防ぐ
-        setId(reactId.replace(/:/g, ''));
-    }, [reactId]);
 
     useEffect(() => {
         if (!pathRef.current || !containerRef.current || !id) return;
@@ -150,29 +145,25 @@ export default function WobblyThumbnail({ src, alt, initialDelay = 0 }: WobblyTh
             ref={containerRef}
             style={{ position: 'relative', width: '80px', height: '80px', background: 'transparent' }}
         >
-            {id && (
-                <>
-                    <svg width="0" height="0" style={{ position: 'absolute' }}>
-                        <defs>
-                            <clipPath id={`wobble-${id}`} clipPathUnits="objectBoundingBox">
-                                <path ref={pathRef} />
-                            </clipPath>
-                        </defs>
-                    </svg>
-                    <img
-                        src={src}
-                        alt={alt}
-                        style={{
-                            width: '100%',
-                            height: '100%',
-                            objectFit: 'cover',
-                            clipPath: `url(#wobble-${id})`,
-                            WebkitClipPath: `url(#wobble-${id})`,
-                            display: 'block'
-                        }}
-                    />
-                </>
-            )}
+            <svg width="0" height="0" style={{ position: 'absolute' }}>
+                <defs>
+                    <clipPath id={`wobble-${id}`} clipPathUnits="objectBoundingBox">
+                        <path ref={pathRef} />
+                    </clipPath>
+                </defs>
+            </svg>
+            <img
+                src={src}
+                alt={alt}
+                style={{
+                    width: '100%',
+                    height: '100%',
+                    objectFit: 'cover',
+                    clipPath: `url(#wobble-${id})`,
+                    WebkitClipPath: `url(#wobble-${id})`,
+                    display: 'block'
+                }}
+            />
         </div>
     );
 }
