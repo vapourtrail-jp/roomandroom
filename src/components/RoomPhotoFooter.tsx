@@ -38,6 +38,8 @@ export default function RoomPhotoFooter({
     const currentIndex = parseInt(photoIndexStr, 10) || 0;
     const isAutoplay = searchParams.get('ap') === '1';
 
+    const [isNavigating, setIsNavigating] = useState(false);
+
     const getPaths = useCallback(() => {
         const padIndexLocal = (idx: number) => idx.toString().padStart(2, '0');
         const currentParams = searchParams.toString();
@@ -69,18 +71,21 @@ export default function RoomPhotoFooter({
     const { prev: prevPath, next: nextPath } = getPaths();
 
     const handleAutoNext = useCallback(() => {
-        if (isAutoplay && mounted) {
+        if (isAutoplay && mounted && !isNavigating) {
+            setIsNavigating(true);
             router.push(nextPath);
         }
-    }, [isAutoplay, mounted, nextPath, router]);
+    }, [isAutoplay, mounted, isNavigating, nextPath, router]);
 
     useEffect(() => {
         let timer: NodeJS.Timeout;
-        if (isAutoplay && mounted) {
+        if (isAutoplay && mounted && !isNavigating) {
             timer = setTimeout(handleAutoNext, 3000);
         }
-        return () => clearTimeout(timer);
-    }, [isAutoplay, mounted, handleAutoNext]);
+        return () => {
+            if (timer) clearTimeout(timer);
+        };
+    }, [isAutoplay, mounted, isNavigating, handleAutoNext]);
 
     const toggleAutoplay = () => {
         const nextAutoplay = !isAutoplay;

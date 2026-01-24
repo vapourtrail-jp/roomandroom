@@ -33,44 +33,50 @@ export default function TagPhotoFooter({
     const currentIndex = parseInt(photoIndexStr, 10) || 1;
     const isAutoplay = searchParams.get('ap') === '1';
 
+    const [isNavigating, setIsNavigating] = useState(false);
+
     const getPaths = useCallback(() => {
         const padIndexLocal = (idx: number) => idx.toString().padStart(2, '0');
         const currentParams = searchParams.toString();
         const query = (mounted && currentParams) ? `?${currentParams}` : '';
 
-        // prev: 1枚目のときは totalPhotos へループ (手動)
-        let prev = `/tags/${tag}/${padIndexLocal(currentIndex > 1 ? currentIndex - 1 : totalPhotos)}`;
+        let prev = '/tags';
+        let next = '/tags';
 
-        // next: 最後の場合は autoPlay か手動かで分岐できるとベストだが、ここではリンク先としてはループさせておく (手動クリック用)
-        // 自動遷移の場合は handleAutoNext 内で分岐させる
-        let next = `/tags/${tag}/${padIndexLocal(currentIndex < totalPhotos ? currentIndex + 1 : 1)}`;
+        // prev
+        if (currentIndex > 1) {
+            prev = `/tags/${tag}/${padIndexLocal(currentIndex - 1)}`;
+        }
+
+        // next
+        if (currentIndex < totalPhotos) {
+            next = `/tags/${tag}/${padIndexLocal(currentIndex + 1)}`;
+        }
 
         return {
-            prev: !mounted ? prev : `${prev}${query}`,
-            next: !mounted ? next : `${next}${query}`
+            prev: (prev === '/tags' || !mounted) ? prev : `${prev}${query}`,
+            next: (next === '/tags' || !mounted) ? next : `${next}${query}`
         };
     }, [currentIndex, tag, totalPhotos, mounted, searchParams]);
 
     const { prev: prevPath, next: nextPath } = getPaths();
 
     const handleAutoNext = useCallback(() => {
-        if (isAutoplay && mounted) {
-            // 自動再生で最後の写真だった場合は tags 一覧へ戻る
-            if (currentIndex >= totalPhotos) {
-                router.push('/tags');
-            } else {
-                router.push(nextPath);
-            }
+        if (isAutoplay && mounted && !isNavigating) {
+            setIsNavigating(true);
+            router.push(nextPath);
         }
-    }, [isAutoplay, mounted, currentIndex, totalPhotos, nextPath, router]);
+    }, [isAutoplay, mounted, isNavigating, nextPath, router]);
 
     useEffect(() => {
         let timer: NodeJS.Timeout;
-        if (isAutoplay && mounted) {
+        if (isAutoplay && mounted && !isNavigating) {
             timer = setTimeout(handleAutoNext, 3000);
         }
-        return () => clearTimeout(timer);
-    }, [isAutoplay, mounted, handleAutoNext]);
+        return () => {
+            if (timer) clearTimeout(timer);
+        };
+    }, [isAutoplay, mounted, isNavigating, handleAutoNext]);
 
     const toggleAutoplay = () => {
         const nextAutoplay = !isAutoplay;
