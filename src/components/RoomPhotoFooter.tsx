@@ -40,6 +40,11 @@ export default function RoomPhotoFooter({
 
     const [isNavigating, setIsNavigating] = useState(false);
 
+    // 遷移が完了してインデックスが変わったら、ナビゲーション中フラグをリセットする
+    useEffect(() => {
+        setIsNavigating(false);
+    }, [currentIndex, slug]);
+
     const getPaths = useCallback(() => {
         const padIndexLocal = (idx: number) => idx.toString().padStart(2, '0');
         const currentParams = searchParams.toString();
