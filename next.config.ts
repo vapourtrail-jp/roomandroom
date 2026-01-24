@@ -2,7 +2,6 @@ import type { NextConfig } from "next";
 
 const nextConfig: NextConfig = {
   reactCompiler: true,
-  transpilePackages: ['three'],
 
   // WordPressの画像を表示するための許可設定
   images: {
