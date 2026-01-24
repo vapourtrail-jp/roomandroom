@@ -75,6 +75,7 @@ export default async function TagsPage() {
 
     const sortedTags = Array.from(tagMap.entries())
         .map(([name, data]) => ({ name, ...data }))
+        .filter(tag => tag.count > 1)
         .sort((a, b) => a.name.localeCompare(b.name, 'ja'));
 
     return (

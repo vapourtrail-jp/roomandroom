@@ -57,13 +57,33 @@ async function getRooms(): Promise<Room[]> {
     }
 }
 
-export default async function RoomsPage() {
+export default async function RoomsPage({
+    searchParams
+}: {
+    searchParams: Promise<{ sort?: string }>;
+}) {
+    const { sort } = await searchParams;
+    const isAsc = sort === 'asc'; // デフォルトは降順（desc）とする
     let rooms = await getRooms();
+
+    // ソート実行
+    rooms.sort((a, b) => {
+        const noA = parseInt(a.acf?.room_no || '0', 10);
+        const noB = parseInt(b.acf?.room_no || '0', 10);
+        return isAsc ? noA - noB : noB - noA;
+    });
 
     return (
         <div className="rooms-container">
             <div className="rooms-header">
                 <h1 className="title">ROOMS</h1>
+                <Link
+                    href={`/rooms?sort=${isAsc ? 'desc' : 'asc'}`}
+                    className={`sort-toggle ${!isAsc ? 'is-desc' : ''}`}
+                    title={isAsc ? '新しい順に並び替え' : '古い順に並び替え'}
+                >
+                    <span className="material-symbols-rounded">expand_more</span>
+                </Link>
             </div>
             {rooms.length === 0 ? (
                 <p className="no-data">現在表示できるデータがありません。</p>

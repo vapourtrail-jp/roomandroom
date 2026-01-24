@@ -41,10 +41,10 @@ export default function TagPhotoFooter({
 
     const [isNavigating, setIsNavigating] = useState(false);
 
-    // 遷移が完了してインデックスが変わったら、ナビゲーション中フラグをリセットする
+    // 遷移が完了してインデックスが変わった際、またはオートプレイ状態が切り替わった際にフラグをリセット
     useEffect(() => {
         setIsNavigating(false);
-    }, [currentIndex, tag]);
+    }, [currentIndex, tag, localAutoplay]);
 
     const getPaths = useCallback(() => {
         const padIndexLocal = (idx: number) => idx.toString().padStart(2, '0');

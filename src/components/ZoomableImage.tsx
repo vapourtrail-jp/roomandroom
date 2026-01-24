@@ -1,7 +1,6 @@
 'use client';
 
-import { useRouter, useSearchParams, usePathname } from 'next/navigation';
-import { useState, useEffect } from 'react';
+import { useState } from 'react';
 
 interface ZoomableImageProps {
     src: string;
@@ -10,34 +9,14 @@ interface ZoomableImageProps {
 }
 
 export default function ZoomableImage({ src, alt, className }: ZoomableImageProps) {
-    const router = useRouter();
-    const searchParams = useSearchParams();
-    const pathname = usePathname();
-    const [mounted, setMounted] = useState(false);
-
-    useEffect(() => {
-        setMounted(true);
-    }, []);
-
-    // z=1 のとき、元の標準サイズ（480px）とする（= isSmall）
-    // マウント前は常に false (デフォルトの拡大表示) とすることでサーバーと一致させる
-    const isSmall = mounted && searchParams.get('z') === '1';
+    const [isSmall, setIsSmall] = useState(false);
 
     const handleToggleZoom = () => {
-        const nextSmall = !isSmall;
-        const params = new URLSearchParams(searchParams.toString());
-        if (nextSmall) {
-            params.set('z', '1');
-        } else {
-            params.delete('z');
-        }
-
-        const query = params.toString();
-        const url = query ? `${pathname}?${query}` : pathname;
-        router.replace(url, { scroll: false });
+        setIsSmall(!isSmall);
     };
 
-    const size = isSmall ? '480px' : '600px';
+    const size = isSmall ? '480px' : '100%';
+    const maxHeight = isSmall ? '480px' : '82dvh';
 
     return (
         <img
@@ -48,14 +27,14 @@ export default function ZoomableImage({ src, alt, className }: ZoomableImageProp
             onContextMenu={(e) => e.preventDefault()}
             onDragStart={(e) => e.preventDefault()}
             style={{
-                cursor: mounted ? (isSmall ? 'zoom-in' : 'zoom-out') : 'default',
+                cursor: isSmall ? 'zoom-in' : 'zoom-out',
                 objectFit: 'contain',
                 display: 'block',
                 margin: '0 auto',
-                width: '100%',
-                height: '100%',
-                maxWidth: mounted ? size : '600px',
-                maxHeight: mounted ? size : '600px',
+                width: isSmall ? '100%' : 'auto',
+                height: isSmall ? '100%' : 'auto',
+                maxWidth: size,
+                maxHeight: maxHeight,
                 minHeight: 0, // Flex内で縮小可能にする
                 transition: 'max-width 0.3s ease-in-out, max-height 0.3s ease-in-out'
             }}

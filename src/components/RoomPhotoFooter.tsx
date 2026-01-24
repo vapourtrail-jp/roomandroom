@@ -46,10 +46,10 @@ export default function RoomPhotoFooter({
 
     const [isNavigating, setIsNavigating] = useState(false);
 
-    // 遷移が完了してインデックスが変わったら、ナビゲーション中フラグをリセットする
+    // 遷移が完了してインデックスが変わった際、またはオートプレイ状態が切り替わった際にフラグをリセット
     useEffect(() => {
         setIsNavigating(false);
-    }, [currentIndex, slug]);
+    }, [currentIndex, slug, localAutoplay]);
 
     const getPaths = useCallback(() => {
         const padIndexLocal = (idx: number) => idx.toString().padStart(2, '0');
@@ -118,11 +118,7 @@ export default function RoomPhotoFooter({
         router.replace(`${window.location.pathname}?${currentParams.toString()}`);
     };
 
-    const showMetadata = mounted && currentIndex !== 0;
     const autoplayActive = mounted && localAutoplay;
-
-    // 00ページではフッター要素を隠すが、レイアウトは維持する
-    const footerVisibility = currentIndex === 0 ? 'hidden' : 'visible';
 
     return (
         <div className="room-photo-page__footer">

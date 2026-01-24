@@ -9,7 +9,7 @@ export default function PageTransition({ children }: { children: ReactNode }) {
     // 部屋が切り替わる時（slugが異なる時）や、 rooms 一覧、about など他ページへの遷移時のみ
     // 全体のフェードを発生させるためのキーを生成。
     const transitionKey = useMemo(() => {
-        const match = pathname.match(/^(\/rooms\/[^\/]+)\/\d+$/);
+        const match = pathname.match(/^(\/(rooms|tags)\/[^\/]+)\/\d+$/);
         return match ? match[1] : pathname;
     }, [pathname]);
 
