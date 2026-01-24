@@ -63,7 +63,7 @@ export default async function RoomsPage({
     searchParams: Promise<{ sort?: string }>;
 }) {
     const { sort } = await searchParams;
-    const isAsc = sort === 'asc'; // デフォルトは降順（desc）とする
+    const isAsc = sort !== 'desc'; // デフォルトは昇順（asc）とする
     let rooms = await getRooms();
 
     // ソート実行
