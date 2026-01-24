@@ -7,6 +7,8 @@ import PageTransition from "@/components/PageTransition";
 import Navigation from "@/components/Navigation";
 import BodyClassManager from "@/components/BodyClassManager";
 
+export const runtime = 'edge';
+
 export const metadata: Metadata = {
   metadataBase: new URL('https://www.roomandroom.org'),
   title: {
