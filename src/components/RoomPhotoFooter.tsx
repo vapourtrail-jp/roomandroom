@@ -96,14 +96,17 @@ export default function RoomPhotoFooter({
         };
     }, [isAutoplay, mounted, isNavigating, handleAutoNext]);
 
-    const toggleAutoplay = () => {
-        const nextAutoplay = !isAutoplay;
+    const startAutoplay = () => {
+        if (isAutoplay) return;
         const currentParams = new URLSearchParams(searchParams.toString());
-        if (nextAutoplay) {
-            currentParams.set('ap', '1');
-        } else {
-            currentParams.delete('ap');
-        }
+        currentParams.set('ap', '1');
+        router.replace(`${window.location.pathname}?${currentParams.toString()}`);
+    };
+
+    const stopAutoplay = () => {
+        setIsNavigating(true); // 即座に自動遷移をブロック
+        const currentParams = new URLSearchParams(searchParams.toString());
+        currentParams.delete('ap');
         router.replace(`${window.location.pathname}?${currentParams.toString()}`);
     };
 
@@ -148,7 +151,7 @@ export default function RoomPhotoFooter({
 
                 <div className="autoplay-controls" style={{ display: 'flex', justifyContent: 'center', alignItems: 'center', gap: '20px' }}>
                     <button
-                        onClick={toggleAutoplay}
+                        onClick={startAutoplay}
                         style={{
                             background: 'none',
                             border: 'none',
@@ -167,7 +170,7 @@ export default function RoomPhotoFooter({
                     </button>
 
                     <button
-                        onClick={toggleAutoplay}
+                        onClick={stopAutoplay}
                         style={{
                             background: 'none',
                             border: 'none',
