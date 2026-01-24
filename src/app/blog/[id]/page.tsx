@@ -2,8 +2,6 @@ import { Metadata } from 'next';
 import { notFound } from 'next/navigation';
 import Link from 'next/link';
 
-export const runtime = 'edge';
-
 export async function generateMetadata(
     { params }: { params: Promise<{ id: string }> }
 ): Promise<Metadata> {
@@ -36,7 +34,7 @@ async function getPost(id: string): Promise<Post | null> {
                 'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/91.0.4472.124 Safari/537.36'
             },
             next: {
-                revalidate: 0
+                revalidate: 3600
             }
         });
 

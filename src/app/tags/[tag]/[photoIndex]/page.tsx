@@ -3,8 +3,6 @@ import ZoomableImage from '@/components/ZoomableImage';
 import { Suspense } from 'react';
 import LocalPhotoContainer from '@/components/LocalPhotoContainer';
 
-export const runtime = 'edge';
-
 interface RoomPhoto {
     id: number;
     url: string;
@@ -33,7 +31,7 @@ async function getAllRooms(): Promise<Room[]> {
             },
             next: {
                 tags: ['rooms'],
-                revalidate: 0
+                revalidate: 60
             }
         });
         if (!res.ok) return [];

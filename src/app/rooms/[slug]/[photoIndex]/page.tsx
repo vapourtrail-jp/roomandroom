@@ -4,8 +4,6 @@ import { Suspense } from 'react';
 import LocalPhotoContainer from '@/components/LocalPhotoContainer';
 import Link from 'next/link';
 
-export const runtime = 'edge';
-
 interface RoomPhoto {
     id: number;
     title: string;
@@ -42,7 +40,7 @@ async function getAllRooms(): Promise<Room[]> {
             },
             next: {
                 tags: ['rooms'],
-                revalidate: 0
+                revalidate: 60
             }
         });
 

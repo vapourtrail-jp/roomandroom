@@ -2,7 +2,7 @@ import { notFound } from 'next/navigation';
 import RoomPhotoFooter from '@/components/RoomPhotoFooter';
 import { Suspense } from 'react';
 
-export const runtime = 'edge';
+
 
 interface RoomPhoto {
     id: number;

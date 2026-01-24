@@ -2,8 +2,6 @@ import { Metadata } from 'next';
 import Link from 'next/link';
 import WobblyThumbnail from '@/components/WobblyThumbnail';
 
-export const runtime = 'edge';
-
 
 export const metadata: Metadata = {
     title: 'TAGS',
@@ -37,7 +35,7 @@ async function getAllRooms(): Promise<Room[]> {
             },
             next: {
                 tags: ['rooms'],
-                revalidate: 0 // キャッシュさせずに常に最新を取得
+                revalidate: 60
             }
         });
 

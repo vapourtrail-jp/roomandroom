@@ -2,8 +2,6 @@ import { Metadata } from 'next';
 import Link from 'next/link';
 import WobblyThumbnail from '@/components/WobblyThumbnail';
 
-export const runtime = 'edge';
-
 export const metadata: Metadata = {
     title: 'ROOMS',
 };
@@ -51,7 +49,7 @@ async function getRooms(): Promise<Room[]> {
             },
             next: {
                 tags: ['rooms'],
-                revalidate: 0
+                revalidate: 60
             }
         });
 

@@ -5,7 +5,6 @@ export const metadata: Metadata = {
     title: 'BLOG',
 };
 
-export const runtime = 'edge';
 
 interface Post {
     id: number;
