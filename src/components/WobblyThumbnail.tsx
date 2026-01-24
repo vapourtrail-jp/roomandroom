@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, useEffect, useRef } from 'react';
+import { useId, useEffect, useRef, useState } from 'react';
 import anime from 'animejs';
 
 interface WobblyThumbnailProps {
@@ -12,8 +12,9 @@ interface WobblyThumbnailProps {
 export default function WobblyThumbnail({ src, alt, initialDelay = 0 }: WobblyThumbnailProps) {
     const pathRef = useRef<SVGPathElement>(null);
     const containerRef = useRef<HTMLDivElement>(null);
-    // Hydrationエラー（使用するIDのズレ）を避けるため、マウント後に生成される乱数を使用
-    const [uniqueId, setUniqueId] = useState<string>('');
+    const reactId = useId();
+    // 実際にIDとして使うものは、コロンなどを除去した安全な文字列にする
+    const [id, setId] = useState<string>('');
 
     const state = useRef({
         progress: 0,
@@ -22,12 +23,12 @@ export default function WobblyThumbnail({ src, alt, initialDelay = 0 }: WobblyTh
     });
 
     useEffect(() => {
-        // マウント時にIDを一意に確定（サーバーとクライアントの不一致を防ぎ、リンクが死ぬのを防ぐ）
-        setUniqueId(Math.random().toString(36).substring(2, 9));
-    }, []);
+        // マウント後にIDを設定することで、サーバー・クライアント間の不一致を完全に防ぐ
+        setId(reactId.replace(/:/g, ''));
+    }, [reactId]);
 
     useEffect(() => {
-        if (!pathRef.current || !containerRef.current || !uniqueId) return;
+        if (!pathRef.current || !containerRef.current || !id) return;
 
         const card = containerRef.current.closest('.room-card');
         const CONFIG = {
@@ -142,18 +143,18 @@ export default function WobblyThumbnail({ src, alt, initialDelay = 0 }: WobblyTh
                 card.removeEventListener('mouseleave', handleMouseLeave);
             }
         };
-    }, [initialDelay, uniqueId]);
+    }, [initialDelay, id]);
 
     return (
         <div
             ref={containerRef}
             style={{ position: 'relative', width: '80px', height: '80px', background: 'transparent' }}
         >
-            {uniqueId && (
+            {id && (
                 <>
                     <svg width="0" height="0" style={{ position: 'absolute' }}>
                         <defs>
-                            <clipPath id={`wobble-${uniqueId}`} clipPathUnits="objectBoundingBox">
+                            <clipPath id={`wobble-${id}`} clipPathUnits="objectBoundingBox">
                                 <path ref={pathRef} />
                             </clipPath>
                         </defs>
@@ -165,8 +166,8 @@ export default function WobblyThumbnail({ src, alt, initialDelay = 0 }: WobblyTh
                             width: '100%',
                             height: '100%',
                             objectFit: 'cover',
-                            clipPath: `url(#wobble-${uniqueId})`,
-                            WebkitClipPath: `url(#wobble-${uniqueId})`,
+                            clipPath: `url(#wobble-${id})`,
+                            WebkitClipPath: `url(#wobble-${id})`,
                             display: 'block'
                         }}
                     />
