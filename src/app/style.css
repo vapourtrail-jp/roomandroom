@@ -4,8 +4,8 @@ html {
 
 /* -------------------------------------------------- */
 
-.material-symbols-rounded {
-    font-family: 'Material Symbols Rounded';
+.material-symbols-rounded,
+.material-symbols-outlined {
     font-weight: normal;
     font-style: normal;
     font-size: 32px;
@@ -22,7 +22,16 @@ html {
     -webkit-font-smoothing: antialiased;
 }
 
-.material-symbols-rounded.is-filled {
+.material-symbols-rounded {
+    font-family: 'Material Symbols Rounded';
+}
+
+.material-symbols-outlined {
+    font-family: 'Material Symbols Outlined';
+}
+
+.material-symbols-rounded.is-filled,
+.material-symbols-outlined.is-filled {
     font-variation-settings: 'FILL' 1;
 }
 

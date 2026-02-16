@@ -49,7 +49,7 @@ export default function RoomPhotoFooter({
     // 遷移が完了してインデックスが変わった際、またはオートプレイ状態が切り替わった際にフラグをリセット
     useEffect(() => {
         setIsNavigating(false);
-    }, [currentIndex, slug, localAutoplay]);
+    }, [currentIndex, slug]);
 
     const getPaths = useCallback(() => {
         const padIndexLocal = (idx: number) => idx.toString().padStart(2, '0');
@@ -104,6 +104,7 @@ export default function RoomPhotoFooter({
 
     const startAutoplay = () => {
         if (localAutoplay) return;
+        setIsNavigating(false); // 遷移ロックを解除して開始
         setLocalAutoplay(true);
         const currentParams = new URLSearchParams(searchParams.toString());
         currentParams.set('ap', '1');
@@ -185,10 +186,10 @@ export default function RoomPhotoFooter({
                         }}
                     >
                         <span
-                            className={`material-symbols-rounded ${mounted && !localAutoplay ? 'is-filled' : ''}`}
+                            className={`material-symbols-outlined ${mounted && !localAutoplay ? 'is-filled' : ''}`}
                             style={{ fontSize: '20px', display: 'block' }}
                         >
-                            {mounted && !localAutoplay ? 'pause_circle' : 'pause'}
+                            pause
                         </span>
                     </button>
                 </div>
