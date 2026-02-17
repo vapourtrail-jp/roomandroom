@@ -62,21 +62,23 @@ export default async function TagLayout({
     const decodedTag = typeof tag === 'string' ? decodeURIComponent(tag) : '';
     const allRooms = await getAllRooms();
 
-    const taggedPhotos = allRooms.flatMap(room => {
+    const taggedPhotos = [];
+    for (const room of allRooms) {
         const photos = room.acf.room_photos || [];
-        return photos
-            .filter(photo => {
-                const tagString = photo.tags || '';
+        for (const photo of photos) {
+            const tagString = photo.tags || '';
+            if (tagString.includes(decodedTag)) {
                 const tagsArray = tagString.split(/[,\s]+/).map(t => t.trim());
-                return tagsArray.includes(decodedTag);
-            })
-            .map(photo => ({
-                ...photo,
-                room_no: room.acf.room_no,
-                room_by: room.acf.room_by,
-                photo_by: room.acf.photo_by
-            }));
-    });
+                if (tagsArray.includes(decodedTag)) {
+                    taggedPhotos.push({
+                        room_no: room.acf.room_no,
+                        room_by: room.acf.room_by,
+                        photo_by: room.acf.photo_by
+                    });
+                }
+            }
+        }
+    }
 
     if (taggedPhotos.length === 0) {
         notFound();

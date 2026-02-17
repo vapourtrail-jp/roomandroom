@@ -94,7 +94,7 @@ export default async function TagsPage() {
                             className="l-list__item room-card-wrapper"
                             style={{ animationDelay: `${index * 0.1}s` }}
                         >
-                            <Link href={`/tags/${encodeURIComponent(tag.name)}/01`} className="room-card">
+                            <a href={`/tags/${encodeURIComponent(tag.name)}/01`} className="room-card">
                                 <div className="room-card__thumbnail">
                                     <WobblyThumbnail
                                         src={tag.thumbnailUrl}
@@ -109,7 +109,7 @@ export default async function TagsPage() {
                                         {tag.name} <span style={{ fontWeight: 'normal' }}>({tag.count})</span>
                                     </p>
                                 </div>
-                            </Link>
+                            </a>
                         </li>
                     ))}
                 </ul>

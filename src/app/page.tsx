@@ -7,9 +7,9 @@ export default function Home() {
     <div className="home-container">
       <div className="title">NEWS</div>
       <div className="content">
-        <Link href="/rooms" style={{ textDecoration: 'none' }}>
+        <a href="/rooms" style={{ textDecoration: 'none' }}>
           <div className="home-notice">2026.1.18　room and room. is back!(This is a beta release. click here!)</div>
-        </Link>
+        </a>
       </div>
     </div>
   );

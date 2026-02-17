@@ -77,13 +77,13 @@ export default async function RoomsPage({
         <div className="rooms-container">
             <div className="rooms-header">
                 <h1 className="title">ROOMS</h1>
-                <Link
+                <a
                     href={`/rooms?sort=${isAsc ? 'desc' : 'asc'}`}
                     className={`sort-toggle ${!isAsc ? 'is-desc' : ''}`}
                     title={isAsc ? '新しい順に並び替え' : '古い順に並び替え'}
                 >
                     <span className="material-symbols-rounded">expand_more</span>
-                </Link>
+                </a>
             </div>
             {rooms.length === 0 ? (
                 <p className="no-data">現在表示できるデータがありません。</p>
@@ -98,7 +98,7 @@ export default async function RoomsPage({
 
                         return (
                             <li key={`${room.id}-${index}`} className="l-list__item room-card-wrapper" style={{ animationDelay: `${index * 0.1}s` }}>
-                                <Link href={`/rooms/${room.acf.room_no}/01`} className="room-card">
+                                <a href={`/rooms/${room.acf.room_no}/01`} className="room-card">
                                     <div className="room-card__thumbnail">
                                         {thumbnailUrl ? (
                                             <WobblyThumbnail src={thumbnailUrl} alt={room.acf.room_no} uid={`room-${room.id}`} initialDelay={index * 0.1} />
@@ -117,7 +117,7 @@ export default async function RoomsPage({
                                             )}
                                         </dl>
                                     </div>
-                                </Link>
+                                </a>
                             </li>
                         );
                     })}

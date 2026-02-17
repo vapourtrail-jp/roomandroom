@@ -2,7 +2,6 @@
 
 import { useParams, useRouter, useSearchParams } from 'next/navigation';
 import { useState, useEffect, useCallback } from 'react';
-import Link from 'next/link';
 
 interface RoomPhotoFooterProps {
     roomNo: string;
@@ -44,12 +43,6 @@ export default function RoomPhotoFooter({
         setLocalAutoplay(isAutoplay);
     }, [isAutoplay]);
 
-    const [isNavigating, setIsNavigating] = useState(false);
-
-    // 遷移が完了してインデックスが変わった際、またはオートプレイ状態が切り替わった際にフラグをリセット
-    useEffect(() => {
-        setIsNavigating(false);
-    }, [currentIndex, slug]);
 
     const getPaths = useCallback(() => {
         const padIndexLocal = (idx: number) => idx.toString().padStart(2, '0');
@@ -82,29 +75,23 @@ export default function RoomPhotoFooter({
     const { prev: prevPath, next: nextPath } = getPaths();
 
     const handleAutoNext = useCallback(() => {
-        if (localAutoplay && mounted && !isNavigating) {
-            setIsNavigating(true);
-            router.push(nextPath);
+        if (localAutoplay && mounted) {
+            window.location.assign(nextPath);
         }
-    }, [localAutoplay, mounted, isNavigating, nextPath, router]);
-
-    const handleManualNav = () => {
-        setIsNavigating(true);
-    };
+    }, [localAutoplay, mounted, nextPath]);
 
     useEffect(() => {
         let timer: NodeJS.Timeout;
-        if (localAutoplay && mounted && !isNavigating) {
+        if (localAutoplay && mounted) {
             timer = setTimeout(handleAutoNext, 3000);
         }
         return () => {
             if (timer) clearTimeout(timer);
         };
-    }, [localAutoplay, mounted, isNavigating, handleAutoNext]);
+    }, [localAutoplay, mounted, handleAutoNext]);
 
     const startAutoplay = () => {
         if (localAutoplay) return;
-        setIsNavigating(false); // 遷移ロックを解除して開始
         setLocalAutoplay(true);
         const currentParams = new URLSearchParams(searchParams.toString());
         currentParams.set('ap', '1');
@@ -113,7 +100,6 @@ export default function RoomPhotoFooter({
 
     const stopAutoplay = () => {
         setLocalAutoplay(false);
-        setIsNavigating(true); // 即座に自動遷移をブロック
         const currentParams = new URLSearchParams(searchParams.toString());
         currentParams.delete('ap');
         router.replace(`${window.location.pathname}?${currentParams.toString()}`);
@@ -124,17 +110,17 @@ export default function RoomPhotoFooter({
     return (
         <div className="room-photo-page__footer">
             <div className="footer-title-row">
-                <Link href={prevPath} className="footer-nav-button footer-nav-button--prev" onClick={handleManualNav}>
+                <a href={prevPath} className="footer-nav-button footer-nav-button--prev">
                     <span className="material-symbols-rounded">arrow_circle_left</span>
-                </Link>
+                </a>
 
                 <h1 className="title">
                     room*{roomNo}
                 </h1>
 
-                <Link href={nextPath} className="footer-nav-button footer-nav-button--next" onClick={handleManualNav}>
+                <a href={nextPath} className="footer-nav-button footer-nav-button--next">
                     <span className="material-symbols-rounded">arrow_circle_right</span>
-                </Link>
+                </a>
             </div>
 
             <div className="room-info">

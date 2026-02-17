@@ -1,7 +1,6 @@
 "use client";
 
 import { useState, useEffect } from "react";
-import Link from "next/link";
 
 export default function Navigation() {
     // Trigger build
@@ -47,16 +46,16 @@ export default function Navigation() {
             >
                 <ul className="menu-main">
                     <li>
-                        <Link href="/" onClick={closeMenu}>HOME</Link>
+                        <a href="/" onClick={closeMenu}>HOME</a>
                     </li>
                     <li>
-                        <Link href="/rooms" onClick={closeMenu}>ROOMS</Link>
+                        <a href="/rooms" onClick={closeMenu}>ROOMS</a>
                     </li>
                     <li>
-                        <Link href="/tags" onClick={closeMenu}>TAGS</Link>
+                        <a href="/tags" onClick={closeMenu}>TAGS</a>
                     </li>
                     <li>
-                        <Link href="/about" onClick={closeMenu}>ABOUT</Link>
+                        <a href="/about" onClick={closeMenu}>ABOUT</a>
                     </li>
                 </ul>
             </nav>

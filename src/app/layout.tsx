@@ -50,9 +50,9 @@ export default function RootLayout({
         </Script>
         <BodyClassManager />
         <header className="header l-header l-padding">
-          <Link href="/" className="logo">
+          <a href="/" className="logo">
             <img src="/logo_rar.png" height={29} alt="room and room" />
-          </Link>
+          </a>
         </header>
 
         <Navigation />
