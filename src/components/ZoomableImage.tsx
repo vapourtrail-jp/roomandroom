@@ -15,8 +15,8 @@ export default function ZoomableImage({ src, alt, className }: ZoomableImageProp
         setIsSmall(!isSmall);
     };
 
-    const size = isSmall ? '480px' : '100%';
-    const maxHeight = isSmall ? '480px' : '82dvh';
+    const size = isSmall ? '480px' : '600px';
+    const maxHeight = isSmall ? '480px' : '600px';
 
     return (
         <img
@@ -31,8 +31,8 @@ export default function ZoomableImage({ src, alt, className }: ZoomableImageProp
                 objectFit: 'contain',
                 display: 'block',
                 margin: '0 auto',
-                width: isSmall ? '100%' : 'auto',
-                height: isSmall ? '100%' : 'auto',
+                width: '100%',
+                height: '100%',
                 maxWidth: size,
                 maxHeight: maxHeight,
                 minHeight: 0, // Flex内で縮小可能にする

@@ -91,7 +91,7 @@ export default function RootLayout({
             </div>
           </div>
           <div className="copyright">
-            Copyright &copy; 2026 room and room. All right reserved.
+            Copyright &copy; 2026 room and room. All rights reserved.
           </div>
         </footer>
       </body>

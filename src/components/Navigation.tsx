@@ -56,9 +56,6 @@ export default function Navigation() {
                         <Link href="/tags" onClick={closeMenu}>TAGS</Link>
                     </li>
                     <li>
-                        <Link href="/blog" onClick={closeMenu}>BLOG</Link>
-                    </li>
-                    <li>
                         <Link href="/about" onClick={closeMenu}>ABOUT</Link>
                     </li>
                 </ul>
