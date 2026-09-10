@@ -1,81 +1,24 @@
 import { Metadata } from 'next';
 import Link from 'next/link';
 import WobblyThumbnail from '@/components/WobblyThumbnail';
-
-export const runtime = 'edge';
+import { buildTagMap, getAllRooms, photoUrlOf } from '@/lib/rooms';
 
 export const metadata: Metadata = {
     title: 'TAGS',
 };
 
-interface RoomPhoto {
-    id: number;
-    url: string;
-}
-
-interface RoomPhotoItem {
-    caption: string;
-    room_photo: RoomPhoto;
-    tags?: string;
-}
-
-interface Room {
-    id: number;
-    acf: {
-        room_no: string;
-        room_photos: RoomPhotoItem[];
-    };
-}
-
-async function getAllRooms(): Promise<Room[]> {
-    try {
-        const res = await fetch(`https://cms.roomandroom.org/w/wp-json/wp/v2/rooms?acf_format=standard&per_page=100`, {
-            headers: {
-                'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/91.0.4472.124 Safari/537.36'
-            },
-            next: { revalidate: 60 }
-        });
-
-        if (!res.ok) return [];
-        const data = await res.json();
-        if (!Array.isArray(data)) return [];
-
-        return data.sort((a, b) => {
-            const noA = parseInt(a.acf?.room_no || '0', 10);
-            const noB = parseInt(b.acf?.room_no || '0', 10);
-            return noA - noB;
-        });
-    } catch (error) {
-        return [];
-    }
-}
-
 export default async function TagsPage() {
     const allRooms = await getAllRooms();
-    const tagMap = new Map<string, { thumbnailUrl: string; count: number }>();
-
-    allRooms.forEach(room => {
-        const photos = room.acf.room_photos || [];
-        photos.forEach(photo => {
-            const tagString = photo.tags || '';
-            const tagsArray = tagString.split(/[,\s]+/).map(t => t.trim()).filter(t => t !== '');
-
-            tagsArray.forEach(tagName => {
-                const existing = tagMap.get(tagName);
-                if (existing) {
-                    existing.count += 1;
-                } else {
-                    if (typeof photo.room_photo === 'object' && photo.room_photo?.url) {
-                        tagMap.set(tagName, { thumbnailUrl: photo.room_photo.url, count: 1 });
-                    }
-                }
-            });
-        });
-    });
+    const tagMap = buildTagMap(allRooms);
 
     const sortedTags = Array.from(tagMap.entries())
-        .map(([name, data]) => ({ name, ...data }))
-        .filter(tag => tag.count > 1)
+        .map(([name, photos]) => ({
+            name,
+            count: photos.length,
+            // 最初にそのタグが付いた写真をサムネイルに使う
+            thumbnailUrl: photoUrlOf(photos.find((p) => photoUrlOf(p) !== '')),
+        }))
+        .filter(tag => tag.count > 1 && tag.thumbnailUrl !== '')
         .sort((a, b) => a.name.localeCompare(b.name, 'ja'));
 
     return (
@@ -94,7 +37,7 @@ export default async function TagsPage() {
                             className="l-list__item room-card-wrapper"
                             style={{ animationDelay: `${index * 0.1}s` }}
                         >
-                            <a href={`/tags/${encodeURIComponent(tag.name)}/01`} className="room-card">
+                            <Link href={`/tags/${encodeURIComponent(tag.name)}/01`} className="room-card">
                                 <div className="room-card__thumbnail">
                                     <WobblyThumbnail
                                         src={tag.thumbnailUrl}
@@ -109,7 +52,7 @@ export default async function TagsPage() {
                                         {tag.name} <span style={{ fontWeight: 'normal' }}>({tag.count})</span>
                                     </p>
                                 </div>
-                            </a>
+                            </Link>
                         </li>
                     ))}
                 </ul>

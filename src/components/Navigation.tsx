@@ -1,5 +1,6 @@
 "use client";
 
+import Link from "next/link";
 import { useState, useEffect } from "react";
 
 export default function Navigation() {
@@ -46,16 +47,16 @@ export default function Navigation() {
             >
                 <ul className="menu-main">
                     <li>
-                        <a href="/" onClick={closeMenu}>HOME</a>
+                        <Link href="/" onClick={closeMenu}>HOME</Link>
                     </li>
                     <li>
-                        <a href="/rooms" onClick={closeMenu}>ROOMS</a>
+                        <Link href="/rooms" onClick={closeMenu}>ROOMS</Link>
                     </li>
                     <li>
-                        <a href="/tags" onClick={closeMenu}>TAGS</a>
+                        <Link href="/tags" onClick={closeMenu}>TAGS</Link>
                     </li>
                     <li>
-                        <a href="/about" onClick={closeMenu}>ABOUT</a>
+                        <Link href="/about" onClick={closeMenu}>ABOUT</Link>
                     </li>
                 </ul>
             </nav>

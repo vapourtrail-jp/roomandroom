@@ -1,47 +1,10 @@
 import { Metadata } from 'next';
 import Link from 'next/link';
-
-export const runtime = 'edge';
+import { getPosts } from '@/lib/rooms';
 
 export const metadata: Metadata = {
     title: 'BLOG',
 };
-
-interface Post {
-    id: number;
-    date: string;
-    title: {
-        rendered: string;
-    };
-    excerpt: {
-        rendered: string;
-    };
-    slug: string;
-}
-
-async function getPosts(): Promise<Post[]> {
-    try {
-        const res = await fetch(`https://cms.roomandroom.org/w/wp-json/wp/v2/posts`, {
-            headers: {
-                'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/91.0.4472.124 Safari/537.36'
-            },
-            next: {
-                tags: ['posts'],
-                revalidate: 3600
-            }
-        });
-
-        if (!res.ok) return [];
-
-        const data = await res.json();
-        if (!Array.isArray(data)) return [];
-
-        return data;
-    } catch (error) {
-        console.error('Error fetching posts:', error);
-        return [];
-    }
-}
 
 export default async function BlogPage() {
     const posts = await getPosts();

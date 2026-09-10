@@ -1,6 +1,8 @@
 'use client';
 
-import { useParams, useRouter, useSearchParams } from 'next/navigation';
+import Link from 'next/link';
+import { useParams, useRouter } from 'next/navigation';
+import { useClientSearchParams } from '@/lib/useClientSearchParams';
 import { useState, useEffect, useCallback } from 'react';
 
 interface TagPhotoFooterProps {
@@ -20,7 +22,7 @@ export default function TagPhotoFooter({
 }: TagPhotoFooterProps) {
     const params = useParams();
     const router = useRouter();
-    const searchParams = useSearchParams();
+    const searchParams = useClientSearchParams();
     const photoIndexStr = params?.photoIndex as string;
 
     const [mounted, setMounted] = useState(false);
@@ -40,8 +42,15 @@ export default function TagPhotoFooter({
 
     const getPaths = useCallback(() => {
         const padIndexLocal = (idx: number) => idx.toString().padStart(2, '0');
-        const currentParams = searchParams.toString();
-        const query = (mounted && currentParams) ? `?${currentParams}` : '';
+        // 遷移先には自動再生の状態（ap=1）を引き継ぐ。URL 由来のクエリはそのまま保持する。
+        const currentParams = new URLSearchParams(searchParams.toString());
+        if (localAutoplay) {
+            currentParams.set('ap', '1');
+        } else {
+            currentParams.delete('ap');
+        }
+        const queryString = currentParams.toString();
+        const query = (mounted && queryString) ? `?${queryString}` : '';
 
         let prev = '/tags';
         let next = '/tags';
@@ -60,13 +69,13 @@ export default function TagPhotoFooter({
             prev: (prev === '/tags' || !mounted) ? prev : `${prev}${query}`,
             next: (next === '/tags' || !mounted) ? next : `${next}${query}`
         };
-    }, [currentIndex, tag, totalPhotos, mounted, searchParams]);
+    }, [currentIndex, tag, totalPhotos, mounted, searchParams, localAutoplay]);
 
     const { prev: prevPath, next: nextPath } = getPaths();
 
     const handleAutoNext = useCallback(() => {
         if (localAutoplay && mounted) {
-            window.location.assign(nextPath);
+            router.push(nextPath);
         }
     }, [localAutoplay, mounted, nextPath]);
 
@@ -100,17 +109,17 @@ export default function TagPhotoFooter({
     return (
         <div className="room-photo-page__footer">
             <div className="footer-title-row">
-                <a href={prevPath} className="footer-nav-button footer-nav-button--prev">
+                <Link href={prevPath} className="footer-nav-button footer-nav-button--prev">
                     <span className="material-symbols-rounded">arrow_circle_left</span>
-                </a>
+                </Link>
 
                 <h1 className="title">
                     {decodeURIComponent(tag)}
                 </h1>
 
-                <a href={nextPath} className="footer-nav-button footer-nav-button--next">
+                <Link href={nextPath} className="footer-nav-button footer-nav-button--next">
                     <span className="material-symbols-rounded">arrow_circle_right</span>
-                </a>
+                </Link>
             </div>
 
             <div className="room-info">
@@ -126,9 +135,9 @@ export default function TagPhotoFooter({
                             </>
                         )}
                         <span className="meta-separator"> / </span>
-                        <a href={`/rooms/${photoMetadata[currentIndex - 1].roomNo}/01`} className="meta-item" style={{ textDecoration: 'none' }}>
+                        <Link href={`/rooms/${photoMetadata[currentIndex - 1].roomNo}/01`} className="meta-item" style={{ textDecoration: 'none' }}>
                             room*{photoMetadata[currentIndex - 1].roomNo}
-                        </a>
+                        </Link>
                     </>
                 )}
             </div>

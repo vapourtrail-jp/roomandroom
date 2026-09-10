@@ -1,8 +1,14 @@
 import { Metadata } from 'next';
 import { notFound } from 'next/navigation';
 import Link from 'next/link';
+import { getPost, getPosts } from '@/lib/rooms';
 
-export const runtime = 'edge';
+export const dynamicParams = false;
+
+export async function generateStaticParams() {
+    const posts = await getPosts();
+    return posts.map((post) => ({ id: String(post.id) }));
+}
 
 export async function generateMetadata(
     { params }: { params: Promise<{ id: string }> }
@@ -15,25 +21,6 @@ export async function generateMetadata(
     return {
         title: post.title.rendered.replace(/<\/?[^>]+(>|$)/g, ""),
     };
-}
-
-interface Post {
-    id: number;
-    date: string;
-    title: { rendered: string };
-    content: { rendered: string };
-}
-
-async function getPost(id: string): Promise<Post | null> {
-    try {
-        const res = await fetch(`https://cms.roomandroom.org/w/wp-json/wp/v2/posts/${id}`, {
-            next: { revalidate: 3600 }
-        });
-        if (!res.ok) return null;
-        return await res.json();
-    } catch (error) {
-        return null;
-    }
 }
 
 export default async function BlogPostPage({ params }: { params: Promise<{ id: string }> }) {

@@ -1,57 +1,21 @@
 import { notFound } from 'next/navigation';
 import ZoomableImage from '@/components/ZoomableImage';
-import { Suspense } from 'react';
 import LocalPhotoContainer from '@/components/LocalPhotoContainer';
+import { getAllRooms, padIndex, photoUrlOf } from '@/lib/rooms';
 
-export const runtime = 'edge';
+// ビルド時に全部屋 × 全写真（00 = PROFILE を含む）を書き出す
+export const dynamicParams = false;
 
-interface RoomPhoto {
-    id: number;
-    title: string;
-    url: string;
-    width: number;
-    height: number;
-    alt: string;
-}
-
-interface RoomPhotoItem {
-    caption: string;
-    room_photo: RoomPhoto;
-}
-
-interface Room {
-    id: number;
-    slug: string;
-    acf: {
-        room_no: string;
-        room_by: string;
-        photo_by: string;
-        room_desc: string;
-        room_photos: RoomPhotoItem[];
-    };
-}
-
-async function getAllRooms(): Promise<Room[]> {
-    try {
-        const res = await fetch(`https://cms.roomandroom.org/w/wp-json/wp/v2/rooms?acf_format=standard&per_page=100`, {
-            headers: {
-                'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/91.0.4472.124 Safari/537.36'
-            },
-            next: { revalidate: 60 }
-        });
-        if (!res.ok) return [];
-        const data = await res.json();
-        if (!Array.isArray(data)) return [];
-
-        // レイアウト側と同じソート順を適用し、キャプションの不一致を解消
-        return data.sort((a, b) => {
-            const noA = parseInt(a.acf?.room_no || '0', 10);
-            const noB = parseInt(b.acf?.room_no || '0', 10);
-            return noA - noB;
-        });
-    } catch (error) {
-        return [];
+export async function generateStaticParams() {
+    const rooms = await getAllRooms();
+    const params: { slug: string; photoIndex: string }[] = [];
+    for (const room of rooms) {
+        const total = room.acf.room_photos?.length || 0;
+        for (let i = 0; i <= total; i++) {
+            params.push({ slug: room.acf.room_no, photoIndex: padIndex(i) });
+        }
     }
+    return params;
 }
 
 export default async function RoomPhotoPage({ params }: { params: Promise<{ slug: string; photoIndex: string }> }) {
@@ -64,6 +28,7 @@ export default async function RoomPhotoPage({ params }: { params: Promise<{ slug
     const currentIndex = parseInt(photoIndex, 10);
     const photos = room.acf.room_photos || [];
     const currentPhotoItem = currentIndex > 0 ? photos[currentIndex - 1] : null;
+    const currentPhotoUrl = photoUrlOf(currentPhotoItem || undefined);
 
     return (
         <div className="room-photo-page__main">
@@ -76,14 +41,12 @@ export default async function RoomPhotoPage({ params }: { params: Promise<{ slug
                     </div>
                 ) : (
                     <>
-                        {currentPhotoItem && typeof currentPhotoItem.room_photo === 'object' && currentPhotoItem.room_photo?.url && (
-                            <Suspense fallback={<div className="image-placeholder" />}>
-                                <ZoomableImage
-                                    src={currentPhotoItem.room_photo.url}
-                                    alt={currentPhotoItem.caption || `${room.acf.room_no} - ${photoIndex}`}
-                                    className="main-photo"
-                                />
-                            </Suspense>
+                        {currentPhotoUrl && (
+                            <ZoomableImage
+                                src={currentPhotoUrl}
+                                alt={currentPhotoItem?.caption || `${room.acf.room_no} - ${photoIndex}`}
+                                className="main-photo"
+                            />
                         )}
                         {currentPhotoItem?.caption && <p className="photo-caption">{currentPhotoItem.caption}</p>}
                     </>

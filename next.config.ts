@@ -1,10 +1,13 @@
 import type { NextConfig } from "next";
 
 const nextConfig: NextConfig = {
+  // 全ページを静的 HTML として out/ に書き出す（Cloudflare Pages で静的配信）
+  output: 'export',
   eslint: {
     ignoreDuringBuilds: true,
   },
   images: {
+    unoptimized: true,
     remotePatterns: [
       {
         protocol: 'https',
@@ -14,34 +17,7 @@ const nextConfig: NextConfig = {
       },
     ],
   },
-
-  // roomandroom.pages.dev から www.roomandroom.org へのリダイレクト設定
-  async redirects() {
-    return [
-      {
-        source: '/:path*',
-        has: [
-          {
-            type: 'host',
-            value: 'roomandroom.pages.dev',
-          },
-        ],
-        destination: 'https://www.roomandroom.org/:path*',
-        permanent: true,
-      },
-      {
-        source: '/:path*',
-        has: [
-          {
-            type: 'host',
-            value: 'roomandroom.org',
-          },
-        ],
-        destination: 'https://www.roomandroom.org/:path*',
-        permanent: true,
-      },
-    ]
-  },
+  // roomandroom.pages.dev / apex → www の転送は public/_redirects と Cloudflare Rules で行う
 };
 
 export default nextConfig;

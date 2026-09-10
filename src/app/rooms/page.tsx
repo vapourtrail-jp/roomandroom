@@ -1,128 +1,29 @@
 import { Metadata } from 'next';
-import Link from 'next/link';
-import WobblyThumbnail from '@/components/WobblyThumbnail';
-
-export const runtime = 'edge';
+import RoomsList, { RoomListItem } from '@/components/RoomsList';
+import { getAllRooms, photoUrlOf } from '@/lib/rooms';
 
 export const metadata: Metadata = {
     title: 'ROOMS',
 };
 
-interface RoomPhoto {
-    id: number;
-    title: string;
-    url: string;
-    width: number;
-    height: number;
-    alt: string;
-}
+export default async function RoomsPage() {
+    const rooms = await getAllRooms();
 
-interface RoomPhotoItem {
-    caption: string;
-    room_photo: RoomPhoto | number;
-}
+    const items: RoomListItem[] = rooms.map((room) => {
+        const thumbIdx = parseInt(room.acf?.thumbnail_no || '0', 10) - 1;
+        const photos = Array.isArray(room.acf?.room_photos) ? room.acf.room_photos : [];
+        const thumbnailUrl = (thumbIdx >= 0 && photoUrlOf(photos[thumbIdx]))
+            || (typeof room.acf?.room_thumbnail === 'object' && room.acf.room_thumbnail?.url)
+            || photoUrlOf(photos[0])
+            || '';
 
-interface Room {
-    id: number;
-    slug: string;
-    title: { rendered: string };
-    acf: {
-        room_no: string;
-        room_by: string;
-        photo_by: string;
-        room_desc: string;
-        sns_instagram: string;
-        sns_x: string;
-        photo_count: string;
-        room_thumbnail: RoomPhoto | number;
-        room_photos: RoomPhotoItem[];
-        thumbnail_no: string;
-    };
-}
-
-async function getRooms(): Promise<Room[]> {
-    try {
-        const res = await fetch(`https://cms.roomandroom.org/w/wp-json/wp/v2/rooms?acf_format=standard&per_page=100`, {
-            headers: {
-                'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/91.0.4472.124 Safari/537.36'
-            },
-            next: { revalidate: 60 }
-        });
-        if (!res.ok) return [];
-        const data = await res.json();
-        if (!Array.isArray(data)) return [];
-        return data.sort((a, b) => parseInt(a.acf?.room_no || '0', 10) - parseInt(b.acf?.room_no || '0', 10));
-    } catch (error) {
-        return [];
-    }
-}
-
-export default async function RoomsPage({
-    searchParams
-}: {
-    searchParams: Promise<{ sort?: string }>;
-}) {
-    const { sort } = await searchParams;
-    const isAsc = sort !== 'desc'; // デフォルトは昇順（asc）とする
-    let rooms = await getRooms();
-
-    // ソート実行
-    rooms.sort((a, b) => {
-        const noA = parseInt(a.acf?.room_no || '0', 10);
-        const noB = parseInt(b.acf?.room_no || '0', 10);
-        return isAsc ? noA - noB : noB - noA;
+        return {
+            id: room.id,
+            roomNo: room.acf?.room_no || '',
+            roomBy: room.acf?.room_by || '',
+            thumbnailUrl,
+        };
     });
 
-    return (
-        <div className="rooms-container">
-            <div className="rooms-header">
-                <h1 className="title">ROOMS</h1>
-                <a
-                    href={`/rooms?sort=${isAsc ? 'desc' : 'asc'}`}
-                    className={`sort-toggle ${!isAsc ? 'is-desc' : ''}`}
-                    title={isAsc ? '新しい順に並び替え' : '古い順に並び替え'}
-                >
-                    <span className="material-symbols-rounded">expand_more</span>
-                </a>
-            </div>
-            {rooms.length === 0 ? (
-                <p className="no-data">現在表示できるデータがありません。</p>
-            ) : (
-                <ul className="l-list">
-                    {rooms.map((room, index) => {
-                        const thumbIdx = parseInt(room.acf?.thumbnail_no || '0', 10) - 1;
-                        const thumbnailUrl = (thumbIdx >= 0 && Array.isArray(room.acf?.room_photos) && typeof room.acf.room_photos[thumbIdx]?.room_photo === 'object' && room.acf.room_photos[thumbIdx].room_photo?.url)
-                            || (typeof room.acf?.room_thumbnail === 'object' && room.acf.room_thumbnail?.url)
-                            || (Array.isArray(room.acf?.room_photos) && typeof room.acf.room_photos[0]?.room_photo === 'object' && room.acf.room_photos[0].room_photo?.url)
-                            || '';
-
-                        return (
-                            <li key={`${room.id}-${index}`} className="l-list__item room-card-wrapper" style={{ animationDelay: `${index * 0.1}s` }}>
-                                <a href={`/rooms/${room.acf.room_no}/01`} className="room-card">
-                                    <div className="room-card__thumbnail">
-                                        {thumbnailUrl ? (
-                                            <WobblyThumbnail src={thumbnailUrl} alt={room.acf.room_no} uid={`room-${room.id}`} initialDelay={index * 0.1} />
-                                        ) : (
-                                            <div className="room-card__no-image" style={{ height: '80px', width: '80px', display: 'flex', alignItems: 'center', justifyContent: 'center', background: '#eee', color: '#999' }}>NO IMAGE</div>
-                                        )}
-                                    </div>
-                                    <div className="room-card__body">
-                                        <p className="room-card__no">room*{room.acf?.room_no}</p>
-                                        <dl className="room-card__meta">
-                                            {room.acf?.room_by && (
-                                                <div className="room-card__owner">
-                                                    <dt className="room-card__label">room by</dt>
-                                                    <dd className="room-card__value">{room.acf.room_by}</dd>
-                                                </div>
-                                            )}
-                                        </dl>
-                                    </div>
-                                </a>
-                            </li>
-                        );
-                    })}
-                </ul>
-            )}
-        </div>
-    );
+    return <RoomsList rooms={items} />;
 }

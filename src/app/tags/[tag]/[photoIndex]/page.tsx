@@ -1,50 +1,20 @@
 import { notFound } from 'next/navigation';
 import ZoomableImage from '@/components/ZoomableImage';
-import { Suspense } from 'react';
 import LocalPhotoContainer from '@/components/LocalPhotoContainer';
+import { buildTagMap, getAllRooms, getTaggedPhotos, padIndex, photoUrlOf } from '@/lib/rooms';
 
-export const runtime = 'edge';
+// ビルド時に全タグ × 全写真を書き出す
+export const dynamicParams = false;
 
-interface RoomPhoto {
-    id: number;
-    url: string;
-}
-
-interface RoomPhotoItem {
-    caption: string;
-    room_photo: RoomPhoto;
-    tags?: string;
-}
-
-interface Room {
-    id: number;
-    acf: {
-        room_no: string;
-        room_photos: RoomPhotoItem[];
-    };
-}
-
-async function getAllRooms(): Promise<Room[]> {
-    try {
-        const res = await fetch(`https://cms.roomandroom.org/w/wp-json/wp/v2/rooms?acf_format=standard&per_page=100`, {
-            headers: {
-                'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/91.0.4472.124 Safari/537.36'
-            },
-            next: { revalidate: 60 }
-        });
-        if (!res.ok) return [];
-        const data = await res.json();
-        if (!Array.isArray(data)) return [];
-
-        // 【最重要】レイアウト側と100%同じソート順を適用
-        return data.sort((a, b) => {
-            const noA = parseInt(a.acf?.room_no || '0', 10);
-            const noB = parseInt(b.acf?.room_no || '0', 10);
-            return noA - noB;
-        });
-    } catch (error) {
-        return [];
+export async function generateStaticParams() {
+    const rooms = await getAllRooms();
+    const params: { tag: string; photoIndex: string }[] = [];
+    for (const [tag, photos] of buildTagMap(rooms)) {
+        for (let i = 1; i <= photos.length; i++) {
+            params.push({ tag, photoIndex: padIndex(i) });
+        }
     }
+    return params;
 }
 
 export default async function TagPhotoPage({
@@ -54,24 +24,7 @@ export default async function TagPhotoPage({
 }) {
     const { tag, photoIndex } = await params;
     const decodedTag = decodeURIComponent(tag);
-    const allRooms = await getAllRooms();
-
-    const taggedPhotos = [];
-    for (const room of allRooms) {
-        const photos = room.acf.room_photos || [];
-        for (const photo of photos) {
-            const tagString = photo.tags || '';
-            if (tagString.includes(decodedTag)) {
-                const tagsArray = tagString.split(/[,\s]+/).map(t => t.trim());
-                if (tagsArray.includes(decodedTag)) {
-                    taggedPhotos.push({
-                        ...photo,
-                        room_no: room.acf.room_no
-                    });
-                }
-            }
-        }
-    }
+    const taggedPhotos = await getTaggedPhotos(decodedTag);
 
     const currentIndex = parseInt(photoIndex, 10);
     if (isNaN(currentIndex) || currentIndex < 1 || currentIndex > taggedPhotos.length) {
@@ -79,18 +32,17 @@ export default async function TagPhotoPage({
     }
 
     const currentPhoto = taggedPhotos[currentIndex - 1];
+    const currentPhotoUrl = photoUrlOf(currentPhoto);
 
     return (
         <div className="room-photo-page__main">
             <LocalPhotoContainer>
-                {currentPhoto && typeof currentPhoto.room_photo === 'object' && currentPhoto.room_photo?.url && (
-                    <Suspense fallback={<div className="image-placeholder" />}>
-                        <ZoomableImage
-                            src={currentPhoto.room_photo.url}
-                            alt={currentPhoto.caption || `${decodedTag} - ${photoIndex}`}
-                            className="main-photo"
-                        />
-                    </Suspense>
+                {currentPhotoUrl && (
+                    <ZoomableImage
+                        src={currentPhotoUrl}
+                        alt={currentPhoto.caption || `${decodedTag} - ${photoIndex}`}
+                        className="main-photo"
+                    />
                 )}
                 {currentPhoto?.caption && (
                     <p className="photo-caption">{currentPhoto.caption} (room*{currentPhoto.room_no})</p>

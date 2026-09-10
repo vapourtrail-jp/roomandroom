@@ -7,8 +7,6 @@ import PageTransition from "@/components/PageTransition";
 import Navigation from "@/components/Navigation";
 import BodyClassManager from "@/components/BodyClassManager";
 
-export const runtime = 'edge';
-
 export const metadata: Metadata = {
   metadataBase: new URL('https://www.roomandroom.org'),
   title: {
@@ -50,9 +48,9 @@ export default function RootLayout({
         </Script>
         <BodyClassManager />
         <header className="header l-header l-padding">
-          <a href="/" className="logo">
+          <Link href="/" className="logo">
             <img src="/logo_rar.png" height={29} alt="room and room" />
-          </a>
+          </Link>
         </header>
 
         <Navigation />

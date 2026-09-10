@@ -1,1 +1,6 @@
-https://roomandroom.pages.dev/* https://www.roomandroom.org/:splat 301!
+# 写真番号なしの URL は 1 枚目へ（旧 rooms/[slug]/page.tsx・tags/[tag]/page.tsx の redirect() 相当）
+/rooms/:slug /rooms/:slug/01 301
+/tags/:tag /tags/:tag/01 301
+
+# pages.dev → 本番ドメイン
+https://roomandroom.pages.dev/* https://www.roomandroom.org/:splat 301
