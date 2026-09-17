@@ -58,8 +58,8 @@ export default function RoomPhotoFooter({
         const queryString = currentParams.toString();
         const query = (mounted && queryString) ? `?${queryString}` : '';
 
-        let prev = '/rooms';
-        let next = '/rooms';
+        let prev = '/';
+        let next = '/';
 
         // Prev
         if (currentIndex > 1) {
@@ -76,8 +76,8 @@ export default function RoomPhotoFooter({
         }
 
         return {
-            prev: (prev === '/rooms' || !mounted) ? prev : `${prev}${query}`,
-            next: (next === '/rooms' || !mounted) ? next : `${next}${query}`
+            prev: (prev === '/' || !mounted) ? prev : `${prev}${query}`,
+            next: (next === '/' || !mounted) ? next : `${next}${query}`
         };
     }, [currentIndex, slug, totalPhotos, nextRoomNo, prevRoomNo, prevRoomTotalPhotos, mounted, searchParams, localAutoplay]);
 

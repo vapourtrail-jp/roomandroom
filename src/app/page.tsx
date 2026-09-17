@@ -1,14 +1,8 @@
-import Link from 'next/link';
+import RoomsList from '@/components/RoomsList';
+import { getAllRooms, toRoomListItems } from '@/lib/rooms';
 
-export default function Home() {
-  return (
-    <div className="home-container">
-      <div className="title">NEWS</div>
-      <div className="content">
-        <Link href="/rooms" style={{ textDecoration: 'none' }}>
-          <div className="home-notice">2026.1.18　room and room. is back!(This is a beta release. click here!)</div>
-        </Link>
-      </div>
-    </div>
-  );
+export default async function Home() {
+  // 一覧データはビルド時に埋め込む
+  const rooms = await getAllRooms();
+  return <RoomsList rooms={toRoomListItems(rooms)} basePath="/" />;
 }

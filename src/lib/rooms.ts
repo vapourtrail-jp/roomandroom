@@ -166,3 +166,29 @@ export async function getPost(id: string): Promise<Post | null> {
 export function padIndex(idx: number): string {
     return idx.toString().padStart(2, '0');
 }
+
+/** 一覧カード用の最小データ */
+export interface RoomListItem {
+    id: number;
+    roomNo: string;
+    roomBy: string;
+    thumbnailUrl: string;
+}
+
+/** Room[] → 一覧カード用データ（サムネイルは thumbnail_no → room_thumbnail → 1 枚目 の順で決める） */
+export function toRoomListItems(rooms: Room[]): RoomListItem[] {
+    return rooms.map((room) => {
+        const thumbIdx = parseInt(room.acf?.thumbnail_no || '0', 10) - 1;
+        const photos = Array.isArray(room.acf?.room_photos) ? room.acf.room_photos : [];
+        const thumbnailUrl = (thumbIdx >= 0 && photoUrlOf(photos[thumbIdx]))
+            || (typeof room.acf?.room_thumbnail === 'object' && room.acf.room_thumbnail?.url)
+            || photoUrlOf(photos[0])
+            || '';
+        return {
+            id: room.id,
+            roomNo: room.acf?.room_no || '',
+            roomBy: room.acf?.room_by || '',
+            thumbnailUrl,
+        };
+    });
+}

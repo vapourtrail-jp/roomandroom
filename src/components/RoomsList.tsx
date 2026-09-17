@@ -3,19 +3,16 @@
 import Link from 'next/link';
 import { useEffect, useState } from 'react';
 import WobblyThumbnail from '@/components/WobblyThumbnail';
+import type { RoomListItem } from '@/lib/rooms';
 
-export interface RoomListItem {
-    id: number;
-    roomNo: string;
-    roomBy: string;
-    thumbnailUrl: string;
-}
+export type { RoomListItem };
 
 interface RoomsListProps {
     rooms: RoomListItem[]; // room_no 昇順
+    basePath?: string; // 並び替え時に書き換える URL のパス（'/' または '/rooms'）
 }
 
-export default function RoomsList({ rooms }: RoomsListProps) {
+export default function RoomsList({ rooms, basePath = '/rooms' }: RoomsListProps) {
     // 初期表示は昇順（静的 HTML と一致）。?sort=desc はマウント後に反映する。
     const [isAsc, setIsAsc] = useState(true);
 
@@ -30,7 +27,7 @@ export default function RoomsList({ rooms }: RoomsListProps) {
         e.preventDefault();
         const next = !isAsc;
         setIsAsc(next);
-        window.history.pushState(null, '', `/rooms?sort=${next ? 'asc' : 'desc'}`);
+        window.history.pushState(null, '', `${basePath}?sort=${next ? 'asc' : 'desc'}`);
     };
 
     const sorted = [...rooms].sort((a, b) => {
@@ -44,7 +41,7 @@ export default function RoomsList({ rooms }: RoomsListProps) {
             <div className="rooms-header">
                 <h1 className="title">ROOMS</h1>
                 <a
-                    href={`/rooms?sort=${isAsc ? 'desc' : 'asc'}`}
+                    href={`${basePath}?sort=${isAsc ? 'desc' : 'asc'}`}
                     onClick={handleToggle}
                     className={`sort-toggle ${!isAsc ? 'is-desc' : ''}`}
                     title={isAsc ? '新しい順に並び替え' : '古い順に並び替え'}
