@@ -241,6 +241,8 @@ export default function HomeEntrance({ images }: HomeEntranceProps) {
         '--gate-cycle': `${c.slideHoldMs + c.slideFadeMs}ms`,
         '--gate-cycle-delay': `${slideSeq <= 1 ? c.enterFadeMs : 0}ms`,
         '--gate-motion-scale': String(c.motionScale),
+        // 出ていく側はフェードアウト中も同じ速さで寄り続ける（上限を超えて進む）
+        '--gate-motion-scale-out': String(1 + (c.motionScale - 1) * (1 + c.slideFadeMs / (c.slideHoldMs + c.slideFadeMs))),
         '--gate-motion-dur': `${c.slideHoldMs + c.slideFadeMs + (slideSeq <= 1 ? c.enterFadeMs : 0)}ms`,
         '--gate-progress-px': `${c.progressPx}px`,
         '--gate-progress-opacity': String(c.progressOpacity),

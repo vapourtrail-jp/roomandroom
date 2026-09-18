@@ -1350,10 +1350,21 @@ a {
     }
 }
 
-/* 表示を終えた側（フェードアウト中）は寄り切った状態のまま。次に表示側になったとき 100% から寄り直す */
+/* 表示を終えた側（フェードアウト中）は止まらず、同じ速さで上限を超えて寄り続ける。次に表示側になったとき 100% から寄り直す */
+@keyframes slideZoomOut {
+    from {
+        transform: scale(var(--gate-motion-scale, 1.04));
+    }
+
+    to {
+        transform: scale(var(--gate-motion-scale-out, 1.05));
+    }
+}
+
 .entrance--motion .entrance__slide {
     transform: scale(var(--gate-motion-scale, 1.04));
     will-change: transform;
+    animation: slideZoomOut var(--gate-fade, 1200ms) linear forwards;
 }
 
 .entrance--motion .entrance__slide.is-active {
