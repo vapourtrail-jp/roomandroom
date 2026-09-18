@@ -7,6 +7,7 @@ import Navigation from "@/components/Navigation";
 import BodyClassManager from "@/components/BodyClassManager";
 import Link from "next/link";
 import HomeEntrance from "@/components/HomeEntrance";
+import SmoothScroll from "@/components/SmoothScroll";
 import { getEntranceImages } from "@/lib/rooms";
 
 export const metadata: Metadata = {
@@ -51,6 +52,7 @@ export default async function RootLayout({
           })(window,document,'script','dataLayer','GTM-P4GJXTPS');`}
         </Script>
         <BodyClassManager />
+        <SmoothScroll />
         <HomeEntrance images={entranceImages} />
         <header className="header l-header l-padding">
           <Link href="/rooms" className="logo">

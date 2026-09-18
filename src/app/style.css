@@ -335,6 +335,11 @@ a {
 }
 
 
+.menu-main a {
+    color: #000;
+    /* スマホメニューの文字色と揃える（HOME の入口では白に上書き） */
+}
+
 .menu-main a:not(:first-child) {
     margin-left: 14px;
 }
@@ -1399,7 +1404,7 @@ a {
     filter: invert(1) drop-shadow(0 1px 3px rgba(0, 0, 0, 0.35));
 }
 
-.entrance ~ .menu-main a {
+.entrance ~ #g-nav .menu-main a {
     color: #fff;
     text-shadow: 0 1px 4px rgba(0, 0, 0, 0.35);
 }
