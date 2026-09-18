@@ -335,6 +335,11 @@ a {
 }
 
 
+.menu-qr {
+    display: none;
+    /* PC のナビでは出さない（スマホメニューでのみ表示） */
+}
+
 .menu-main a {
     color: #000;
     /* スマホメニューの文字色と揃える（HOME の入口では白に上書き） */
@@ -1059,6 +1064,24 @@ a {
 
     #g-nav.panelactive ul,
     #g-nav.is-open ul {
+        display: block;
+    }
+
+    /* スマホメニュー: 項目の下に QR コード（幅 100px） */
+    #g-nav .menu-qr {
+        display: block;
+        margin-top: 28px;
+    }
+
+    #g-nav .menu-qr a {
+        display: block;
+        width: 100px;
+        line-height: 0;
+    }
+
+    #g-nav .menu-qr img {
+        width: 100px;
+        height: 100px;
         display: block;
     }
 

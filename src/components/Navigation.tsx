@@ -66,6 +66,12 @@ export default function Navigation() {
                     <li>
                         <Link href="/about" onClick={closeMenu}>ABOUT</Link>
                     </li>
+                    {/* スマホメニューのみ: サイト URL の QR コード（public/qr.svg、https://www.roomandroom.org/） */}
+                    <li className="menu-qr">
+                        <a href="https://www.roomandroom.org/" onClick={closeMenu} aria-label="room and room. の QR コード">
+                            <img src="/qr.svg" width={100} height={100} alt="https://www.roomandroom.org/" />
+                        </a>
+                    </li>
                 </ul>
             </nav>
         </>
