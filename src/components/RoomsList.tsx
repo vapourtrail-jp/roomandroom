@@ -1,8 +1,9 @@
 'use client';
 
 import Link from 'next/link';
-import { useEffect, useState } from 'react';
+import { useCallback, useEffect, useState } from 'react';
 import WobblyThumbnail from '@/components/WobblyThumbnail';
+import RevealProgress from '@/components/RevealProgress';
 import type { RoomListItem } from '@/lib/rooms';
 
 export type { RoomListItem };
@@ -27,6 +28,8 @@ export default function RoomsList({ rooms, basePath = '/rooms' }: RoomsListProps
         e.preventDefault();
         const next = !isAsc;
         setIsAsc(next);
+        setRevealedIds(new Set());
+        setLoadedIds(new Set());
         window.history.pushState(null, '', `${basePath}?sort=${next ? 'asc' : 'desc'}`);
     };
 
@@ -36,8 +39,18 @@ export default function RoomsList({ rooms, basePath = '/rooms' }: RoomsListProps
         return isAsc ? noA - noB : noB - noA;
     });
 
+    // プログレス: 画像の読み込み完了数と、登場アニメーションの完了数を別々に数え、遅い方をバーに出す
+    const [loadedIds, setLoadedIds] = useState<Set<number>>(() => new Set());
+    const [revealedIds, setRevealedIds] = useState<Set<number>>(() => new Set());
+    const markLoaded = useCallback((id: number) => setLoadedIds((s) => (s.has(id) ? s : new Set(s).add(id))), []);
+    const markRevealed = useCallback((id: number) => setRevealedIds((s) => (s.has(id) ? s : new Set(s).add(id))), []);
+    const total = sorted.length;
+    const progress = total === 0 ? 1 : Math.min(loadedIds.size, revealedIds.size) / total;
+
     return (
         <div className="rooms-container">
+            {/* 並び替えでサムネイルが出直すので、そのたびにバーも最初から */}
+            <RevealProgress progress={progress} />
             <div className="rooms-header">
                 <h1 className="title">ROOMS</h1>
                 <a
@@ -54,13 +67,18 @@ export default function RoomsList({ rooms, basePath = '/rooms' }: RoomsListProps
             ) : (
                 <ul className="l-list">
                     {sorted.map((room, index) => (
-                        <li key={`${room.id}-${index}`} className="l-list__item room-card-wrapper" style={{ animationDelay: `${index * 0.1}s` }}>
+                        <li
+                            key={`${room.id}-${index}`}
+                            className="l-list__item room-card-wrapper"
+                            style={{ animationDelay: `${index * 0.1}s` }}
+                            onAnimationEnd={() => markRevealed(room.id)}
+                        >
                             <Link href={`/rooms/${room.roomNo}/01`} className="room-card">
                                 <div className="room-card__thumbnail">
                                     {room.thumbnailUrl ? (
-                                        <WobblyThumbnail src={room.thumbnailUrl} alt={room.roomNo} uid={`room-${room.id}`} initialDelay={index * 0.1} />
+                                        <WobblyThumbnail src={room.thumbnailUrl} alt={room.roomNo} uid={`room-${room.id}`} initialDelay={index * 0.1} onLoaded={() => markLoaded(room.id)} />
                                     ) : (
-                                        <div className="room-card__no-image" style={{ height: '80px', width: '80px', display: 'flex', alignItems: 'center', justifyContent: 'center', background: '#eee', color: '#999' }}>NO IMAGE</div>
+                                        <div ref={() => markLoaded(room.id)} className="room-card__no-image" style={{ height: '80px', width: '80px', display: 'flex', alignItems: 'center', justifyContent: 'center', background: '#eee', color: '#999' }}>NO IMAGE</div>
                                     )}
                                 </div>
                                 <div className="room-card__body">

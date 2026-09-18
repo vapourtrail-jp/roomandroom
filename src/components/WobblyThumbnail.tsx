@@ -8,11 +8,26 @@ interface WobblyThumbnailProps {
     alt: string;
     uid: string;
     initialDelay?: number;
+    onLoaded?: () => void; // 画像の読み込みが終わった（失敗も含む）ときに 1 回呼ぶ
 }
 
-export default function WobblyThumbnail({ src, alt, uid, initialDelay = 0 }: WobblyThumbnailProps) {
+export default function WobblyThumbnail({ src, alt, uid, initialDelay = 0, onLoaded }: WobblyThumbnailProps) {
     const pathRef = useRef<SVGPathElement>(null);
     const containerRef = useRef<HTMLDivElement>(null);
+    const imgRef = useRef<HTMLImageElement>(null);
+    const loadedNotified = useRef(false);
+
+    const notifyLoaded = () => {
+        if (loadedNotified.current) return;
+        loadedNotified.current = true;
+        onLoaded?.();
+    };
+
+    // キャッシュ済み等で、イベントが付く前に読み込みが終わっている場合にも通知する
+    useEffect(() => {
+        if (imgRef.current?.complete) notifyLoaded();
+        // eslint-disable-next-line react-hooks/exhaustive-deps
+    }, []);
     const id = uid.replace(/[^a-zA-Z0-9]/g, '-');
 
     const state = useRef({
@@ -44,9 +59,18 @@ export default function WobblyThumbnail({ src, alt, uid, initialDelay = 0 }: Wob
             { x: 0, y: 50 }, { x: 0, y: 0 }, { x: 50, y: 0 }, { x: 100, y: 0 }
         ];
 
-        let animationFrameId: number;
+        let animationFrameId = 0;
+        let running = false;
 
-        const update = () => {
+        // 形が動いている間だけ描画ループを回す。四角に落ち着いたら止めて CPU を使わない
+        const isSettled = () => state.current.progress >= 0.999 && state.current.wobbleScale <= 0.001;
+        const ensureRunning = () => {
+            if (running) return;
+            running = true;
+            animationFrameId = requestAnimationFrame(update);
+        };
+
+        function update() {
             const s = state.current;
             s.time += 0.016;
             const t = s.time;
@@ -89,11 +113,16 @@ export default function WobblyThumbnail({ src, alt, uid, initialDelay = 0 }: Wob
                 pathRef.current.setAttribute('d', d);
                 pathRef.current.setAttribute('transform', 'scale(0.01)');
             }
+            if (isSettled()) {
+                running = false;
+                return;
+            }
             animationFrameId = requestAnimationFrame(update);
-        };
+        }
 
         const handleMouseEnter = () => {
             anime.remove(state.current);
+            ensureRunning();
             anime({
                 targets: state.current,
                 progress: 0,
@@ -105,6 +134,7 @@ export default function WobblyThumbnail({ src, alt, uid, initialDelay = 0 }: Wob
 
         const handleMouseLeave = () => {
             anime.remove(state.current);
+            ensureRunning();
             anime({
                 targets: state.current,
                 progress: 1,
@@ -114,7 +144,7 @@ export default function WobblyThumbnail({ src, alt, uid, initialDelay = 0 }: Wob
             });
         };
 
-        animationFrameId = requestAnimationFrame(update);
+        ensureRunning();
         const isMouse = window.matchMedia('(pointer: fine)').matches;
         if (isMouse && card) {
             card.addEventListener('mouseenter', handleMouseEnter);
@@ -153,8 +183,11 @@ export default function WobblyThumbnail({ src, alt, uid, initialDelay = 0 }: Wob
                 </defs>
             </svg>
             <img
+                ref={imgRef}
                 src={src}
                 alt={alt}
+                onLoad={notifyLoaded}
+                onError={notifyLoaded}
                 style={{
                     width: '100%',
                     height: '100%',

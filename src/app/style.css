@@ -125,6 +125,27 @@ a {
     flex-flow: column;
 }
 
+/* フッターの配置（全ページ共通）: コピーライトは左下、SNS アイコンは右下端 */
+.l-footer {
+    position: relative;
+}
+
+.l-footer .menu-footer {
+    position: absolute;
+    right: 21px;
+    bottom: 21px;
+}
+
+.l-footer .list-sns {
+    margin-bottom: 0;
+}
+
+.l-footer .copyright {
+    margin-top: 0;
+    max-width: calc(100% - 110px);
+    /* 右下の SNS アイコンと重ならないように */
+}
+
 .l-content-width {
     width: 1025px;
 }
@@ -328,7 +349,7 @@ a {
 
 .sns-icon {
     width: 28px;
-    height: 28px;
+    height: 17px;
 
     display: flex;
     justify-content: left;
@@ -739,14 +760,10 @@ a {
 
 .footer-title-row h1.title {
     margin: 0;
+    /* 上下の余白を無くし、footer-title-row の align-items: center で上下中央に置く */
     padding: 0;
     line-height: 1.2;
-    /* margin-bottom はtsx側の inline style (7px) と競合しないよう注意、またはここで統一 */
-
-    margin-top: 7px;
-    margin-bottom: 13px;
     letter-spacing: 0.04rem;
-
 }
 
 
@@ -773,7 +790,7 @@ a {
 }
 
 .footer-nav-button span {
-    font-size: 28px;
+    font-size: 21px;
 }
 
 .footer-nav-button:hover .material-symbols-rounded {
@@ -800,7 +817,7 @@ a {
 }
 
 .room-photo-page__footer h1 {
-    font-size: 21px;
+    font-size: 18px;
 }
 
 .room-info {
@@ -1125,6 +1142,15 @@ a {
     }
 }
 
+/* スマホ幅ではコピーライトを「room and room.」の後で改行する */
+@media screen and (max-width: 721px) {
+    .copyright__rights {
+        display: block;
+        margin-top: 7px;
+        /* 入口のキャプションとコピーライトの間隔（captionGapPx）と同じ値 */
+    }
+}
+
 /* BLOG */
 .blog-container,
 .blog-detail-container {
@@ -1203,4 +1229,390 @@ a {
 .back-link {
     font-size: 0.75rem !important;
     color: #999 !important;
+}
+/* -------------------------------------------------- */
+/* HOME 入口（画像スライドショー + 柄 + NEWS + ENTER）
+/* 値は HomeEntrance.tsx の ENTRANCE_CONFIG から CSS 変数で渡される
+/* -------------------------------------------------- */
+
+.entrance {
+    position: fixed;
+    inset: 0;
+    z-index: 5;
+    /* ヘッダー(10)・ナビ(11)より下、本文より上 */
+    background: #000;
+    overflow: hidden;
+}
+
+/* スライド: 2 枚を重ねて opacity でクロスフェード。色ずれの加算合成はスライド内に閉じる */
+.entrance__slide {
+    position: absolute;
+    /* 色ずれとぼかしの縁が画面端に出ないよう、箱を画面より少し大きくする（はみ出しは .entrance で隠す） */
+    inset: calc(-1 * (var(--gate-shift, 0px) + var(--gate-blur, 0px) + 2px));
+    opacity: 0;
+    transition: opacity var(--gate-fade) ease;
+    isolation: isolate;
+    background: #000;
+}
+
+.entrance__slide.is-active {
+    opacity: 1;
+}
+
+.entrance__img {
+    position: absolute;
+    inset: 0;
+    width: 100%;
+    height: 100%;
+    object-fit: var(--gate-fit, contain);
+    display: block;
+    filter: blur(var(--gate-blur));
+}
+
+/* 色ずれ: G だけの元画像に、R だけ・B だけの複製を左右にずらして加算 */
+.entrance__slide img.entrance__img--g {
+    filter: url(#gate-only-g) blur(var(--gate-blur));
+}
+
+.entrance__slide img.entrance__img--r {
+    filter: url(#gate-only-r) blur(var(--gate-blur));
+    transform: translateX(calc(var(--gate-shift) * -1));
+    mix-blend-mode: plus-lighter;
+}
+
+.entrance__slide img.entrance__img--b {
+    filter: url(#gate-only-b) blur(var(--gate-blur));
+    transform: translateX(var(--gate-shift));
+    mix-blend-mode: plus-lighter;
+}
+
+.entrance__dark {
+    position: absolute;
+    inset: 0;
+    background: rgba(0, 0, 0, var(--gate-dark));
+}
+
+.entrance__pattern {
+    position: absolute;
+    inset: 0;
+    mix-blend-mode: var(--gate-blend);
+}
+
+.entrance__pattern--lines {
+    background-image: repeating-linear-gradient(to bottom,
+            rgba(var(--gate-rgb), var(--gate-ink)) 0,
+            rgba(var(--gate-rgb), var(--gate-ink)) var(--gate-thick),
+            transparent var(--gate-thick),
+            transparent var(--gate-gap));
+}
+
+.entrance__pattern--squares {
+    background-image: conic-gradient(at var(--gate-thick) var(--gate-thick), transparent 75%, rgba(var(--gate-rgb), var(--gate-ink)) 0);
+    background-size: var(--gate-gap) var(--gate-gap);
+}
+
+.entrance__pattern--mesh {
+    background-image:
+        linear-gradient(to right, rgba(var(--gate-rgb), var(--gate-ink)) var(--gate-thick), transparent var(--gate-thick)),
+        linear-gradient(to bottom, rgba(var(--gate-rgb), var(--gate-ink)) var(--gate-thick), transparent var(--gate-thick));
+    background-size: var(--gate-gap) var(--gate-gap);
+}
+
+.entrance__grain {
+    position: absolute;
+    inset: 0;
+    background-size: 160px 160px;
+    opacity: var(--gate-grain);
+    pointer-events: none;
+}
+
+.entrance__content {
+    position: absolute;
+    inset: 0;
+    pointer-events: none;
+    /* 全画面の層なので、クリックは下のキャプション等に通す。ENTER だけ受ける */
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 28px;
+    padding: 0 21px;
+    text-align: center;
+    color: #fff;
+}
+
+.entrance__notice {
+    font-size: 0.875rem;
+    color: #fff;
+    letter-spacing: 0.05rem;
+    text-shadow: 0 1px 8px rgba(0, 0, 0, 0.5);
+}
+
+.entrance__enter {
+    pointer-events: auto;
+    font-family: inherit;
+    font-size: 0.875rem;
+    letter-spacing: 0.2em;
+    color: #fff;
+    background: transparent;
+    border: 1px solid rgba(255, 255, 255, 0.85);
+    padding: 10px 36px 10px 40px;
+    cursor: pointer;
+    transition: background-color 0.3s, color 0.3s;
+}
+
+.entrance__enter:hover {
+    background-color: #fff;
+    color: #000;
+}
+
+/* ENTER 後: 暗転しながら消える。その下で /rooms の一覧がサムネイル順に現れる */
+@keyframes entranceOut {
+    0% {
+        opacity: 1;
+        filter: brightness(1);
+    }
+
+    60% {
+        filter: brightness(0.25);
+    }
+
+    100% {
+        opacity: 0;
+        filter: brightness(0);
+    }
+}
+
+.entrance.is-leaving {
+    animation: entranceOut var(--gate-leave) ease forwards;
+    pointer-events: none;
+}
+
+/* 入口表示中: ヘッダー透明・白文字、フッター非表示 */
+.entrance ~ .l-header {
+    background-color: transparent;
+    backdrop-filter: none;
+    -webkit-backdrop-filter: none;
+}
+
+.entrance ~ .header a.logo img {
+    filter: invert(1) drop-shadow(0 1px 3px rgba(0, 0, 0, 0.35));
+}
+
+.entrance ~ .menu-main a {
+    color: #fff;
+    text-shadow: 0 1px 4px rgba(0, 0, 0, 0.35);
+}
+
+.entrance ~ .mob-menu span,
+.entrance ~ .mob-menu .menu-icon span,
+.entrance ~ .mob-menu span:nth-of-type(1),
+.entrance ~ .mob-menu span:nth-of-type(2) {
+    background-color: #fff !important;
+    border-color: #fff !important;
+    /* 入口表示中は白。バーは背景 2px + 上下 1px の枠線で描かれているので枠線も白にする */
+}
+
+.entrance ~ .mob-menu.panelactive span,
+.entrance ~ .mob-menu.panelactive .menu-icon span {
+    background-color: #000 !important;
+    border-color: #000 !important;
+    /* メニューを開いたとき（白いパネルの上）は黒に戻す */
+}
+
+.entrance ~ #g-nav.is-open .menu-main a,
+.entrance ~ #g-nav.panelactive .menu-main a {
+    color: #000;
+    text-shadow: none;
+    /* 開いたメニュー（白いパネル上）は他のページと同じ黒文字 */
+}
+
+/* 入口表示中: フッターを画面下に固定して入口の上に白抜きで重ねる。コピーライトは左下、SNS アイコンは右下端 */
+.entrance ~ .l-footer {
+    position: fixed;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    width: 100%;
+    z-index: 6;
+    /* 入口(5)より上、ヘッダー(10)より下 */
+    color: #fff;
+    display: block;
+    pointer-events: none;
+    /* 箱はクリックを通し、中のリンク（SNS）だけ受ける */
+}
+
+.entrance ~ .l-footer a {
+    pointer-events: auto;
+}
+
+
+
+.entrance ~ .l-footer .sns-icon img {
+    filter: invert(1) drop-shadow(0 1px 3px rgba(0, 0, 0, 0.35));
+}
+
+.entrance ~ .l-footer .copyright {
+    color: #fff;
+    text-shadow: 0 1px 4px rgba(0, 0, 0, 0.35);
+}
+
+/* fit='fill': 余白を同じ写真の拡大ぼかしで埋める（本体の写真の下に敷く） */
+.entrance__backdrop {
+    position: absolute;
+    inset: 0;
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    display: block;
+    filter: blur(var(--gate-backdrop-blur, 24px)) brightness(var(--gate-backdrop-dim, 0.5));
+    transform: scale(1.15);
+}
+
+/* 向きが判定される前の先頭スライド: CSS の orientation で縦・横の片方だけ見せる */
+@media (orientation: portrait) {
+    .entrance__slide--landscape {
+        display: none;
+    }
+}
+
+@media (orientation: landscape) {
+    .entrance__slide--portrait {
+        display: none;
+    }
+}
+
+/* 写真のキャプション（左下、コピーライトの真上。フッターの高さは JS で計測して変数に入れる） */
+.entrance__caption {
+    position: absolute;
+    left: 21px;
+    bottom: calc(var(--gate-footer-h, 58px) - 21px + var(--gate-caption-gap, 6px));
+    margin: 0;
+    font-size: 0.75rem;
+    letter-spacing: 0.05rem;
+    color: #fff;
+    white-space: nowrap;
+    text-shadow: 0 1px 4px rgba(0, 0, 0, 0.35);
+}
+
+.entrance__caption a {
+    cursor: pointer;
+    color: #fff;
+    font-size: inherit;
+    text-decoration: none;
+    transition: opacity 0.3s;
+}
+
+.entrance__caption a:hover {
+    opacity: 0.7;
+}
+
+@keyframes captionBlink {
+    0%, 50% { opacity: 1; }
+    50.01%, 100% { opacity: 0; }
+}
+
+.entrance__caption-cursor {
+    display: inline-block;
+    margin-left: 1px;
+    animation: captionBlink 1s steps(1) infinite;
+}
+
+/* 画面最上部のプログレスバー（1 枚の表示サイクルで 0 → 100%。写真が切り替わるたびに再スタート） */
+@keyframes entranceProgress {
+    from {
+        transform: scaleX(0);
+    }
+
+    to {
+        transform: scaleX(1);
+    }
+}
+
+.entrance__progress {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: var(--gate-progress-px, 1px);
+    background: rgba(255, 255, 255, var(--gate-progress-opacity, 0.7));
+    transform-origin: left center;
+    animation: entranceProgress var(--gate-cycle, 4200ms) linear forwards;
+    pointer-events: none;
+    z-index: 2;
+}
+
+/* スマホメニューを開いている間（body.is-fixed）: フッターをパネルの上に固定表示する。通常ページ・HOME 共通 */
+body.is-fixed .l-footer {
+    position: fixed;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    width: 100%;
+    z-index: 1000;
+    /* メニューパネル(999)より上 */
+    pointer-events: none;
+}
+
+body.is-fixed .l-footer a {
+    pointer-events: auto;
+}
+
+/* HOME では白文字・白アイコンにしているので、白いパネルの上では通常の色に戻す */
+body.is-fixed .entrance ~ .l-footer {
+    color: inherit;
+}
+
+body.is-fixed .entrance ~ .l-footer .copyright {
+    color: inherit;
+    text-shadow: none;
+}
+
+body.is-fixed .entrance ~ .l-footer .sns-icon img {
+    filter: none;
+}
+
+/* ROOMS 一覧: 画面最上部の 1px プログレスバー（画像の読み込みと表示完了の実際の進み具合に追従。100% で消える） */
+.reveal-progress {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 1px;
+    background: rgba(0, 0, 0, 0.5);
+    transform-origin: left center;
+    transform: scaleX(var(--reveal-progress, 0));
+    transition: transform 0.25s ease-out, opacity 0.4s ease;
+    pointer-events: none;
+    z-index: 12;
+    /* ヘッダー(10)・ナビ(11)より上 */
+}
+
+.reveal-progress.is-done {
+    opacity: 0;
+}
+
+/* スマホ幅のフッター: SNS アイコンはコピーライトの上（元の配置）、コピーライトは左下で改行なし。HOME では SNS アイコンを出さない */
+@media screen and (max-width: 721px) {
+    .l-footer .menu-footer {
+        position: static;
+    }
+
+    .l-footer .list-sns {
+        margin-bottom: 9px;
+    }
+
+    .l-footer .copyright {
+        max-width: none;
+        white-space: nowrap;
+    }
+
+    .copyright__rights {
+        display: inline;
+        margin-top: 0;
+    }
+
+    .entrance ~ .l-footer .menu-footer {
+        display: none;
+    }
 }

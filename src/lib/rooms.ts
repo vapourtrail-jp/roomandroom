@@ -177,18 +177,78 @@ export interface RoomListItem {
 
 /** Room[] → 一覧カード用データ（サムネイルは thumbnail_no → room_thumbnail → 1 枚目 の順で決める） */
 export function toRoomListItems(rooms: Room[]): RoomListItem[] {
-    return rooms.map((room) => {
-        const thumbIdx = parseInt(room.acf?.thumbnail_no || '0', 10) - 1;
+    return rooms.map((room) => ({
+        id: room.id,
+        roomNo: room.acf?.room_no || '',
+        roomBy: room.acf?.room_by || '',
+        thumbnailUrl: thumbnailUrlOf(room),
+    }));
+}
+
+/** 部屋のサムネイル画像 URL（thumbnail_no → room_thumbnail → 1 枚目）。一覧と入口で共用 */
+export function thumbnailUrlOf(room: Room): string {
+    const thumbIdx = parseInt(room.acf?.thumbnail_no || '0', 10) - 1;
+    const photos = Array.isArray(room.acf?.room_photos) ? room.acf.room_photos : [];
+    return (thumbIdx >= 0 && photoUrlOf(photos[thumbIdx]))
+        || (typeof room.acf?.room_thumbnail === 'object' && room.acf.room_thumbnail?.url)
+        || photoUrlOf(photos[0])
+        || '';
+}
+
+/** 部屋のサムネイル写真オブジェクト（URL と縦横サイズ）。thumbnail_no → room_thumbnail → 1 枚目 */
+export function thumbnailPhotoOf(room: Room): RoomPhoto | null {
+    const thumbIdx = parseInt(room.acf?.thumbnail_no || '0', 10) - 1;
+    const photos = Array.isArray(room.acf?.room_photos) ? room.acf.room_photos : [];
+    const pick = (item: RoomPhotoItem | undefined) => (item && typeof item.room_photo === 'object' && item.room_photo?.url ? item.room_photo : null);
+    return (thumbIdx >= 0 && pick(photos[thumbIdx]))
+        || (typeof room.acf?.room_thumbnail === 'object' && room.acf.room_thumbnail?.url ? room.acf.room_thumbnail : null)
+        || pick(photos[0]);
+}
+
+export interface EntranceSlide {
+    url: string;
+    roomNo: string;
+    roomBy: string;
+    photoIndex: string; // その写真の枚目（2 桁）。リンク先 /rooms/{roomNo}/{photoIndex}
+}
+
+export interface EntranceImages {
+    portrait: EntranceSlide[];  // 縦長（スマホ縦持ち向け）
+    landscape: EntranceSlide[]; // 横長（PC・横向き向け）
+}
+
+function shuffleInPlace<T>(a: T[]): T[] {
+    for (let i = a.length - 1; i > 0; i--) {
+        const j = Math.floor(Math.random() * (i + 1));
+        [a[i], a[j]] = [a[j], a[i]];
+    }
+    return a;
+}
+
+/** 入口のスライドショー用: 全部屋のサムネイル写真を縦長・横長に分け、ビルド時にシャッフルして返す。正方形は両方に入れる */
+export async function getEntranceImages(): Promise<EntranceImages> {
+    const rooms = await getAllRooms();
+    const portrait: EntranceSlide[] = [];
+    const landscape: EntranceSlide[] = [];
+    for (const room of rooms) {
+        const p = thumbnailPhotoOf(room);
+        if (!p) continue;
+        const w = p.width || 0;
+        const h = p.height || 0;
+        // 何枚目の写真かを探す（room_photos に無ければ 1 枚目へ）
         const photos = Array.isArray(room.acf?.room_photos) ? room.acf.room_photos : [];
-        const thumbnailUrl = (thumbIdx >= 0 && photoUrlOf(photos[thumbIdx]))
-            || (typeof room.acf?.room_thumbnail === 'object' && room.acf.room_thumbnail?.url)
-            || photoUrlOf(photos[0])
-            || '';
-        return {
-            id: room.id,
+        const found = photos.findIndex((item) => photoUrlOf(item) === p.url);
+        const slide: EntranceSlide = {
+            url: p.url,
             roomNo: room.acf?.room_no || '',
             roomBy: room.acf?.room_by || '',
-            thumbnailUrl,
+            photoIndex: padIndex(found >= 0 ? found + 1 : 1),
         };
-    });
+        if (h >= w) portrait.push(slide);
+        if (w >= h) landscape.push(slide);
+    }
+    // 片方が空なら、もう片方で代用する
+    if (portrait.length === 0) portrait.push(...landscape);
+    if (landscape.length === 0) landscape.push(...portrait);
+    return { portrait: shuffleInPlace(portrait), landscape: shuffleInPlace(landscape) };
 }

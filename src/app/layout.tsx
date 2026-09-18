@@ -2,10 +2,12 @@ import type { Metadata } from "next";
 import Script from "next/script";
 import "./globals.css";
 import "./style.css";
-import Link from "next/link";
 import PageTransition from "@/components/PageTransition";
 import Navigation from "@/components/Navigation";
 import BodyClassManager from "@/components/BodyClassManager";
+import Link from "next/link";
+import HomeEntrance from "@/components/HomeEntrance";
+import { getEntranceImages } from "@/lib/rooms";
 
 export const metadata: Metadata = {
   metadataBase: new URL('https://www.roomandroom.org'),
@@ -20,11 +22,13 @@ export const metadata: Metadata = {
   },
 };
 
-export default function RootLayout({
+export default async function RootLayout({
   children,
 }: Readonly<{
   children: React.ReactNode;
 }>) {
+  // 入口スライドショー用の画像 URL（ビルド時に取得・シャッフル）
+  const entranceImages = await getEntranceImages();
   return (
     <html lang="ja" suppressHydrationWarning>
       <head>
@@ -47,9 +51,10 @@ export default function RootLayout({
           })(window,document,'script','dataLayer','GTM-P4GJXTPS');`}
         </Script>
         <BodyClassManager />
+        <HomeEntrance images={entranceImages} />
         <header className="header l-header l-padding">
-          <Link href="/" className="logo">
-            <img src="/logo_rar.png" height={29} alt="room and room" />
+          <Link href="/rooms" className="logo">
+            <img src="/logo_rar.png" height={24} alt="room and room" />
           </Link>
         </header>
 
@@ -89,7 +94,7 @@ export default function RootLayout({
             </div>
           </div>
           <div className="copyright">
-            Copyright &copy; 2026 room and room. All rights reserved.
+            Copyright &copy; 2026 room and room. <span className="copyright__rights">All rights reserved.</span>
           </div>
         </footer>
       </body>
