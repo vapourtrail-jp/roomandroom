@@ -1249,6 +1249,50 @@ a {
     overflow: hidden;
 }
 
+/* 表示時: 透過ではなく色調で現れる。白飛び・無彩色・低コントラストの状態から、明るさ→彩度の順に戻る */
+@keyframes entranceIn {
+    0% {
+        filter: brightness(2.4) saturate(0) contrast(0.5);
+    }
+
+    60% {
+        filter: brightness(1.15) saturate(0.5) contrast(0.9);
+    }
+
+    100% {
+        filter: brightness(1) saturate(1) contrast(1);
+    }
+}
+
+.entrance {
+    animation: entranceIn var(--gate-enter, 600ms) var(--gate-enter-ease, ease) both;
+}
+
+/* 最初は完全な真っ白から: 白い層を最前面に敷き、同じ時間で消す */
+@keyframes entranceWhite {
+    0% {
+        opacity: 1;
+    }
+
+    100% {
+        opacity: 0;
+    }
+}
+
+.entrance::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background: #fff;
+    z-index: 10;
+    pointer-events: none;
+    animation: entranceWhite var(--gate-enter, 600ms) var(--gate-enter-ease, ease) both;
+}
+
+.entrance.is-leaving::before {
+    display: none;
+}
+
 /* スライド: 2 枚を重ねて opacity でクロスフェード。色ずれの加算合成はスライド内に閉じる */
 .entrance__slide {
     position: absolute;

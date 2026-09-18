@@ -50,6 +50,10 @@ export const ENTRANCE_CONFIG = {
     progressPx: 1,              // 太さ px
     progressOpacity: 0.7,       // 白の不透明度
 
+    enterFadeMs: 2000,          // 入口が現れる時間（白飛び・無彩色の状態から色調が戻る）
+    // 現れ方のイージング。'cubic-bezier(0.16, 1, 0.3, 1)' = 最初に一気に進み、最後にゆっくり落ち着く（ブワッ）
+    //   ほかの例: 'ease'（標準） / 'ease-in-out'（ゆっくり→速く→ゆっくり） / 'cubic-bezier(0.7, 0, 0.3, 1)'（溜めてから一気に）
+    enterEasing: 'cubic-bezier(0.16, 1, 0.3, 1)',
     leaveMs: 800,               // ENTER 後に暗転して消えるまでの時間
     notice: '',                 // NEWS の文言（空なら表示しない）
 };
@@ -200,6 +204,8 @@ export default function HomeEntrance({ images }: HomeEntranceProps) {
         '--gate-backdrop-dim': String(c.backdropDim),
         '--gate-fade': `${c.slideFadeMs}ms`,
         '--gate-leave': `${c.leaveMs}ms`,
+        '--gate-enter': `${c.enterFadeMs}ms`,
+        '--gate-enter-ease': c.enterEasing,
         '--gate-gap': `${c.patternGap}px`,
         '--gate-thick': `${c.patternThickness}px`,
         '--gate-rgb': `${c.patternGray}, ${c.patternGray}, ${c.patternGray}`,

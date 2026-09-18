@@ -4,8 +4,16 @@ import Link from "next/link";
 import { useState, useEffect } from "react";
 
 export default function Navigation() {
-    // Trigger build
-    const [isOpen, setIsOpen] = useState(false);
+    // JS 初期化前に（layout.tsx の小さなスクリプトで）開かれていた場合は、その状態を引き継ぐ
+    const [isOpen, setIsOpen] = useState(() =>
+        typeof document !== 'undefined' && !!document.getElementById('g-nav')?.classList.contains('is-open')
+    );
+
+    // 初期化が済んだら、初期化前用のクリック処理を無効にする（二重に切り替わらないように）
+    useEffect(() => {
+        const btn = document.querySelector<HTMLElement>('.mob-menu');
+        if (btn) btn.dataset.hydrated = '1';
+    }, []);
 
     const toggleMenu = () => {
         setIsOpen(!isOpen);

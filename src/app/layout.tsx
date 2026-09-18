@@ -61,6 +61,13 @@ export default async function RootLayout({
         </header>
 
         <Navigation />
+        {/* JS の初期化（水和）が終わる前でもハンバーガーを開閉できるようにする。初期化後は Navigation 側が引き継ぐ */}
+        <script
+          dangerouslySetInnerHTML={{
+            __html:
+              "(function(){var b=document.querySelector('.mob-menu'),n=document.getElementById('g-nav');if(!b||!n)return;b.addEventListener('click',function(){if(b.dataset.hydrated)return;var o=!n.classList.contains('is-open'),i=b.querySelector('.menu-icon');n.classList.toggle('panelactive',o);n.classList.toggle('is-open',o);b.classList.toggle('panelactive',o);if(i)i.classList.toggle('is-open',o);document.body.classList.toggle('is-fixed',o);});})();",
+          }}
+        />
 
         <main id="content" className="main l-main l-padding">
           <PageTransition>{children}</PageTransition>
