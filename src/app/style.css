@@ -1057,7 +1057,8 @@ a {
         position: absolute;
         z-index: 999;
         padding: 0;
-        top: 40%;
+        /* 40% を中心に置いていたところへ QR（100px + 間隔 52px）が加わるので、その半分（76px）だけ中心を下げ、項目の位置は従来どおりにする */
+        top: calc(40% + 76px);
         left: 50%;
         transform: translate(-50%, -50%);
     }
@@ -1070,7 +1071,7 @@ a {
     /* スマホメニュー: 項目の下に QR コード（幅 100px） */
     #g-nav .menu-qr {
         display: block;
-        margin-top: 28px;
+        margin-top: 52px;
     }
 
     #g-nav .menu-qr a {
