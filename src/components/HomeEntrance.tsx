@@ -304,18 +304,32 @@ function Typewriter({ text, href, onNavigate, charMs, cursor, cursorHoldMs }: { 
             return;
         }
         setShowCursor(cursor);
-        let i = 0;
+
+        // タイマー（setInterval）はスマホで遅延してまとめて実行され「一気に出る」ことがあるため、
+        // 描画フレームごとの経過時間で文字数を決める。1 フレームの経過は最大 100ms に抑え、
+        // 画面が止まっていた分は数えない（復帰後も 1 文字ずつ続く）。
+        let frame = 0;
         let hold = 0;
-        const tick = window.setInterval(() => {
-            i += 1;
-            setShown(text.slice(0, i));
-            if (i >= text.length) {
-                window.clearInterval(tick);
+        let last = performance.now();
+        let elapsed = 0;
+        let shownCount = 0;
+        const tick = (now: number) => {
+            elapsed += Math.min(100, now - last);
+            last = now;
+            const count = Math.min(text.length, Math.floor(elapsed / charMs));
+            if (count !== shownCount) {
+                shownCount = count;
+                setShown(text.slice(0, count));
+            }
+            if (count < text.length) {
+                frame = requestAnimationFrame(tick);
+            } else {
                 hold = window.setTimeout(() => setShowCursor(false), cursorHoldMs);
             }
-        }, charMs);
+        };
+        frame = requestAnimationFrame(tick);
         return () => {
-            window.clearInterval(tick);
+            cancelAnimationFrame(frame);
             window.clearTimeout(hold);
         };
     }, [text, charMs, cursor, cursorHoldMs]);
