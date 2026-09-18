@@ -27,7 +27,7 @@ export const ENTRANCE_CONFIG = {
 
     // 写真をごくわずかに動かす（表示中にゆっくり寄る）。スマホは描画負荷のため既定で静止
     motion: true,
-    motionScale: 1.02,          // 表示の終わりまでに何倍まで寄るか
+    motionScale: 1.03,          // 表示の終わりまでに何倍まで寄るか
     motionOnTouch: false,
 
     // 画像の上に重ねる柄: 'none' | 'lines'（走査線） | 'squares'（正方形） | 'mesh'（網目）

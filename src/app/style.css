@@ -1069,6 +1069,11 @@ a {
     }
 
     /* スマホメニュー: 項目の下に QR コード（幅 100px） */
+    /* 項目と QR を中央揃え */
+    #g-nav ul {
+        text-align: center;
+    }
+
     #g-nav .menu-qr {
         display: block;
         margin-top: 52px;
@@ -1077,6 +1082,7 @@ a {
     #g-nav .menu-qr a {
         display: block;
         width: 100px;
+        margin: 0 auto;
         line-height: 0;
     }
 
