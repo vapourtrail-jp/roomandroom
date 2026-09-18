@@ -131,7 +131,11 @@ export default function HomeEntrance({ images }: HomeEntranceProps) {
         if (phase === 'hidden') return;
         const footer = document.querySelector<HTMLElement>('.l-footer');
         if (!footer) return;
-        const measure = () => setFooterH(footer.getBoundingClientRect().height);
+        const measure = () => {
+            // スマホメニューを開いている間（body.is-fixed）はフッターが一時的に高くなるので測らない（キャプションが動かないように）
+            if (document.body.classList.contains('is-fixed')) return;
+            setFooterH(footer.getBoundingClientRect().height);
+        };
         measure();
         const ro = new ResizeObserver(measure);
         ro.observe(footer);

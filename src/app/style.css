@@ -1615,4 +1615,9 @@ body.is-fixed .entrance ~ .l-footer .sns-icon img {
     .entrance ~ .l-footer .menu-footer {
         display: none;
     }
+
+    /* ただしスマホメニューを開いている間は、HOME でも SNS アイコンを出す（通常のフッターと同じ内容） */
+    body.is-fixed .entrance ~ .l-footer .menu-footer {
+        display: block;
+    }
 }
