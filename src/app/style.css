@@ -1589,6 +1589,64 @@ a {
     50.01%, 100% { opacity: 0; }
 }
 
+/* 打ち終わった後に出す「>>>」（リンクの手がかり）。1 文字分あけて置き、左から順に 1 文字ずつ光って右へ流れる */
+@keyframes captionArrowIn {
+    from {
+        opacity: 0;
+    }
+
+    to {
+        opacity: 1;
+    }
+}
+
+/* 「>>>」の点灯パターン（3 文字前提、中間なしの点滅）。1 周を 4 等分し、
+   1: >XX / 2: X>X / 3: XX> / 4: XXX（全部消える）の順でループ */
+@keyframes captionChevron1 {
+    0% { opacity: 1; }
+    25% { opacity: 0; }
+    100% { opacity: 0; }
+}
+
+@keyframes captionChevron2 {
+    0% { opacity: 0; }
+    25% { opacity: 1; }
+    50% { opacity: 0; }
+    100% { opacity: 0; }
+}
+
+@keyframes captionChevron3 {
+    0% { opacity: 0; }
+    50% { opacity: 1; }
+    75% { opacity: 0; }
+    100% { opacity: 0; }
+}
+
+.entrance__caption-arrow {
+    display: inline-block;
+    margin-left: 0.45em;
+    white-space: nowrap;
+}
+
+.entrance__caption-arrow .entrance__caption-chevron {
+    display: inline-block;
+    opacity: 0;
+    /* アイコンフォント: 文字と同じ高さに揃え、3 つの間隔を詰める（Google Fonts 側の .material-symbols-outlined { font-size: 24px } より優先させるため親付きで指定） */
+    font-size: 1.25em;
+    width: 0.7em;
+    height: 1em;
+    line-height: 1;
+    vertical-align: -0.2em;
+    margin-left: -0.05em;
+    animation-duration: var(--arrow-cycle, 1300ms);
+    animation-timing-function: steps(1, end);
+    animation-iteration-count: infinite;
+}
+
+.entrance__caption-chevron--1 { animation-name: captionChevron1; }
+.entrance__caption-chevron--2 { animation-name: captionChevron2; }
+.entrance__caption-chevron--3 { animation-name: captionChevron3; }
+
 .entrance__caption-cursor {
     display: inline-block;
     margin-left: 1px;

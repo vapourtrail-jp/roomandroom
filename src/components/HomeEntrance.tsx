@@ -44,6 +44,9 @@ export const ENTRANCE_CONFIG = {
     captionCharMs: 40,          // 1 文字あたりの表示間隔
     captionCursor: true,        // 末尾の点滅カーソル
     captionCursorHoldMs: 0,     // 打ち終わってからカーソルを消すまで（0 = 即座に消す）
+    captionArrow: '>>>',        // 打ち終わった後に出す印（リンクの手がかり）。文字数分の chevron_right アイコンを順に点灯。空なら出さない
+    captionArrowIcon: 'chevron_right', // Material Symbols Outlined のアイコン名
+    captionArrowCycleMs: 1000,  // 「>XX → X>X → XX> → XXX（全消灯）」の 1 周の長さ（4 等分。タイミングは CSS の captionChevron1〜3 に固定）
     captionGapPx: 7,            // コピーライトとの間隔 px（コピーライト内の改行の間隔 .copyright__rights と同じ値にする）
 
     // 画面最上部のプログレスバー（1 枚の表示サイクルで左から右へ）
@@ -290,7 +293,7 @@ export default function HomeEntrance({ images }: HomeEntranceProps) {
             {c.grain > 0 && <div className="entrance__grain" style={{ backgroundImage: GRAIN_SVG }} />}
 
             {c.caption && c.media === 'slideshow' && (
-                <Typewriter text={captionText} href={captionHref} onNavigate={leaveTo} charMs={c.captionCharMs} cursor={c.captionCursor} cursorHoldMs={c.captionCursorHoldMs} notBefore={shownAt + c.enterFadeMs} />
+                <Typewriter text={captionText} href={captionHref} onNavigate={leaveTo} charMs={c.captionCharMs} cursor={c.captionCursor} cursorHoldMs={c.captionCursorHoldMs} notBefore={shownAt + c.enterFadeMs} arrow={c.captionArrow} arrowCycleMs={c.captionArrowCycleMs} arrowIcon={c.captionArrowIcon} />
             )}
 
             <div className="entrance__content">
@@ -312,12 +315,14 @@ export default function HomeEntrance({ images }: HomeEntranceProps) {
 }
 
 // ---- タイプライター表示のキャプション ----
-function Typewriter({ text, href, onNavigate, charMs, cursor, cursorHoldMs, notBefore }: { text: string; href: string; onNavigate: (href: string) => void; charMs: number; cursor: boolean; cursorHoldMs: number; notBefore: number }) {
+function Typewriter({ text, href, onNavigate, charMs, cursor, cursorHoldMs, notBefore, arrow, arrowCycleMs, arrowIcon }: { text: string; href: string; onNavigate: (href: string) => void; charMs: number; cursor: boolean; cursorHoldMs: number; notBefore: number; arrow: string; arrowCycleMs: number; arrowIcon: string }) {
     const [shown, setShown] = useState('');
     const [showCursor, setShowCursor] = useState(false);
+    const [done, setDone] = useState(false);
 
     useEffect(() => {
         setShown('');
+        setDone(false);
         if (!text) {
             setShowCursor(false);
             return;
@@ -346,6 +351,7 @@ function Typewriter({ text, href, onNavigate, charMs, cursor, cursorHoldMs, notB
             if (count < text.length) {
                 frame = requestAnimationFrame(tick);
             } else {
+                setDone(true);
                 hold = window.setTimeout(() => setShowCursor(false), cursorHoldMs);
             }
         };
@@ -369,6 +375,13 @@ function Typewriter({ text, href, onNavigate, charMs, cursor, cursorHoldMs, notB
             >
                 <span>{shown}</span>
                 {showCursor && <span className="entrance__caption-cursor">_</span>}
+                {done && arrow && (
+                    <span className="entrance__caption-arrow" aria-hidden="true" style={{ '--arrow-cycle': `${arrowCycleMs}ms` } as CSSProperties}>
+                        {arrow.split('').map((_, i) => (
+                            <span key={i} className={`entrance__caption-chevron entrance__caption-chevron--${i + 1} material-symbols-outlined`}>{arrowIcon}</span>
+                        ))}
+                    </span>
+                )}
             </Link>
         </p>
     );
