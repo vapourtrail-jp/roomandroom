@@ -1333,6 +1333,27 @@ a {
     opacity: 1;
 }
 
+/* 写真をごくわずかに動かす: 表示中に等速でゆっくり寄る（切替でクラスが付け直されるたびに最初から） */
+@keyframes slideZoom {
+    from {
+        transform: scale(1);
+    }
+
+    to {
+        transform: scale(var(--gate-motion-scale, 1.04));
+    }
+}
+
+/* 表示を終えた側（フェードアウト中）は寄り切った状態のまま。次に表示側になったとき 100% から寄り直す */
+.entrance--motion .entrance__slide {
+    transform: scale(var(--gate-motion-scale, 1.04));
+    will-change: transform;
+}
+
+.entrance--motion .entrance__slide.is-active {
+    animation: slideZoom var(--gate-motion-dur, 4200ms) linear forwards;
+}
+
 .entrance__img {
     position: absolute;
     inset: 0;
@@ -1672,7 +1693,8 @@ a {
     height: var(--gate-progress-px, 1px);
     background: rgba(255, 255, 255, var(--gate-progress-opacity, 0.7));
     transform-origin: left center;
-    animation: entranceProgress var(--gate-cycle, 4200ms) linear forwards;
+    /* 最初の 1 周だけ、入口が現れ切ってから伸び始める（--gate-cycle-delay = enterFadeMs） */
+    animation: entranceProgress var(--gate-cycle, 4200ms) linear var(--gate-cycle-delay, 0ms) forwards;
     pointer-events: none;
     z-index: 2;
 }

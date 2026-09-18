@@ -25,6 +25,11 @@ export const ENTRANCE_CONFIG = {
     slideHoldMs: 3000,          // 1 枚の表示時間
     slideFadeMs: 1200,          // 切替のクロスフェード時間
 
+    // 写真をごくわずかに動かす（表示中にゆっくり寄る）。スマホは描画負荷のため既定で静止
+    motion: true,
+    motionScale: 1.02,          // 表示の終わりまでに何倍まで寄るか
+    motionOnTouch: false,
+
     // 画像の上に重ねる柄: 'none' | 'lines'（走査線） | 'squares'（正方形） | 'mesh'（網目）
     pattern: 'lines' as 'none' | 'lines' | 'squares' | 'mesh',
     patternGap: 3,              // 間隔 px
@@ -203,7 +208,8 @@ export default function HomeEntrance({ images }: HomeEntranceProps) {
             };
             img.src = next.url;
         };
-        timer = window.setTimeout(advance, c.slideHoldMs + c.slideFadeMs);
+        // 最初の 1 枚は、入口が現れ切ってから（enterFadeMs 後）表示時間を数え始める
+        timer = window.setTimeout(advance, c.enterFadeMs + c.slideHoldMs + c.slideFadeMs);
         return () => {
             cancelled = true;
             window.clearTimeout(timer);
@@ -233,6 +239,9 @@ export default function HomeEntrance({ images }: HomeEntranceProps) {
         '--gate-grain': String(c.grain),
         '--gate-footer-h': `${footerH}px`,
         '--gate-cycle': `${c.slideHoldMs + c.slideFadeMs}ms`,
+        '--gate-cycle-delay': `${slideSeq <= 1 ? c.enterFadeMs : 0}ms`,
+        '--gate-motion-scale': String(c.motionScale),
+        '--gate-motion-dur': `${c.slideHoldMs + c.slideFadeMs + (slideSeq <= 1 ? c.enterFadeMs : 0)}ms`,
         '--gate-progress-px': `${c.progressPx}px`,
         '--gate-progress-opacity': String(c.progressOpacity),
         '--gate-caption-gap': `${c.captionGapPx}px`,
@@ -266,7 +275,7 @@ export default function HomeEntrance({ images }: HomeEntranceProps) {
     const captionHref = activeSlide ? `/rooms/${activeSlide.roomNo}/01` : '/rooms';
 
     return (
-        <div className={`entrance ${phase === 'leaving' ? 'is-leaving' : ''}`} style={vars}>
+        <div className={`entrance ${phase === 'leaving' ? 'is-leaving' : ''} ${c.motion && (c.motionOnTouch || !isTouch) ? 'entrance--motion' : ''}`} style={vars}>
             {c.media === 'video' ? (
                 <video className="entrance__img" autoPlay muted loop playsInline preload="auto" poster={c.videoPoster}>
                     <source src={c.videoSrc} type="video/mp4" />
