@@ -33,6 +33,9 @@ export default async function RootLayout({
   return (
     <html lang="ja" suppressHydrationWarning>
       <head>
+        {/* Android Chrome の「ホーム画面に追加」は <link rel="icon"> の大きい画像を使う（マニフェストは display: browser だと使われない） */}
+        <link rel="icon" type="image/png" sizes="192x192" href="/icon-192.png" />
+        <link rel="icon" type="image/png" sizes="512x512" href="/icon-512.png" />
         <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@20..48,100..700,0..1,-50..200&family=Material+Symbols+Rounded:opsz,wght,FILL,GRAD@20..48,100..700,0..1,-50..200&display=block" />
       </head>
       <body className="home wp-singular page-template-default page page-id-8 wp-embed-responsive wp-theme-blankslate">
