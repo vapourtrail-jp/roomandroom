@@ -1265,7 +1265,8 @@ a {
 }
 
 .entrance {
-    animation: entranceIn var(--gate-enter, 600ms) var(--gate-enter-ease, ease) both;
+    /* backwards: 始まる前は 0% の状態、終わったらフィルタを完全に外す（フィルタが残ると子の層が平らにされ再描画が重い） */
+    animation: entranceIn var(--gate-enter, 600ms) var(--gate-enter-ease, ease) backwards;
 }
 
 /* 最初は完全な真っ白から: 白い層を最前面に敷き、同じ時間で消す */
@@ -1534,6 +1535,9 @@ a {
 /* 写真のキャプション（左下、コピーライトの真上。フッターの高さは JS で計測して変数に入れる） */
 .entrance__caption {
     position: absolute;
+    /* 独立した描画層にして、文字の書き換えが写真・柄の層に波及しないようにする */
+    will-change: transform;
+    transform: translateZ(0);
     left: 21px;
     bottom: calc(var(--gate-footer-h, 58px) - 21px + var(--gate-caption-gap, 6px));
     margin: 0;

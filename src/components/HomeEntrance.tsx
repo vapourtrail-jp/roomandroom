@@ -36,6 +36,7 @@ export const ENTRANCE_CONFIG = {
     darken: 0.1,                // 全体の暗さ（黒のベタ層）0〜1
     blur: 1,                    // 元画像のぼかし px
     colorShift: 1,              // 赤・青の左右ずれ px（0 で無効。動画では無効）
+    colorShiftOnTouch: false,   // タッチ端末（スマホ・タブレット）でも色ずれを使うか。SVG フィルタが重いので既定は無効
     grain: 0.08,                // 粒子の濃さ 0〜1（0 で無効）
 
     // 写真のキャプション（room*001 by 名前）をタイプライター表示
@@ -120,6 +121,12 @@ export default function HomeEntrance({ images }: HomeEntranceProps) {
     // 入口が現れた時刻。最初のキャプションは現れ切ってから打ち始める（phase を shown にするのと同時に記録する）
     const [shownAt, setShownAt] = useState(() => (pathname === '/' ? performance.now() : 0));
 
+    // タッチ端末かどうか（マウント後に判定）。色ずれの有無に使う
+    const [isTouch, setIsTouch] = useState(false);
+    useEffect(() => {
+        setIsTouch(window.matchMedia('(pointer: coarse)').matches);
+    }, []);
+
     // ---- 画面の向き（マウント後に判定。サーバーでは null）----
     const [orientation, setOrientation] = useState<Orientation | null>(null);
     useEffect(() => {
@@ -203,7 +210,7 @@ export default function HomeEntrance({ images }: HomeEntranceProps) {
 
     if (phase === 'hidden') return null;
 
-    const useShift = c.media === 'slideshow' && c.colorShift > 0;
+    const useShift = c.media === 'slideshow' && c.colorShift > 0 && (c.colorShiftOnTouch || !isTouch);
     const vars = {
         '--gate-fit': c.fit === 'cover' ? 'cover' : 'contain',
         '--gate-backdrop-blur': `${c.backdropBlur}px`,
