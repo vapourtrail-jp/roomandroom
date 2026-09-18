@@ -87,7 +87,10 @@ export default function HomeEntrance({ images }: HomeEntranceProps) {
     // ---- 入口の表示制御 ----
     useEffect(() => {
         if (pathname === '/') {
-            if (phase === 'hidden') setPhase('shown');
+            if (phase === 'hidden') {
+                setShownAt(performance.now());
+                setPhase('shown');
+            }
         } else if (phase === 'shown') {
             // 入口表示中にナビで別ページへ移動した
             setPhase('hidden');
@@ -113,6 +116,9 @@ export default function HomeEntrance({ images }: HomeEntranceProps) {
         window.setTimeout(() => setPhase('hidden'), c.leaveMs);
     };
     const enter = () => leaveTo('/rooms');
+
+    // 入口が現れた時刻。最初のキャプションは現れ切ってから打ち始める（phase を shown にするのと同時に記録する）
+    const [shownAt, setShownAt] = useState(() => (pathname === '/' ? performance.now() : 0));
 
     // ---- 画面の向き（マウント後に判定。サーバーでは null）----
     const [orientation, setOrientation] = useState<Orientation | null>(null);
@@ -277,7 +283,7 @@ export default function HomeEntrance({ images }: HomeEntranceProps) {
             {c.grain > 0 && <div className="entrance__grain" style={{ backgroundImage: GRAIN_SVG }} />}
 
             {c.caption && c.media === 'slideshow' && (
-                <Typewriter text={captionText} href={captionHref} onNavigate={leaveTo} charMs={c.captionCharMs} cursor={c.captionCursor} cursorHoldMs={c.captionCursorHoldMs} />
+                <Typewriter text={captionText} href={captionHref} onNavigate={leaveTo} charMs={c.captionCharMs} cursor={c.captionCursor} cursorHoldMs={c.captionCursorHoldMs} notBefore={shownAt + c.enterFadeMs} />
             )}
 
             <div className="entrance__content">
@@ -299,7 +305,7 @@ export default function HomeEntrance({ images }: HomeEntranceProps) {
 }
 
 // ---- タイプライター表示のキャプション ----
-function Typewriter({ text, href, onNavigate, charMs, cursor, cursorHoldMs }: { text: string; href: string; onNavigate: (href: string) => void; charMs: number; cursor: boolean; cursorHoldMs: number }) {
+function Typewriter({ text, href, onNavigate, charMs, cursor, cursorHoldMs, notBefore }: { text: string; href: string; onNavigate: (href: string) => void; charMs: number; cursor: boolean; cursorHoldMs: number; notBefore: number }) {
     const [shown, setShown] = useState('');
     const [showCursor, setShowCursor] = useState(false);
 
@@ -317,12 +323,15 @@ function Typewriter({ text, href, onNavigate, charMs, cursor, cursorHoldMs }: { 
         let frame = 0;
         let hold = 0;
         let last = performance.now();
-        let elapsed = 0;
+        // notBefore（入口が現れ切る時刻）まではマイナスから数え始めて待つ
+        let elapsed = -Math.max(0, notBefore - last);
         let shownCount = 0;
         const tick = (now: number) => {
-            elapsed += Math.min(100, now - last);
+            // 1 フレームで進むのは最大 1 文字分（フレームが飛んでもまとめて出ない）
+            elapsed += Math.min(charMs, now - last);
             last = now;
-            const count = Math.min(text.length, Math.floor(elapsed / charMs));
+            // 待ち時間中（elapsed < 0）は 0 文字に固定する（負の値を slice に渡すと末尾が欠けた文字列になる）
+            const count = Math.max(0, Math.min(text.length, Math.floor(elapsed / charMs)));
             if (count !== shownCount) {
                 shownCount = count;
                 setShown(text.slice(0, count));
@@ -338,7 +347,7 @@ function Typewriter({ text, href, onNavigate, charMs, cursor, cursorHoldMs }: { 
             cancelAnimationFrame(frame);
             window.clearTimeout(hold);
         };
-    }, [text, charMs, cursor, cursorHoldMs]);
+    }, [text, charMs, cursor, cursorHoldMs, notBefore]);
 
     if (!text) return null;
     return (
