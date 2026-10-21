@@ -1,6 +1,12 @@
-# 写真番号なしの URL は 1 枚目へ（旧 rooms/[slug]/page.tsx・tags/[tag]/page.tsx の redirect() 相当）
-/rooms/:slug /rooms/:slug/01 301
-/tags/:tag /tags/:tag/01 301
+# メンテナンス中: トップ以外はすべてトップへ（一時的なので 302）
+# ここに無い未知のパスは 404 ページ（not-found.tsx）がトップへ送る
+/rooms / 302
+/rooms/* / 302
+/tags / 302
+/tags/* / 302
+/blog / 302
+/blog/* / 302
+/about / 302
 
 # pages.dev → 本番ドメイン
 https://roomandroom.pages.dev/* https://www.roomandroom.org/:splat 301

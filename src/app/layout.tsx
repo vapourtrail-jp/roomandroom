@@ -2,13 +2,10 @@ import type { Metadata } from "next";
 import Script from "next/script";
 import "./globals.css";
 import "./style.css";
-import PageTransition from "@/components/PageTransition";
-import Navigation from "@/components/Navigation";
-import BodyClassManager from "@/components/BodyClassManager";
 import Link from "next/link";
-import HomeEntrance from "@/components/HomeEntrance";
-import SmoothScroll from "@/components/SmoothScroll";
-import { getEntranceImages } from "@/lib/rooms";
+
+// メンテナンス用レイアウト（maintenance ブランチ）。
+// 入口スライドショー・ナビゲーション・CMS 取得を外し、ロゴと SNS・コピーライトだけ残す。
 
 export const metadata: Metadata = {
   metadataBase: new URL('https://www.roomandroom.org'),
@@ -23,20 +20,16 @@ export const metadata: Metadata = {
   },
 };
 
-export default async function RootLayout({
+export default function RootLayout({
   children,
 }: Readonly<{
   children: React.ReactNode;
 }>) {
-  // 入口スライドショー用の画像 URL（ビルド時に取得・シャッフル）
-  const entranceImages = await getEntranceImages();
   return (
     <html lang="ja" suppressHydrationWarning>
       <head>
-        {/* Android Chrome の「ホーム画面に追加」は <link rel="icon"> の大きい画像を使う（マニフェストは display: browser だと使われない） */}
         <link rel="icon" type="image/png" sizes="192x192" href="/icon-192.png" />
         <link rel="icon" type="image/png" sizes="512x512" href="/icon-512.png" />
-        <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@20..48,100..700,0..1,-50..200&family=Material+Symbols+Rounded:opsz,wght,FILL,GRAD@20..48,100..700,0..1,-50..200&display=block" />
       </head>
       <body className="home wp-singular page-template-default page page-id-8 wp-embed-responsive wp-theme-blankslate">
         <noscript>
@@ -54,26 +47,15 @@ export default async function RootLayout({
           'https://www.googletagmanager.com/gtm.js?id='+i+dl;f.parentNode.insertBefore(j,f);
           })(window,document,'script','dataLayer','GTM-P4GJXTPS');`}
         </Script>
-        <BodyClassManager />
-        <SmoothScroll />
-        <HomeEntrance images={entranceImages} />
+
         <header className="header l-header l-padding">
-          <Link href="/rooms" className="logo">
+          <Link href="/" className="logo">
             <img src="/logo_rar.png" height={24} alt="room and room" />
           </Link>
         </header>
 
-        <Navigation />
-        {/* JS の初期化（水和）が終わる前でもハンバーガーを開閉できるようにする。初期化後は Navigation 側が引き継ぐ */}
-        <script
-          dangerouslySetInnerHTML={{
-            __html:
-              "(function(){var b=document.querySelector('.mob-menu'),n=document.getElementById('g-nav');if(!b||!n)return;b.addEventListener('click',function(){if(b.dataset.hydrated)return;var o=!n.classList.contains('is-open'),i=b.querySelector('.menu-icon');n.classList.toggle('panelactive',o);n.classList.toggle('is-open',o);b.classList.toggle('panelactive',o);if(i)i.classList.toggle('is-open',o);document.body.classList.toggle('is-fixed',o);});})();",
-          }}
-        />
-
         <main id="content" className="main l-main l-padding">
-          <PageTransition>{children}</PageTransition>
+          {children}
         </main>
 
         <footer className="footer l-footer l-padding">
